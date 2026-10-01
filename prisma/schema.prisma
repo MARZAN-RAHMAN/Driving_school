@@ -1,0 +1,98 @@
+// NexusCore Database Architecture
+// Compatible with PostgreSQL, SQLite, and MySQL
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  INSTRUCTOR
+  STUDENT
+  USER
+  EDITOR
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+enum ContentStatus {
+  PUBLISHED
+  DRAFT
+  ARCHIVED
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  name         String
+  passwordHash String?
+  role         Role          @default(USER)
+  status       UserStatus    @default(ACTIVE)
+  avatar       String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  lastLogin    DateTime?
+  
+  contentItems ContentItem[]
+  auditLogs    AuditLog[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model ContentItem {
+  id          String        @id @default(uuid())
+  title       String
+  slug        String        @unique
+  category    String
+  excerpt     String
+  content     String
+  status      ContentStatus @default(DRAFT)
+  views       Int           @default(0)
+  readTime    String        @default("4 min read")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  authorId    String
+  author      User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([slug])
+  @@index([status])
+  @@index([category])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  action      String
+  actorEmail  String
+  target      String
+  ip          String   @default("127.0.0.1")
+  severity    String   @default("INFO")
+  createdAt   DateTime @default(now())
+
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([action])
+  @@index([createdAt])
+}
+
+model SystemMetric {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  label       String
+  value       String
+  change      String
+  changeType  String   // positive, negative, neutral
+  description String
+  updatedAt   DateTime @updatedAt
+}
