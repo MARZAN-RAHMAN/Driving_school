@@ -49,7 +49,7 @@ function parsePayload(encodedPayload: string) {
   }
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Protect all /admin routes
