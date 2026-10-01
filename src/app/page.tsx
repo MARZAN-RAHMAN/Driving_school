@@ -16,6 +16,7 @@ import {
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { BookLessonButton } from "@/components/booking/BookLessonButton";
+import { InstructorsCarousel } from "@/components/instructor/InstructorsCarousel";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -286,84 +287,12 @@ export default async function HomePage() {
         </section>
 
         {/* ========================================================================= */}
+        {/* ========================================================================= */}
         {/* 4. INSTRUCTORS FLEET SPOTLIGHT (#instructors) */}
         {/* ========================================================================= */}
         <section id="instructors" className="py-20 lg:py-28 bg-surface-secondary/40 border-b border-border">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                  Certified Instructors
-                </span>
-                <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-                  Meet Our Grade A ADI Fleet
-                </h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Every instructor is fully qualified, enhanced DBS checked, and operates modern dual-control vehicles.
-                </p>
-              </div>
-
-              <Link
-                href="/admin/instructors"
-                className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary-hover transition-colors"
-              >
-                Inspect Fleet Directory →
-              </Link>
-            </div>
-
-            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {instructors.slice(0, 3).map((inst) => (
-                <div
-                  key={inst.id}
-                  className="rounded-2xl border border-border bg-card p-6 shadow-xs text-card-foreground"
-                >
-                  <div className="flex items-start gap-4">
-                    <img
-                      src={inst.avatar}
-                      alt={inst.name}
-                      className="h-14 w-14 rounded-2xl object-cover ring-2 ring-border"
-                    />
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-base font-bold text-card-foreground">{inst.name}</h3>
-                        <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[9px] font-semibold text-muted-foreground">
-                          {inst.badgeNumber}
-                        </span>
-                      </div>
-
-                      <div className="mt-1 flex items-center gap-1 text-xs font-bold text-amber-500">
-                        <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                        <span>{inst.rating.toFixed(1)}</span>
-                        <span className="text-muted-foreground font-normal">
-                          ({inst.totalPasses} verified passes)
-                        </span>
-                      </div>
-
-                      <p className="mt-1 text-xs text-muted-foreground">{inst.vehicle}</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-5 pt-4 border-t border-border flex items-center justify-between text-xs">
-                    <span
-                      className={`rounded px-2 py-0.5 text-[10px] font-bold ${
-                        inst.transmission === "MANUAL"
-                          ? "bg-primary/10 text-primary border border-primary/20"
-                          : inst.transmission === "AUTOMATIC"
-                          ? "bg-secondary/10 text-secondary border border-secondary/20"
-                          : "bg-success/10 text-success border border-success/20"
-                      }`}
-                    >
-                      {inst.transmission === "BOTH" ? "Dual Transmission" : `${inst.transmission} Specialist`}
-                    </span>
-
-                    <span className="text-[11px] text-success font-semibold flex items-center gap-1">
-                      <span className="h-1.5 w-1.5 rounded-full bg-success" />
-                      Available for Booking
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <InstructorsCarousel instructors={instructors} />
           </div>
         </section>
 
