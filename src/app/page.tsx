@@ -9,8 +9,6 @@ import {
   ArrowRight,
   Zap,
   ExternalLink,
-  ChevronRight,
-  Check,
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -18,6 +16,7 @@ import { BookLessonButton } from "@/components/booking/BookLessonButton";
 import { InstructorsCarousel } from "@/components/instructor/InstructorsCarousel";
 import { NextDriveMethod } from "@/components/home/NextDriveMethod";
 import { HeroSection } from "@/components/home/HeroSection";
+import { CoursePackagesSection } from "@/components/home/CoursePackagesSection";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { FaqAccordion } from "@/components/home/FaqAccordion";
 import { db } from "@/lib/db";
@@ -78,93 +77,7 @@ export default async function HomePage() {
         {/* ========================================================================= */}
         {/* 2. TUITION PACKAGES & PRICING SECTION (#courses) */}
         {/* ========================================================================= */}
-        <section id="courses" className="py-20 lg:py-28 bg-surface-secondary/40 border-b border-border">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <ScrollReveal animation="fade-up" className="text-center max-w-2xl mx-auto">
-              <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                Transparent Tuition
-              </span>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-                Structured Course Packages &amp; Pricing
-              </h2>
-              <p className="mt-3 text-sm text-muted-foreground">
-                Zero hidden surcharges. All courses include door-to-door learner pickup, full insurance, and official DVSA test route preparation.
-              </p>
-            </ScrollReveal>
-
-            <div className="mt-14 sm:mt-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {packages.map((pkg, idx) => (
-                <ScrollReveal
-                  key={pkg.id}
-                  animation="fade-up"
-                  delay={idx * 90}
-                  className="h-full"
-                >
-                  <div
-                    className={`relative flex flex-col justify-between rounded-2xl bg-card text-card-foreground p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl h-full border ${
-                      pkg.popular
-                        ? "border-primary ring-2 ring-primary/20 shadow-md"
-                        : "border-border shadow-xs hover:border-primary/40"
-                    }`}
-                  >
-                    {pkg.popular && (
-                      <span className="absolute -top-3 right-6 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary-foreground shadow-xs">
-                        <Zap className="h-3 w-3 fill-current text-primary-foreground" />
-                        Most Popular
-                      </span>
-                    )}
-
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-foreground">
-                          {pkg.level}
-                        </span>
-                        <span className="text-xs font-medium text-muted-foreground font-mono">
-                          {pkg.durationHours} Hours Instruction
-                        </span>
-                      </div>
-
-                      <h3 className="mt-3 text-lg font-bold text-foreground">{pkg.title}</h3>
-
-                      <div className="mt-5 flex items-baseline gap-1.5 pb-5 border-b border-border">
-                        <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-mono">
-                          £{pkg.price}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          (£{(pkg.price / pkg.durationHours).toFixed(2)}/hr)
-                        </span>
-                      </div>
-
-                      <ul className="mt-6 space-y-3 text-xs text-muted-foreground">
-                        {pkg.features.map((feat, i) => (
-                          <li key={i} className="flex items-start gap-2.5">
-                            <Check className="h-4 w-4 text-success shrink-0 mt-0.5" />
-                            <span>{feat}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="mt-8 pt-5 border-t border-border">
-                      <BookLessonButton
-                        course={pkg.title}
-                        source="pricing-package"
-                        className={`flex w-full items-center justify-center gap-2 rounded-xl py-3 text-xs font-semibold transition cursor-pointer ${
-                          pkg.popular
-                            ? "bg-primary text-primary-foreground hover:bg-primary-hover shadow-xs"
-                            : "bg-muted text-foreground hover:bg-muted/80 border border-border"
-                        }`}
-                      >
-                        Book Course Package
-                        <ChevronRight className="h-3.5 w-3.5" />
-                      </BookLessonButton>
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </section>
+        <CoursePackagesSection packages={packages} />
 
         {/* ========================================================================= */}
         {/* 3. SYLLABUS & PROGRESSION (#curriculum) */}

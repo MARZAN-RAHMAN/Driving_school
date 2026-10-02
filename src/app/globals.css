@@ -203,9 +203,25 @@ body {
   animation: hero-float 5.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
 }
 
+/* Subtle Featured Pricing Card Glow */
+@keyframes featured-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px 0 rgba(79, 70, 229, 0.12), 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 30px 4px rgba(79, 70, 229, 0.25), 0 8px 24px -2px rgba(79, 70, 229, 0.15);
+  }
+}
+
+.animate-featured-glow {
+  animation: featured-glow 5s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-hero-float {
+  .animate-hero-float,
+  .animate-featured-glow {
     animation: none !important;
   }
 }
+
 
