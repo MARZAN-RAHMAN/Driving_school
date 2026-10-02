@@ -17,6 +17,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { BookLessonButton } from "@/components/booking/BookLessonButton";
 import { InstructorsCarousel } from "@/components/instructor/InstructorsCarousel";
+import { NextDriveMethod } from "@/components/home/NextDriveMethod";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -244,45 +245,17 @@ export default async function HomePage() {
         {/* ========================================================================= */}
         {/* 3. SYLLABUS & PROGRESSION (#curriculum) */}
         {/* ========================================================================= */}
-        <section id="curriculum" className="py-20 lg:py-28 border-b border-border bg-background">
+        <section id="curriculum" className="relative py-20 lg:py-28 border-b border-border bg-background overflow-hidden">
+          {/* Subtle ambient glow behind central content */}
+          <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center opacity-40 dark:opacity-20" aria-hidden="true">
+            <div className="h-[400px] w-[700px] rounded-full bg-primary/10 blur-[120px]" />
+          </div>
+
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto">
-              <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                The {settings.businessName.split(" ")[0] || "NextDrive"} Method
-              </span>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-                Five Steps from Provisional to Full License
-              </h2>
-              <p className="mt-3 text-sm text-muted-foreground">
-                Our structured DVSA curriculum systematically builds road confidence and defensive driving skills.
-              </p>
-            </div>
-
-            <div className="mt-14 sm:mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
-              {syllabusSteps.map((s) => (
-                <div
-                  key={s.step}
-                  className="rounded-2xl border border-border bg-card p-6 shadow-xs flex flex-col justify-between"
-                >
-                  <div>
-                    <span className="text-2xl font-black text-muted-foreground/30 font-mono block">
-                      {s.step}
-                    </span>
-                    <h3 className="mt-2 text-sm font-bold text-foreground leading-snug">
-                      {s.title}
-                    </h3>
-                    <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-                      {s.desc}
-                    </p>
-                  </div>
-
-                  <div className="mt-6 pt-3 border-t border-border flex items-center gap-1.5 text-[10px] font-semibold text-success">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
-                    DVSA Approved Skill
-                  </div>
-                </div>
-              ))}
-            </div>
+            <NextDriveMethod
+              businessName={settings.businessName.split(" ")[0] || "NextDrive"}
+              steps={syllabusSteps}
+            />
           </div>
         </section>
 
