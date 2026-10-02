@@ -8,10 +8,10 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await db.getBusinessSettings();
 
-  const title = settings.metaTitle || `${settings.businessName} | London Driving Academy`;
+  const title = settings.metaTitle || `${settings.businessName} | Manchester Driving Academy`;
   const description =
     settings.metaDescription ||
-    `DVSA-approved driving tuition across London with ${settings.businessName}. Industry-leading pass rates, dual-control modern vehicles, and certified Grade A ADI instructors.`;
+    `DVSA-approved driving tuition across Manchester with ${settings.businessName}. Modern dual-control vehicles and certified Grade A ADI instructors.`;
 
   return {
     title: {
@@ -22,8 +22,8 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL("https://nextdrive.uk"),
     authors: [{ name: settings.businessName }],
     keywords: settings.metaKeywords || [
-      "driving lessons london",
-      "learn to drive",
+      "driving lessons manchester",
+      "learn to drive manchester",
       "automatic driving lessons",
       "manual driving lessons",
     ],

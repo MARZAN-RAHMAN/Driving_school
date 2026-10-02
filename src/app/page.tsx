@@ -7,7 +7,6 @@ import {
   MapPin,
   Phone,
   ArrowRight,
-  Sparkles,
   Zap,
   ExternalLink,
   ChevronRight,
@@ -18,6 +17,7 @@ import { Footer } from "@/components/layout/Footer";
 import { BookLessonButton } from "@/components/booking/BookLessonButton";
 import { InstructorsCarousel } from "@/components/instructor/InstructorsCarousel";
 import { NextDriveMethod } from "@/components/home/NextDriveMethod";
+import { HeroSection } from "@/components/home/HeroSection";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -69,93 +69,9 @@ export default async function HomePage() {
 
       <main className="flex-1">
         {/* ========================================================================= */}
-        {/* 1. HERO SECTION (Minimalist, Spacious, Premium, Light/Dark) */}
+        {/* 1. HERO SECTION (Automotive, Futuristic, Premium Manchester Driving Academy) */}
         {/* ========================================================================= */}
-        <section className="relative overflow-hidden pt-16 pb-20 sm:pt-20 sm:pb-24 lg:pt-28 lg:pb-32 border-b border-border bg-background">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-4xl text-center">
-              {/* Trust Pill */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-semibold text-foreground shadow-xs mb-8">
-                <span className="flex h-2 w-2 rounded-full bg-success animate-pulse" />
-                <span>{settings.heroBadge || "DVSA Approved Driving Academy"}</span>
-                <span className="text-muted-foreground/40">•</span>
-                <span className="text-primary font-bold">
-                  {settings.heroPassRateBadge || `${settings.firstTimePassRate || "89.4%"} Practical Pass Rate`}
-                </span>
-              </div>
-
-              {/* Grand Minimalist Headline */}
-              <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-[1.08]">
-                {settings.heroHeadline || "Master the Road. Pass First Time in London."}
-              </h1>
-
-              {/* Crisp Subhead */}
-              <p className="mt-6 sm:mt-8 text-base text-muted-foreground sm:text-xl sm:leading-relaxed max-w-2xl mx-auto font-normal">
-                {settings.heroSubhead || "Premier manual and automatic driving tuition with certified Grade A ADI instructors, dual-control modern vehicles, and guaranteed test route mastery."}
-              </p>
-
-              {/* Action Buttons */}
-              <div className="mt-8 sm:mt-10 flex flex-col items-center justify-center gap-3 sm:gap-4 sm:flex-row">
-                <BookLessonButton
-                  course="Introductory 2-Hour Assessment"
-                  source="hero"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-7 py-4 text-sm font-semibold text-primary-foreground shadow-xs transition hover:bg-primary-hover sm:w-auto cursor-pointer"
-                >
-                  <Sparkles className="h-4 w-4" />
-                  {settings.heroPrimaryCtaText || "Book Assessment Lesson"} (£{assessmentPrice})
-                  <ArrowRight className="h-4 w-4" />
-                </BookLessonButton>
-
-                <a
-                  href={phoneHref}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-7 py-4 text-sm font-semibold text-foreground shadow-xs transition hover:bg-muted sm:w-auto"
-                >
-                  <Phone className="h-4 w-4 text-primary" />
-                  {settings.heroSecondaryCtaText || "Call"}: {settings.phone}
-                </a>
-              </div>
-
-              {/* Key Trust Stats */}
-              <div className="mt-14 sm:mt-16 grid grid-cols-2 gap-4 border-t border-border pt-8 sm:pt-10 sm:grid-cols-4 text-left sm:text-center">
-                <div className="p-3">
-                  <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-mono">
-                    {settings.firstTimePassRate || "89.4%"}
-                  </div>
-                  <div className="mt-1 text-xs text-muted-foreground font-medium">
-                    First-Time Pass Rate (vs 48.2% UK avg)
-                  </div>
-                </div>
-
-                <div className="p-3">
-                  <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-mono">
-                    {settings.totalPassesCount || "500+"}
-                  </div>
-                  <div className="mt-1 text-xs text-muted-foreground font-medium">
-                    Verified London Passes Recorded
-                  </div>
-                </div>
-
-                <div className="p-3">
-                  <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-mono">
-                    {settings.activeFleetCount || "12"}
-                  </div>
-                  <div className="mt-1 text-xs text-muted-foreground font-medium">
-                    Dual-Control Fleet Vehicles
-                  </div>
-                </div>
-
-                <div className="p-3">
-                  <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-mono">
-                    {settings.googleRating || "4.9 ★"}
-                  </div>
-                  <div className="mt-1 text-xs text-muted-foreground font-medium">
-                    Google &amp; Trustpilot Student Rating
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <HeroSection settings={settings} assessmentPrice={assessmentPrice} />
 
         {/* ========================================================================= */}
         {/* 2. TUITION PACKAGES & PRICING SECTION (#courses) */}
