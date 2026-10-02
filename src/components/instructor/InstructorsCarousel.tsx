@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
@@ -31,11 +32,11 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [viewportWidth, setViewportWidth] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null);
 
   const viewportRef = useRef<HTMLDivElement>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const isSwipingRef = useRef(false);
 
   // Measure exact inner viewport width to guarantee zero clipping & exact container alignment
   const updateDimensions = useCallback(() => {
@@ -62,7 +63,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
     };
   }, [updateDimensions]);
 
-  // Lock body scroll when instructor profile modal is open
+  // Lock body scroll when instructor profile modal is open; cleanly restore on close
   useEffect(() => {
     if (selectedInstructor) {
       document.body.style.overflow = "hidden";
@@ -124,40 +125,77 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
     }
   };
 
-  // Mobile touch swipe gestures
+  // Direction-aware mobile touch swipe handlers:
+  // Allows native vertical page scrolling while enabling smooth horizontal card swipes
   const minSwipeDistance = 45;
+
   const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
+    if (e.touches.length !== 1) return;
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+    isSwipingRef.current = false;
     setIsPaused(true);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
+    if (!touchStartRef.current || e.touches.length !== 1) return;
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const diffX = currentX - touchStartRef.current.x;
+    const diffY = currentY - touchStartRef.current.y;
+    const absX = Math.abs(diffX);
+    const absY = Math.abs(diffY);
 
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-    if (isLeftSwipe) {
-      handleNext();
-    } else if (isRightSwipe) {
-      handlePrev();
+    // If vertical movement dominates, user is scrolling the page vertically:
+    // Do NOT lock or interfere with native page scrolling
+    if (absY > absX) {
+      return;
     }
-    setTimeout(() => setIsPaused(false), 2000);
+
+    // Only if horizontal movement is distinctly greater than vertical and past jitter threshold:
+    if (absX > absY && absX > 10) {
+      isSwipingRef.current = true;
+    }
   };
 
-  // Slow 5.5s autoplay interval (pauses on hover, interaction, or focus)
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+
+    if (isSwipingRef.current && e.changedTouches && e.changedTouches.length > 0) {
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+      const diffX = endX - touchStartRef.current.x;
+      const diffY = endY - touchStartRef.current.y;
+      const absX = Math.abs(diffX);
+      const absY = Math.abs(diffY);
+
+      // Must be primarily horizontal and exceed minimum swipe distance
+      if (absX > minSwipeDistance && absX > absY * 1.25) {
+        if (diffX < 0) {
+          handleNext();
+        } else {
+          handlePrev();
+        }
+      }
+    }
+
+    touchStartRef.current = null;
+    isSwipingRef.current = false;
+    setTimeout(() => setIsPaused(false), 3000);
+  };
+
+  // Autoplay only on desktop/devices with pointer hover; disabled on mobile
+  // so it never interferes with reading credentials or mobile vertical scrolling
   useEffect(() => {
-    if (isPaused || total <= itemsPerView) return;
+    if (isMobile || isPaused || total <= itemsPerView) return;
     const timer = setInterval(() => {
       handleNext();
     }, 5500);
 
     return () => clearInterval(timer);
-  }, [isPaused, handleNext, total, itemsPerView]);
+  }, [isPaused, handleNext, total, itemsPerView, isMobile]);
 
   if (activeInstructors.length === 0) {
     return null;
@@ -168,7 +206,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
 
   return (
     <div
-      className="relative w-full max-w-full focus:outline-hidden"
+      className="relative w-full max-w-full overflow-hidden focus:outline-hidden"
       onKeyDown={handleKeyDown}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -179,8 +217,8 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
       aria-roledescription="carousel"
       aria-label="Meet Our Grade A ADI Fleet Carousel"
     >
-      {/* 1. Header & Controls: Aligns to container boundaries */}
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 sm:mb-10">
+      {/* 1. Header & Controls: Aligns cleanly to container boundaries */}
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6 sm:mb-10">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-2.5 border border-primary/20">
             <Award className="w-3.5 h-3.5" />
@@ -194,13 +232,13 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
           </p>
         </div>
 
-        {/* Previous & Next Buttons */}
+        {/* Previous & Next Buttons: 44px min touch target */}
         <div className="flex items-center gap-2.5 self-start sm:self-auto shrink-0">
           <button
             type="button"
             onClick={handlePrev}
             aria-label="Previous instructor"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-border bg-card text-foreground hover:bg-muted hover:text-primary transition-colors shadow-xs focus-visible:ring-2 focus-visible:ring-primary focus:outline-hidden cursor-pointer"
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 min-h-[44px] rounded-xl border border-border bg-card text-foreground hover:bg-muted hover:text-primary transition-colors shadow-xs focus-visible:ring-2 focus-visible:ring-primary focus:outline-hidden cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4" />
             <span className="text-xs font-semibold">Previous</span>
@@ -209,7 +247,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
             type="button"
             onClick={handleNext}
             aria-label="Next instructor"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-border bg-card text-foreground hover:bg-muted hover:text-primary transition-colors shadow-xs focus-visible:ring-2 focus-visible:ring-primary focus:outline-hidden cursor-pointer"
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 min-h-[44px] rounded-xl border border-border bg-card text-foreground hover:bg-muted hover:text-primary transition-colors shadow-xs focus-visible:ring-2 focus-visible:ring-primary focus:outline-hidden cursor-pointer"
           >
             <span className="text-xs font-semibold">Next</span>
             <ChevronRight className="w-4 h-4" />
@@ -217,10 +255,11 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
         </div>
       </div>
 
-      {/* 2. Carousel Viewport: strictly contained with overflow-hidden */}
+      {/* 2. Carousel Viewport: strictly contained with overflow-hidden and pan-y touch-action */}
       <div
         ref={viewportRef}
-        className="w-full max-w-full overflow-hidden py-1.5 -my-1.5"
+        className="w-full max-w-full overflow-hidden"
+        style={{ touchAction: "pan-y" }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -231,6 +270,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
           style={{
             transform: `translateX(-${translateX}px)`,
             gap: `${gap}px`,
+            touchAction: "pan-y",
           }}
         >
           {activeInstructors.map((inst, index) => {
@@ -247,10 +287,10 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
             return (
               <div
                 key={inst.id}
-                className="shrink-0 flex flex-col transition-all duration-300"
+                className="shrink-0 flex flex-col transition-all duration-300 min-w-0 max-w-full"
                 style={{
-                  width: cardWidth > 0 ? `${cardWidth}px` : undefined,
-                  flex: cardWidth > 0 ? `0 0 ${cardWidth}px` : undefined,
+                  width: cardWidth > 0 ? `${cardWidth}px` : "100%",
+                  flex: cardWidth > 0 ? `0 0 ${cardWidth}px` : "0 0 100%",
                 }}
                 role="group"
                 aria-roledescription="slide"
@@ -284,7 +324,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
 
                     {/* Floating Badges */}
                     <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-white text-[11px] font-semibold border border-white/10 shadow-xs">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-white text-[10px] sm:text-[11px] font-semibold border border-white/10 shadow-xs">
                         <ShieldCheck className="w-3.5 h-3.5 text-accent" />
                         {inst.grade || "Grade A ADI"}
                       </span>
@@ -296,9 +336,9 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                       </span>
                     </div>
 
-                    {/* Vehicle pill on image */}
-                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs gap-2">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-card/90 dark:bg-card/90 backdrop-blur-md text-foreground text-xs font-semibold shadow-xs truncate">
+                    {/* Vehicle pill on image: constrained to prevent overflow on 375px */}
+                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs gap-1.5">
+                      <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-card/90 dark:bg-card/90 backdrop-blur-md text-foreground text-[11px] sm:text-xs font-semibold shadow-xs min-w-0 max-w-[72%]">
                         <Car className="w-3.5 h-3.5 text-primary shrink-0" />
                         <span className="truncate">{inst.vehicle.replace(/\s*\(Dual Controls\)/i, "")}</span>
                       </span>
@@ -317,13 +357,13 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                     </div>
                   </div>
 
-                  {/* Card Content */}
+                  {/* Card Content: naturally expanding height */}
                   <div className="p-5 sm:p-6 flex flex-col flex-1 justify-between">
                     <div>
-                      {/* Name & Availability Status */}
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <h3 className="text-lg sm:text-xl font-bold text-card-foreground group-hover:text-primary transition-colors">
+                      {/* Name & Availability Status: responsive flex layout */}
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                        <div className="min-w-0">
+                          <h3 className="text-lg sm:text-xl font-bold text-card-foreground group-hover:text-primary transition-colors truncate">
                             {inst.name}
                           </h3>
                           <p className="text-xs text-muted-foreground font-medium mt-0.5">
@@ -332,10 +372,12 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                         </div>
 
                         {/* Availability Status Badge */}
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-success/10 text-success border border-success/20 shrink-0">
-                          <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-                          AVAILABLE FOR BOOKING
-                        </span>
+                        <div className="self-start sm:self-auto shrink-0">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-success/10 text-success border border-success/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                            AVAILABLE FOR BOOKING
+                          </span>
+                        </div>
                       </div>
 
                       {/* Rating & Verified Passes */}
@@ -364,15 +406,15 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                       </div>
                     </div>
 
-                    {/* Dual Action Buttons */}
-                    <div className="mt-5 pt-4 border-t border-border grid grid-cols-2 gap-2.5">
+                    {/* Dual Action Buttons: Stacks on mobile for 44px touch targets; side-by-side on sm+ */}
+                    <div className="mt-5 pt-4 border-t border-border flex flex-col sm:grid sm:grid-cols-2 gap-2.5">
                       <button
                         type="button"
                         onClick={() => setSelectedInstructor(inst)}
-                        className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-border bg-surface-secondary/70 hover:bg-muted text-foreground text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-primary focus:outline-hidden cursor-pointer"
+                        className="w-full flex items-center justify-center gap-2 px-3 py-3 sm:py-2.5 min-h-[44px] rounded-xl border border-border bg-surface-secondary/70 hover:bg-muted text-foreground text-xs sm:text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-primary focus:outline-hidden cursor-pointer"
                         aria-label={`View full profile and credentials for ${inst.name}`}
                       >
-                        <UserCheck className="w-3.5 h-3.5 text-primary" />
+                        <UserCheck className="w-4 h-4 text-primary shrink-0" />
                         <span>View Profile</span>
                       </button>
 
@@ -383,10 +425,10 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                             : "Beginner Driving Lessons"
                         }
                         source={`instructor-carousel-${inst.name.toLowerCase().replace(/\s+/g, "-")}`}
-                        className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-semibold shadow-xs transition-colors focus-visible:ring-2 focus-visible:ring-primary focus:outline-hidden cursor-pointer"
+                        className="w-full flex items-center justify-center gap-2 px-3 py-3 sm:py-2.5 min-h-[44px] rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground text-xs sm:text-sm font-semibold shadow-xs transition-colors focus-visible:ring-2 focus-visible:ring-primary focus:outline-hidden cursor-pointer"
                         ariaLabel={`Book driving lessons with ${inst.name}`}
                       >
-                        <Sparkles className="w-3.5 h-3.5" />
+                        <Sparkles className="w-4 h-4 shrink-0" />
                         <span>Book With {inst.name.split(" ")[0]}</span>
                       </BookLessonButton>
                     </div>
@@ -399,10 +441,10 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
       </div>
 
       {/* 4. Pagination Dots & Status Information: aligned within container */}
-      <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-        {/* Pagination Dots */}
+      <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* Pagination Dots with comfortable 40px touch zone */}
         <div
-          className="flex items-center gap-2"
+          className="flex items-center gap-1 sm:gap-2"
           role="tablist"
           aria-label="Instructor Carousel Pagination"
         >
@@ -416,12 +458,16 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                 role="tab"
                 aria-selected={isActive}
                 aria-label={`Go to instructor slide ${idx + 1} of ${maxIndex + 1}`}
-                className={`h-2.5 rounded-full transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus:outline-hidden cursor-pointer ${
-                  isActive
-                    ? "w-8 bg-primary"
-                    : "w-2.5 bg-border hover:bg-muted-foreground/40"
-                }`}
-              />
+                className="relative py-2 px-1 focus-visible:ring-2 focus-visible:ring-primary focus:outline-hidden cursor-pointer"
+              >
+                <span
+                  className={`block h-2.5 rounded-full transition-all duration-300 ${
+                    isActive
+                      ? "w-8 bg-primary"
+                      : "w-2.5 bg-border hover:bg-muted-foreground/40"
+                  }`}
+                />
+              </button>
             );
           })}
         </div>
@@ -431,57 +477,61 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
           <span className="font-mono font-medium">
             Showing {currentIndex + 1}–{Math.min(currentIndex + itemsPerView, total)} of {total} Grade A ADIs
           </span>
-          <span className="text-muted-foreground/40">•</span>
-          <span className="text-[11px]">
-            {isPaused ? "Autoplay paused" : "Auto-advancing"}
-          </span>
+          {!isMobile && (
+            <>
+              <span className="text-muted-foreground/40">•</span>
+              <span className="text-[11px]">
+                {isPaused ? "Autoplay paused" : "Auto-advancing"}
+              </span>
+            </>
+          )}
         </div>
       </div>
 
       {/* 5. Instructor Profile & Credentials Modal */}
       {selectedInstructor && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 overscroll-contain"
           role="dialog"
           aria-modal="true"
           aria-labelledby="instructor-modal-title"
           onClick={() => setSelectedInstructor(null)}
         >
           <div
-            className="relative w-full max-w-lg rounded-2xl border border-border bg-card text-card-foreground shadow-2xl p-6 sm:p-7 overflow-hidden max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-lg rounded-2xl border border-border bg-card text-card-foreground shadow-2xl p-5 sm:p-7 overflow-hidden max-h-[90vh] overflow-y-auto overscroll-contain"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close Button */}
+            {/* Close Button: 44px touch area */}
             <button
               type="button"
               onClick={() => setSelectedInstructor(null)}
-              className="absolute top-4 right-4 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+              className="absolute top-4 right-4 p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
               aria-label="Close instructor profile"
             >
               <X className="w-5 h-5" />
             </button>
 
             {/* Profile Header */}
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-4 pr-8">
               <img
                 src={selectedInstructor.avatar}
                 alt={selectedInstructor.name}
-                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover ring-2 ring-primary/30"
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover ring-2 ring-primary/30 shrink-0"
               />
-              <div>
+              <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3
                     id="instructor-modal-title"
-                    className="text-xl font-bold text-foreground"
+                    className="text-lg sm:text-xl font-bold text-foreground truncate"
                   >
                     {selectedInstructor.name}
                   </h3>
-                  <span className="rounded bg-muted px-2 py-0.5 font-mono text-[10px] font-bold text-muted-foreground border border-border">
+                  <span className="rounded bg-muted px-2 py-0.5 font-mono text-[10px] font-bold text-muted-foreground border border-border shrink-0">
                     {selectedInstructor.badgeNumber}
                   </span>
                 </div>
 
-                <div className="mt-1 flex items-center gap-2 text-xs">
+                <div className="mt-1 flex items-center gap-2 text-xs flex-wrap">
                   <div className="flex items-center gap-1 font-bold text-amber-500">
                     <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                     <span>{selectedInstructor.rating.toFixed(1)}</span>
@@ -506,7 +556,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
               <p className="mt-1 text-xs text-muted-foreground font-medium">
                 {selectedInstructor.vehicle}
               </p>
-              <div className="mt-2.5 flex items-center gap-2">
+              <div className="mt-2.5 flex items-center gap-2 flex-wrap">
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
                   {selectedInstructor.transmission === "BOTH"
                     ? "Dual Transmission"
@@ -569,11 +619,11 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
             )}
 
             {/* Modal Bottom CTA */}
-            <div className="mt-7 pt-5 border-t border-border flex items-center justify-end gap-3">
+            <div className="mt-7 pt-5 border-t border-border flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
               <button
                 type="button"
                 onClick={() => setSelectedInstructor(null)}
-                className="px-4 py-2.5 rounded-xl border border-border bg-card text-foreground hover:bg-muted text-xs font-semibold transition-colors cursor-pointer"
+                className="w-full sm:w-auto px-4 py-2.5 min-h-[44px] rounded-xl border border-border bg-card text-foreground hover:bg-muted text-xs font-semibold transition-colors cursor-pointer"
               >
                 Close
               </button>
@@ -586,7 +636,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                 }
                 source={`instructor-modal-${selectedInstructor.name.toLowerCase().replace(/\s+/g, "-")}`}
                 onClick={() => setSelectedInstructor(null)}
-                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-5 py-2.5 min-h-[44px] rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-semibold shadow-xs transition-colors cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Book Lessons With {selectedInstructor.name.split(" ")[0]}</span>

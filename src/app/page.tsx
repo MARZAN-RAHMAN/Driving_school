@@ -99,7 +99,7 @@ export default async function HomePage() {
         {/* ========================================================================= */}
         {/* 4. INSTRUCTORS FLEET SPOTLIGHT (#instructors) */}
         {/* ========================================================================= */}
-        <section id="instructors" className="py-20 lg:py-28 bg-surface-secondary/40 border-b border-border">
+        <section id="instructors" className="py-20 lg:py-28 bg-surface-secondary/40 border-b border-border overflow-hidden">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <ScrollReveal animation="fade-up">
               <InstructorsCarousel instructors={instructors} />
