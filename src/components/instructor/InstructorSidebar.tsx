@@ -194,7 +194,7 @@ export function InstructorSidebar({
         </div>
         <div className="rounded-lg bg-surface-secondary p-2 text-center text-[10px] text-muted-foreground">
           <p className="font-semibold text-foreground">NextDrive Academy</p>
-          <p>London Fleet Operations</p>
+          <p>Manchester Fleet Operations</p>
         </div>
       </div>
     </div>

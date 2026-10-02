@@ -188,3 +188,24 @@ body {
 .input-theme::placeholder {
   color: var(--muted-foreground);
 }
+
+/* Subtle Hero Vehicle Float Animation */
+@keyframes hero-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-hero-float {
+  animation: hero-float 5.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-float {
+    animation: none !important;
+  }
+}
+

@@ -32,7 +32,7 @@ export async function Footer({
   const phone = settings.phone || "+44 20 7946 0921";
   const phoneHref = `tel:${phone.replace(/[^\d+]/g, "")}`;
   const email = settings.email || "support@nextdrive.uk";
-  const address = settings.headOfficeAddress || "124 Baker Street, Marylebone, London, NW1 6XE";
+  const address = settings.headOfficeAddress || "Peter House, Oxford Street, Manchester, M1 5AN";
   const regNo = settings.companyRegistrationNumber || "12948210";
   const dvsaId = settings.dvsaSchoolId || "DVSA-SCH-90412";
   const passRate = settings.firstTimePassRate || "89.4%";
@@ -70,13 +70,13 @@ export async function Footer({
                   )}
                 </span>
                 <span className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  {settings.tagline || "Driving Academy London"}
+                  {settings.tagline || "Driving Academy Manchester"}
                 </span>
               </div>
             </div>
 
             <p className="mt-4 text-xs text-muted-foreground leading-relaxed max-w-sm">
-              DVSA-approved professional driving tuition across London. Dual-control manual and automatic instruction with industry-leading {passRate} first-time pass rates.
+              DVSA-approved professional driving tuition across Greater Manchester. Dual-control manual and automatic instruction with structured practical test preparation.
             </p>
 
             <div className="mt-5 space-y-2 text-xs text-muted-foreground">

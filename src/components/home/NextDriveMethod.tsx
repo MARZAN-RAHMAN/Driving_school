@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Sliders,
   GitFork,
@@ -12,6 +12,7 @@ import {
   Compass,
 } from "lucide-react";
 import { BookLessonButton } from "@/components/booking/BookLessonButton";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export interface SyllabusStep {
   step: string;
@@ -63,13 +64,33 @@ export function NextDriveMethod({
   steps,
 }: NextDriveMethodProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [hasEntered, setHasEntered] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasEntered(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="relative w-full">
+    <div ref={containerRef} className="relative w-full">
       {/* ========================================================================= */}
       {/* 1. SECTION HEADER */}
       {/* ========================================================================= */}
-      <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+      <ScrollReveal animation="fade-up" duration={600} className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
         {/* Eyebrow */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider border border-primary/20 mb-3.5">
           <Compass className="w-3.5 h-3.5" aria-hidden="true" />
@@ -93,50 +114,52 @@ export function NextDriveMethod({
           <span className="h-1 w-10 rounded-full bg-primary" />
           <span className="h-1 w-2 rounded-full bg-primary/30" />
         </div>
-      </div>
+      </ScrollReveal>
 
       {/* ========================================================================= */}
       {/* 2. PROGRESSION JOURNEY STRIP (Desktop & Tablet) */}
       {/* ========================================================================= */}
-      <div className="hidden md:flex items-center justify-between max-w-4xl mx-auto mb-12 px-5 py-3 rounded-xl border border-border/80 bg-surface-secondary/50 backdrop-blur-xs text-xs shadow-xs">
-        <div className="flex items-center gap-2 font-semibold">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">
-            Roadmap
-          </span>
-          <span className="text-foreground text-xs">Provisional Licence</span>
-        </div>
+      <ScrollReveal animation="fade-up" delay={100} duration={600}>
+        <div className="hidden md:flex items-center justify-between max-w-4xl mx-auto mb-12 px-5 py-3 rounded-xl border border-border/80 bg-surface-secondary/50 backdrop-blur-xs text-xs shadow-xs">
+          <div className="flex items-center gap-2 font-semibold">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">
+              Roadmap
+            </span>
+            <span className="text-foreground text-xs">Provisional Licence</span>
+          </div>
 
-        <div className="flex items-center gap-2 font-mono text-[11px] text-muted-foreground">
-          {steps.map((stepItem, idx) => {
-            const meta = STEP_META[stepItem.step] || { milestoneLabel: `Step ${stepItem.step}` };
-            const isHighlighted = hoveredIndex !== null && idx <= hoveredIndex;
-            return (
-              <React.Fragment key={stepItem.step}>
-                <span
-                  className={`transition-colors duration-200 ${
-                    isHighlighted ? "text-primary font-bold" : "text-muted-foreground"
-                  }`}
-                >
-                  {stepItem.step} {meta.milestoneLabel}
-                </span>
-                {idx < steps.length - 1 && (
-                  <ArrowRight
-                    className={`w-3 h-3 transition-colors duration-200 ${
-                      isHighlighted ? "text-primary" : "text-muted-foreground/30"
+          <div className="flex items-center gap-2 font-mono text-[11px] text-muted-foreground">
+            {steps.map((stepItem, idx) => {
+              const meta = STEP_META[stepItem.step] || { milestoneLabel: `Step ${stepItem.step}` };
+              const isHighlighted = hoveredIndex !== null && idx <= hoveredIndex;
+              return (
+                <React.Fragment key={stepItem.step}>
+                  <span
+                    className={`transition-colors duration-200 ${
+                      isHighlighted ? "text-primary font-bold" : "text-muted-foreground"
                     }`}
-                    aria-hidden="true"
-                  />
-                )}
-              </React.Fragment>
-            );
-          })}
-        </div>
+                  >
+                    {stepItem.step} {meta.milestoneLabel}
+                  </span>
+                  {idx < steps.length - 1 && (
+                    <ArrowRight
+                      className={`w-3 h-3 transition-colors duration-200 ${
+                        isHighlighted ? "text-primary" : "text-muted-foreground/30"
+                      }`}
+                      aria-hidden="true"
+                    />
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
 
-        <div className="flex items-center gap-1.5 font-bold text-xs text-primary">
-          <Award className="w-3.5 h-3.5" aria-hidden="true" />
-          <span>Full Licence</span>
+          <div className="flex items-center gap-1.5 font-bold text-xs text-primary">
+            <Award className="w-3.5 h-3.5" aria-hidden="true" />
+            <span>Full Licence</span>
+          </div>
         </div>
-      </div>
+      </ScrollReveal>
 
       {/* ========================================================================= */}
       {/* 3. DESKTOP & LAPTOP LAYOUT (>= 1024px: 5 Columns with Connected Timeline) */}
@@ -153,105 +176,112 @@ export function NextDriveMethod({
           const isPreceding = hoveredIndex !== null && idx < hoveredIndex;
 
           return (
-            <div
+            <ScrollReveal
               key={s.step}
+              animation="fade-up"
+              delay={150 + idx * 80}
+              duration={550}
               className="flex flex-col group relative"
-              onMouseEnter={() => setHoveredIndex(idx)}
-              onMouseLeave={() => setHoveredIndex(null)}
-              onFocus={() => setHoveredIndex(idx)}
-              onBlur={() => setHoveredIndex(null)}
             >
-              {/* Horizontal Connecting Timeline Line behind the Node */}
               <div
-                className="relative h-12 flex items-center justify-center mb-3"
-                aria-hidden="true"
+                className="flex flex-col h-full"
+                onMouseEnter={() => setHoveredIndex(idx)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                onFocus={() => setHoveredIndex(idx)}
+                onBlur={() => setHoveredIndex(null)}
               >
-                {/* Background Track Line */}
+                {/* Horizontal Connecting Timeline Line behind the Node */}
                 <div
-                  className={`absolute top-1/2 -translate-y-1/2 h-[2px] bg-border transition-colors duration-300 ${
-                    idx === 0
-                      ? "left-1/2 right-0"
-                      : idx === steps.length - 1
-                      ? "left-0 right-1/2"
-                      : "left-0 right-0"
-                  }`}
-                />
+                  className="relative h-12 flex items-center justify-center mb-3"
+                  aria-hidden="true"
+                >
+                  {/* Background Track Line */}
+                  <div
+                    className={`absolute top-1/2 -translate-y-1/2 h-[2px] bg-border transition-colors duration-300 ${
+                      idx === 0
+                        ? "left-1/2 right-0"
+                        : idx === steps.length - 1
+                        ? "left-0 right-1/2"
+                        : "left-0 right-0"
+                    }`}
+                  />
 
-                {/* Active Purple Progress Line */}
-                <div
-                  className={`absolute top-1/2 -translate-y-1/2 h-[2px] bg-primary transition-all duration-300 ${
-                    isHovered || isPreceding
-                      ? "opacity-100"
-                      : "opacity-0"
-                  } ${
-                    idx === 0
-                      ? "left-1/2 right-0"
-                      : idx === steps.length - 1
-                      ? "left-0 right-1/2"
-                      : "left-0 right-0"
-                  }`}
-                />
+                  {/* Active Purple Progress Line with entrance animation */}
+                  <div
+                    className={`absolute top-1/2 -translate-y-1/2 h-[2px] bg-primary transition-all duration-500 ${
+                      hasEntered && (isHovered || isPreceding || hoveredIndex === null)
+                        ? idx === 0
+                          ? "opacity-60 left-1/2 right-0"
+                          : idx === steps.length - 1
+                          ? "opacity-60 left-0 right-1/2"
+                          : "opacity-60 left-0 right-0"
+                        : "opacity-0"
+                    } ${
+                      isHovered || isPreceding ? "opacity-100" : ""
+                    }`}
+                  />
 
-                {/* Milestone Node Circle */}
+                  {/* Milestone Node Circle */}
+                  <div
+                    className={`relative z-10 w-9 h-9 rounded-full flex items-center justify-center font-mono font-bold text-xs transition-all duration-300 ${
+                      isHovered
+                        ? "bg-primary text-primary-foreground border-2 border-primary scale-110 shadow-md shadow-primary/30"
+                        : isPreceding
+                        ? "bg-primary/20 text-primary border-2 border-primary shadow-xs"
+                        : "bg-card text-foreground border-2 border-border shadow-xs group-hover:border-primary/50 group-hover:text-primary"
+                    }`}
+                  >
+                    {s.step}
+                  </div>
+                </div>
+
+                {/* Step Card */}
                 <div
-                  className={`relative z-10 w-9 h-9 rounded-full flex items-center justify-center font-mono font-bold text-xs transition-all duration-300 ${
+                  className={`flex-1 flex flex-col justify-between rounded-2xl border bg-card p-5 xl:p-6 transition-all duration-300 ${
                     isHovered
-                      ? "bg-primary text-primary-foreground border-2 border-primary scale-110 shadow-md shadow-primary/30"
-                      : isPreceding
-                      ? "bg-primary/20 text-primary border-2 border-primary shadow-xs"
-                      : "bg-card text-foreground border-2 border-border shadow-xs group-hover:border-primary/50 group-hover:text-primary"
+                      ? "border-primary/60 shadow-lg shadow-primary/5 -translate-y-1.5 bg-card"
+                      : "border-border shadow-xs hover:border-primary/40 hover:shadow-md"
                   }`}
                 >
-                  {s.step}
-                </div>
-              </div>
+                  <div>
+                    {/* Card Header: Stage Pill & Icon */}
+                    <div className="flex items-center justify-between gap-2 mb-4">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider font-mono uppercase bg-muted/60 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                        {meta.stage}
+                      </span>
 
-              {/* Step Card */}
-              <div
-                className={`flex-1 flex flex-col justify-between rounded-2xl border bg-card p-5 xl:p-6 transition-all duration-300 ${
-                  isHovered
-                    ? "border-primary/60 shadow-lg shadow-primary/5 -translate-y-1.5 bg-card"
-                    : "border-border shadow-xs hover:border-primary/40 hover:shadow-md"
-                }`}
-              >
-                <div>
-                  {/* Card Header: Stage Pill & Icon */}
-                  <div className="flex items-center justify-between gap-2 mb-4">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider font-mono uppercase bg-muted/60 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                      {meta.stage}
-                    </span>
+                      <div
+                        className={`p-2 rounded-xl transition-colors duration-300 ${
+                          isHovered
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-surface-secondary text-muted-foreground border border-border/60 group-hover:text-primary group-hover:border-primary/30"
+                        }`}
+                      >
+                        <IconComponent className="w-4 h-4" aria-hidden="true" />
+                      </div>
+                    </div>
 
-                    <div
-                      className={`p-2 rounded-xl transition-colors duration-300 ${
-                        isHovered
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-surface-secondary text-muted-foreground border border-border/60 group-hover:text-primary group-hover:border-primary/30"
-                      }`}
-                    >
-                      <IconComponent className="w-4 h-4" aria-hidden="true" />
+                    {/* Card Title */}
+                    <h3 className="text-base font-bold text-card-foreground leading-snug tracking-tight group-hover:text-primary transition-colors">
+                      {s.title}
+                    </h3>
+
+                    {/* Card Description */}
+                    <p className="mt-2.5 text-xs text-muted-foreground leading-relaxed">
+                      {s.desc}
+                    </p>
+                  </div>
+
+                  {/* DVSA Approved Skill Verification Footer */}
+                  <div className="mt-6 pt-3.5 border-t border-border flex items-center justify-between">
+                    <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-success/10 text-success border border-success/20">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-success shrink-0" aria-hidden="true" />
+                      <span>DVSA Approved Skill</span>
                     </div>
                   </div>
-
-                  {/* Card Title */}
-                  <h3 className="text-base font-bold text-card-foreground leading-snug tracking-tight group-hover:text-primary transition-colors">
-                    {s.title}
-                  </h3>
-
-                  {/* Card Description */}
-                  <p className="mt-2.5 text-xs text-muted-foreground leading-relaxed">
-                    {s.desc}
-                  </p>
-                </div>
-
-                {/* DVSA Approved Skill Verification Footer */}
-                <div className="mt-6 pt-3.5 border-t border-border flex items-center justify-between">
-                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-success/10 text-success border border-success/20">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-success shrink-0" aria-hidden="true" />
-                    <span>DVSA Approved Skill</span>
-                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
           );
         })}
       </div>
@@ -270,8 +300,10 @@ export function NextDriveMethod({
           const isHovered = hoveredIndex === idx;
 
           return (
-            <div
+            <ScrollReveal
               key={s.step}
+              animation="fade-up"
+              delay={100 + idx * 80}
               className={`rounded-2xl border bg-card p-6 flex flex-col justify-between transition-all duration-200 group ${
                 idx === steps.length - 1 ? "md:col-span-2 md:max-w-md md:mx-auto md:w-full" : ""
               } ${
@@ -279,10 +311,11 @@ export function NextDriveMethod({
                   ? "border-primary/60 shadow-md -translate-y-1"
                   : "border-border shadow-xs hover:border-primary/40 hover:shadow-md"
               }`}
-              onMouseEnter={() => setHoveredIndex(idx)}
-              onMouseLeave={() => setHoveredIndex(null)}
             >
-              <div>
+              <div
+                onMouseEnter={() => setHoveredIndex(idx)}
+                onMouseLeave={() => setHoveredIndex(null)}
+              >
                 <div className="flex items-center justify-between gap-3 mb-4">
                   <div className="flex items-center gap-2.5">
                     <span className="w-8 h-8 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-mono font-bold text-xs">
@@ -304,15 +337,15 @@ export function NextDriveMethod({
                 <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
                   {s.desc}
                 </p>
-              </div>
 
-              <div className="mt-5 pt-3.5 border-t border-border flex items-center">
-                <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-success/10 text-success border border-success/20">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-success shrink-0" aria-hidden="true" />
-                  <span>DVSA Approved Skill</span>
+                <div className="mt-5 pt-3.5 border-t border-border flex items-center">
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-success/10 text-success border border-success/20">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-success shrink-0" aria-hidden="true" />
+                    <span>DVSA Approved Skill</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
           );
         })}
       </div>
@@ -337,7 +370,12 @@ export function NextDriveMethod({
             const IconComponent = meta.icon;
 
             return (
-              <div key={s.step} className="relative flex items-start gap-4">
+              <ScrollReveal
+                key={s.step}
+                animation="fade-up"
+                delay={idx * 70}
+                className="relative flex items-start gap-4"
+              >
                 {/* Milestone Node on the Vertical Line */}
                 <div className="relative z-10 w-10 h-10 rounded-full border-2 border-primary bg-card text-primary flex items-center justify-center font-mono font-bold text-xs shadow-xs shrink-0 mt-1">
                   {s.step}
@@ -369,7 +407,7 @@ export function NextDriveMethod({
                     </div>
                   </div>
                 </div>
-              </div>
+              </ScrollReveal>
             );
           })}
         </div>
@@ -378,7 +416,7 @@ export function NextDriveMethod({
       {/* ========================================================================= */}
       {/* 6. SUBTLE FOOTER PROMPT & CTA */}
       {/* ========================================================================= */}
-      <div className="mt-12 sm:mt-16 text-center">
+      <ScrollReveal animation="fade-up" delay={250} className="mt-12 sm:mt-16 text-center">
         <div className="inline-flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6 px-6 py-4 rounded-2xl border border-border/80 bg-surface-secondary/40 backdrop-blur-xs shadow-xs max-w-xl mx-auto">
           <div className="text-center sm:text-left">
             <p className="text-xs font-bold text-foreground">
@@ -398,7 +436,7 @@ export function NextDriveMethod({
             <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
           </BookLessonButton>
         </div>
-      </div>
+      </ScrollReveal>
     </div>
   );
 }

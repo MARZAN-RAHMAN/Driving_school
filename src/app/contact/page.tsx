@@ -152,7 +152,7 @@ export default async function ContactPage() {
                     <Clock className="h-5 w-5 text-primary" />
                     <div>
                       <span className="text-xs font-bold text-foreground">Operating Hours</span>
-                      <p className="text-[10px] text-muted-foreground">London Instructor Dispatch</p>
+                      <p className="text-[10px] text-muted-foreground">Manchester Instructor Dispatch</p>
                     </div>
                   </div>
 

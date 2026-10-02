@@ -49,11 +49,11 @@ const DEFAULT_COURSES: CourseOption[] = [
 ];
 
 const DEFAULT_AREAS: AreaOption[] = [
-  { id: "loc_01", name: "Central & North London" },
-  { id: "loc_02", name: "South & South East London" },
-  { id: "loc_03", name: "East & Canary Wharf" },
-  { id: "loc_04", name: "South West & Surrey Borders" },
-  { id: "loc_05", name: "West London & Heathrow" },
+  { id: "loc_01", name: "Central & North Manchester" },
+  { id: "loc_02", name: "South Manchester & Didsbury" },
+  { id: "loc_03", name: "Trafford & Sale" },
+  { id: "loc_04", name: "Salford & Bury" },
+  { id: "loc_05", name: "Stockport & Greater Manchester" },
 ];
 
 const HOW_FOUND_OPTIONS = [
@@ -88,7 +88,7 @@ export default function LeadBookingModal({
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [course, setCourse] = useState(initialCourse || "Beginner Driving Lessons");
-  const [area, setArea] = useState(initialArea || "Central & North London");
+  const [area, setArea] = useState(initialArea || "Central & North Manchester");
   const [postcode, setPostcode] = useState("");
   const [provisionalLicence, setProvisionalLicence] = useState<ProvisionalLicenceStatus>("Yes");
   const [howFound, setHowFound] = useState("Google");

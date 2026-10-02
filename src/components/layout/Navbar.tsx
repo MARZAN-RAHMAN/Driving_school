@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Car,
-  ShieldCheck,
   LayoutDashboard,
   LogIn,
   LogOut,
@@ -75,7 +74,7 @@ export function Navbar({ initialSettings }: NavbarProps = {}) {
   const businessName = settings?.businessName || "NextDrive";
   const phone = settings?.phone || "+44 20 7946 0921";
   const phoneHref = `tel:${phone.replace(/[^\d+]/g, "")}`;
-  const tagline = settings?.tagline || "DVSA Certified • London";
+  const tagline = settings?.tagline || "DVSA Certified • Manchester";
   const logoBadge = settings?.logoBadgeText || "Academy";
   const assessmentPrice = settings?.hourlyRateManual ? Math.round(settings.hourlyRateManual * 2) : 75;
 

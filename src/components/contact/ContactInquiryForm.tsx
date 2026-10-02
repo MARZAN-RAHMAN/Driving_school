@@ -49,7 +49,7 @@ export function ContactInquiryForm({ settings }: ContactInquiryFormProps) {
           Start Your Journey with {settings.businessName}
         </h2>
         <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-          Fill out your details below and our senior ADI dispatch manager will match you with a certified instructor in your London postcode.
+          Fill out your details below and our senior ADI dispatch manager will match you with a certified instructor in your Manchester postcode.
         </p>
       </div>
 
