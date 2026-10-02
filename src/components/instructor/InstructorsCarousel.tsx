@@ -29,35 +29,72 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
   );
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [itemsPerView, setItemsPerView] = useState(3);
+  const [viewportWidth, setViewportWidth] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null);
-  const carouselRef = useRef<HTMLDivElement>(null);
 
-  // Responsive items-per-view calculation
-  useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
-      if (width < 768) {
-        setItemsPerView(1); // Mobile: 1 card
-      } else if (width < 1024) {
-        setItemsPerView(2); // Tablet: 2 cards
-      } else {
-        setItemsPerView(3); // Desktop: 3 cards
-      }
-    };
+  const viewportRef = useRef<HTMLDivElement>(null);
 
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+  // Measure exact inner viewport width to guarantee zero clipping & exact container alignment
+  const updateDimensions = useCallback(() => {
+    if (!viewportRef.current) return;
+    const width = viewportRef.current.clientWidth;
+    setViewportWidth(width);
   }, []);
+
+  useEffect(() => {
+    updateDimensions();
+
+    const ro = new ResizeObserver(() => {
+      updateDimensions();
+    });
+
+    if (viewportRef.current) {
+      ro.observe(viewportRef.current);
+    }
+
+    window.addEventListener("resize", updateDimensions);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", updateDimensions);
+    };
+  }, [updateDimensions]);
+
+  // Lock body scroll when instructor profile modal is open
+  useEffect(() => {
+    if (selectedInstructor) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [selectedInstructor]);
+
+  // Breakpoint & dimensions calculation
+  // Desktop (>= 1024px): 3 cards | Tablet (768px - 1023px): 2 cards | Mobile (< 768px): 1 card
+  const isMobile = viewportWidth > 0 ? viewportWidth < 768 : false;
+  const isTablet = viewportWidth > 0 ? viewportWidth >= 768 && viewportWidth < 1024 : false;
+  const itemsPerView = isMobile ? 1 : isTablet ? 2 : 3;
+  const gap = isMobile ? 16 : 24; // 16px on mobile, 24px (1.5rem) on tablet & desktop
 
   const total = activeInstructors.length;
   const maxIndex = Math.max(0, total - itemsPerView);
   const currentIndex = Math.min(activeIndex, maxIndex);
 
+  // Exact card width in pixels derived directly from available viewport container
+  const cardWidth =
+    viewportWidth > 0
+      ? (viewportWidth - (itemsPerView - 1) * gap) / itemsPerView
+      : 0;
+
+  // Exact translation in pixels: shifts by exactly (cardWidth + gap)
+  const translateX = currentIndex * (cardWidth + gap);
+
+  // Navigation handlers
   const handlePrev = useCallback(() => {
     setActiveIndex((prev) => {
       const cur = Math.min(prev, maxIndex);
@@ -87,7 +124,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
     }
   };
 
-  // Touch handlers for mobile swipe
+  // Mobile touch swipe gestures
   const minSwipeDistance = 45;
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -112,7 +149,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
     setTimeout(() => setIsPaused(false), 2000);
   };
 
-  // Autoplay with slow 5.5s interval (pauses on interaction, hover, focus)
+  // Slow 5.5s autoplay interval (pauses on hover, interaction, or focus)
   useEffect(() => {
     if (isPaused || total <= itemsPerView) return;
     const timer = setInterval(() => {
@@ -126,13 +163,12 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
     return null;
   }
 
-  // Calculate center item on desktop
+  // Active / prominent card index (center card on desktop)
   const centerItemIndex = itemsPerView === 3 ? currentIndex + 1 : currentIndex;
 
   return (
     <div
-      className="relative focus:outline-hidden"
-      ref={carouselRef}
+      className="relative w-full max-w-full focus:outline-hidden"
       onKeyDown={handleKeyDown}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -143,28 +179,28 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
       aria-roledescription="carousel"
       aria-label="Meet Our Grade A ADI Fleet Carousel"
     >
-      {/* Top Header & Navigation Controls */}
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
+      {/* 1. Header & Controls: Aligns to container boundaries */}
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 sm:mb-10">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-2 border border-primary/20">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-2.5 border border-primary/20">
             <Award className="w-3.5 h-3.5" />
             <span>CERTIFIED INSTRUCTORS</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
             Meet Our Grade A ADI Fleet
           </h2>
-          <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-2xl">
+          <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
             Every instructor is fully qualified, DBS checked and operates modern dual-control vehicles.
           </p>
         </div>
 
-        {/* Desktop & Tablet Previous/Next Arrows */}
-        <div className="flex items-center gap-3">
+        {/* Previous & Next Buttons */}
+        <div className="flex items-center gap-2.5 self-start sm:self-auto shrink-0">
           <button
             type="button"
             onClick={handlePrev}
             aria-label="Previous instructor"
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-border bg-card text-foreground hover:bg-muted/80 hover:text-primary transition-all shadow-xs focus-visible:ring-2 focus-visible:ring-primary focus:outline-hidden cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-border bg-card text-foreground hover:bg-muted hover:text-primary transition-colors shadow-xs focus-visible:ring-2 focus-visible:ring-primary focus:outline-hidden cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4" />
             <span className="text-xs font-semibold">Previous</span>
@@ -173,7 +209,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
             type="button"
             onClick={handleNext}
             aria-label="Next instructor"
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-border bg-card text-foreground hover:bg-muted/80 hover:text-primary transition-all shadow-xs focus-visible:ring-2 focus-visible:ring-primary focus:outline-hidden cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-border bg-card text-foreground hover:bg-muted hover:text-primary transition-colors shadow-xs focus-visible:ring-2 focus-visible:ring-primary focus:outline-hidden cursor-pointer"
           >
             <span className="text-xs font-semibold">Next</span>
             <ChevronRight className="w-4 h-4" />
@@ -181,25 +217,26 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
         </div>
       </div>
 
-      {/* Carousel Track Container */}
+      {/* 2. Carousel Viewport: strictly contained with overflow-hidden */}
       <div
-        className="overflow-hidden rounded-2xl"
+        ref={viewportRef}
+        className="w-full max-w-full overflow-hidden py-1.5 -my-1.5"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
+        {/* 3. Carousel Track: translated by exact pixel offset */}
         <div
-          className="flex transition-transform duration-500 ease-out will-change-transform"
+          className="flex items-stretch transition-transform duration-500 ease-out will-change-transform"
           style={{
-            transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
+            transform: `translateX(-${translateX}px)`,
+            gap: `${gap}px`,
           }}
         >
           {activeInstructors.map((inst, index) => {
             const isCenterProminent =
               itemsPerView === 3 && index === centerItemIndex;
-            const isCurrentActive = index === currentIndex;
 
-            // Clean transmission badge label
             const transmissionLabel =
               inst.transmission === "BOTH"
                 ? "Dual Transmission"
@@ -210,9 +247,10 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
             return (
               <div
                 key={inst.id}
-                className="shrink-0 px-3 transition-all duration-300"
+                className="shrink-0 flex flex-col transition-all duration-300"
                 style={{
-                  width: `${100 / itemsPerView}%`,
+                  width: cardWidth > 0 ? `${cardWidth}px` : undefined,
+                  flex: cardWidth > 0 ? `0 0 ${cardWidth}px` : undefined,
                 }}
                 role="group"
                 aria-roledescription="slide"
@@ -221,11 +259,11 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                 <div
                   className={`group relative flex flex-col h-full rounded-2xl border bg-card text-card-foreground overflow-hidden transition-all duration-300 ${
                     isCenterProminent
-                      ? "border-primary/60 shadow-lg ring-1 ring-primary/30 md:scale-[1.01]"
+                      ? "border-primary ring-1 ring-primary/40 shadow-md"
                       : "border-border shadow-xs hover:border-primary/40 hover:shadow-md"
                   }`}
                 >
-                  {/* Instructor Large Featured Image */}
+                  {/* Instructor Image */}
                   <div className="relative aspect-[16/11] sm:aspect-[4/3] w-full overflow-hidden bg-muted/60">
                     <img
                       src={inst.avatar}
@@ -234,7 +272,6 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                       decoding="async"
                       className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                       onError={(e) => {
-                        // High-grade SVG fallback avatar
                         const target = e.currentTarget;
                         target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
                           inst.name
@@ -242,7 +279,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                       }}
                     />
 
-                    {/* Gradient Overlay for visual polish */}
+                    {/* Subtle Overlay Gradient */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-80" />
 
                     {/* Floating Badges */}
@@ -259,15 +296,15 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                       </span>
                     </div>
 
-                    {/* Overlay Vehicle Badge at bottom of image */}
-                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-card/90 dark:bg-card/90 backdrop-blur-md text-foreground text-xs font-semibold shadow-xs">
-                        <Car className="w-3.5 h-3.5 text-primary" />
-                        <span className="truncate max-w-[200px]">{inst.vehicle.replace(/\s*\(Dual Controls\)/i, "")}</span>
+                    {/* Vehicle pill on image */}
+                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs gap-2">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-card/90 dark:bg-card/90 backdrop-blur-md text-foreground text-xs font-semibold shadow-xs truncate">
+                        <Car className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <span className="truncate">{inst.vehicle.replace(/\s*\(Dual Controls\)/i, "")}</span>
                       </span>
 
                       <span
-                        className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider backdrop-blur-md ${
+                        className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider backdrop-blur-md shrink-0 ${
                           inst.transmission === "MANUAL"
                             ? "bg-primary text-primary-foreground"
                             : inst.transmission === "AUTOMATIC"
@@ -283,7 +320,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                   {/* Card Content */}
                   <div className="p-5 sm:p-6 flex flex-col flex-1 justify-between">
                     <div>
-                      {/* Name & Availability Pill */}
+                      {/* Name & Availability Status */}
                       <div className="flex items-start justify-between gap-2">
                         <div>
                           <h3 className="text-lg sm:text-xl font-bold text-card-foreground group-hover:text-primary transition-colors">
@@ -294,15 +331,15 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                           </p>
                         </div>
 
-                        {/* Availability Pill */}
+                        {/* Availability Status Badge */}
                         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-success/10 text-success border border-success/20 shrink-0">
                           <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-                          AVAILABLE
+                          AVAILABLE FOR BOOKING
                         </span>
                       </div>
 
-                      {/* Ratings & Passes Metric */}
-                      <div className="mt-3.5 flex items-center gap-2 text-xs">
+                      {/* Rating & Verified Passes */}
+                      <div className="mt-3.5 flex items-center gap-2 text-xs flex-wrap">
                         <div className="flex items-center gap-1 font-bold text-amber-500 bg-amber-500/10 px-2 py-1 rounded-lg border border-amber-500/20">
                           <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                           <span>{inst.rating.toFixed(1)}</span>
@@ -316,7 +353,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                         </span>
                       </div>
 
-                      {/* Transmission & Speciality Description */}
+                      {/* Transmission & Dual-Control Status */}
                       <div className="mt-3.5 pt-3.5 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
                         <span className="font-medium text-foreground">
                           {transmissionLabel}
@@ -327,7 +364,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
+                    {/* Dual Action Buttons */}
                     <div className="mt-5 pt-4 border-t border-border grid grid-cols-2 gap-2.5">
                       <button
                         type="button"
@@ -361,7 +398,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
         </div>
       </div>
 
-      {/* Pagination Dots & Navigation Indicators */}
+      {/* 4. Pagination Dots & Status Information: aligned within container */}
       <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* Pagination Dots */}
         <div
@@ -389,21 +426,19 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
           })}
         </div>
 
-        {/* Counter & Mobile Helper */}
+        {/* Counter and Status */}
         <div className="text-xs text-muted-foreground flex items-center gap-2">
           <span className="font-mono font-medium">
             Showing {currentIndex + 1}–{Math.min(currentIndex + itemsPerView, total)} of {total} Grade A ADIs
           </span>
-          <span className="hidden sm:inline text-muted-foreground/40">•</span>
-          <span className="hidden sm:inline text-[11px]">
+          <span className="text-muted-foreground/40">•</span>
+          <span className="text-[11px]">
             {isPaused ? "Autoplay paused" : "Auto-advancing"}
           </span>
         </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* INSTRUCTOR PROFILE & CREDENTIALS MODAL */}
-      {/* ========================================================================= */}
+      {/* 5. Instructor Profile & Credentials Modal */}
       {selectedInstructor && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
