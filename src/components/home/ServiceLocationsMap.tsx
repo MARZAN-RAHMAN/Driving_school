@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import {
   MapPin,
   Target,
@@ -10,20 +10,52 @@ import {
   Search,
   RotateCcw,
   Loader2,
+  AlertCircle,
 } from "lucide-react";
+import { setOptions, importLibrary } from "@googlemaps/js-api-loader";
 import { LocationArea } from "@/types";
 import { openBookingModalGlobal } from "@/context/BookingModalContext";
-import "leaflet/dist/leaflet.css";
 
 interface ServiceLocationsMapProps {
   locations: LocationArea[];
 }
 
-const MANCHESTER_CENTER: [number, number] = [53.4808, -2.2426];
+const MANCHESTER_CENTER = { lat: 53.4808, lng: -2.2426 };
 const DEFAULT_ZOOM = 11;
 
+// Automotive futuristic dark theme for Google Maps
+const DARK_MAP_STYLES: google.maps.MapTypeStyle[] = [
+  { elementType: "geometry", stylers: [{ color: "#171c26" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#171c26" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#8b9bb4" }] },
+  { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#c5d1e6" }] },
+  { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#8b9bb4" }] },
+  { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#111721" }] },
+  { featureType: "poi.park", elementType: "labels.text.fill", stylers: [{ color: "#546e7a" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#252d3d" }] },
+  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#1b212d" }] },
+  { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#9ca3af" }] },
+  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#313c52" }] },
+  { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#1b212d" }] },
+  { featureType: "transit", elementType: "geometry", stylers: [{ color: "#1e2433" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#0c111a" }] },
+  { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#38bdf8" }] },
+];
+
+// Clean modern vector theme for Light Mode
+const LIGHT_MAP_STYLES: google.maps.MapTypeStyle[] = [
+  { elementType: "geometry", stylers: [{ color: "#f8fafc" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#475569" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#ffffff" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
+  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#e2e8f0" }] },
+  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#e0e7ff" }] },
+  { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#c7d2fe" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#e0f2fe" }] },
+];
+
 export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
-  // Only display active locations with coordinates
+  // Only display active database-driven locations with coordinates
   const activeLocations = useMemo(() => {
     return locations
       .filter((loc) => loc.isActive !== false && loc.latitude && loc.longitude)
@@ -36,14 +68,15 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapError, setMapError] = useState(
+    () => !process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  );
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const mapInstanceRef = useRef<any>(null);
+  const mapInstanceRef = useRef<google.maps.Map | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const markersRef = useRef<Record<string, any>>({});
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const tileLayerRef = useRef<any>(null);
+  const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
 
   // Filter locations by search query (name, postcodes, test center)
   const filteredLocations = useMemo(() => {
@@ -79,60 +112,160 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
     return () => observer.disconnect();
   }, []);
 
-  // Initialize Leaflet Map
+  // Update Map Styles when Theme changes
+  useEffect(() => {
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setOptions({
+        styles: isDarkMode ? DARK_MAP_STYLES : LIGHT_MAP_STYLES,
+      });
+    }
+  }, [isDarkMode]);
+
+  // Fly to / Select location handler
+  const handleSelectLocation = useCallback(
+    (loc: LocationArea) => {
+      setSelectedId(loc.id);
+
+      if (mapInstanceRef.current && loc.latitude && loc.longitude) {
+        mapInstanceRef.current.panTo({
+          lat: loc.latitude,
+          lng: loc.longitude,
+        });
+        mapInstanceRef.current.setZoom(13);
+
+        const marker = markersRef.current[loc.id];
+        if (marker && infoWindowRef.current) {
+          const popupHtml = `
+            <div class="nextdrive-google-popup-content">
+              <div class="popup-eyebrow">DVSA Test Zone</div>
+              <h4 class="popup-title">${loc.name}</h4>
+              <p class="popup-desc">${loc.coverageText || "Intensive driving lessons & DVSA test prep"}</p>
+              
+              <div class="popup-badge-row">
+                <span class="popup-badge-testcenter">🎯 ${loc.testCenterName}</span>
+                <span class="popup-badge-instructors">${loc.activeInstructors} ADIs</span>
+              </div>
+
+              <div class="popup-postcodes-row">
+                ${loc.postcodes.slice(0, 4).map((pc) => `<span class="popup-postcode-chip">${pc}</span>`).join("")}
+              </div>
+
+              <button
+                type="button"
+                id="btn-gmap-book-${loc.id}"
+                class="popup-book-btn"
+              >
+                <span>Book Lessons in ${loc.name.split(" ")[0]}</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </button>
+            </div>
+          `;
+
+          infoWindowRef.current.setContent(popupHtml);
+
+          if (marker instanceof google.maps.Marker) {
+            infoWindowRef.current.open({
+              anchor: marker,
+              map: mapInstanceRef.current,
+            });
+          } else {
+            infoWindowRef.current.open({
+              anchor: marker,
+              map: mapInstanceRef.current,
+            });
+          }
+
+          // Attach click listener for popup book button
+          setTimeout(() => {
+            const btn = document.getElementById(`btn-gmap-book-${loc.id}`);
+            if (btn) {
+              btn.onclick = () => {
+                openBookingModalGlobal({
+                  area: loc.name,
+                  source: "google-maps-infowindow",
+                });
+              };
+            }
+          }, 100);
+        }
+      }
+    },
+    []
+  );
+
+  // Initialize Google Maps JavaScript API
   useEffect(() => {
     let isMounted = true;
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-    async function initMap() {
+    // Listen for Google Maps authentication failures
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).gm_authFailure = () => {
+      if (isMounted) {
+        setMapError(true);
+        setMapLoaded(false);
+      }
+    };
+
+    if (!apiKey) {
+      // API key not configured; initial state mapError handles displaying "Map temporarily unavailable"
+      return;
+    }
+
+    async function initGoogleMap() {
       if (typeof window === "undefined" || !mapContainerRef.current) return;
       if (mapInstanceRef.current) return;
 
-      const L = (await import("leaflet")).default;
+      try {
+        setOptions({
+          key: apiKey || "",
+          v: "weekly",
+        });
 
-      if (!isMounted || !mapContainerRef.current) return;
+        // Load Maps & Marker Libraries
+        const { Map, InfoWindow } = await importLibrary("maps");
+        const { AdvancedMarkerElement } = await importLibrary("marker");
 
-      // Safe initialization preventing mobile scroll lock
-      const map = L.map(mapContainerRef.current, {
-        center: MANCHESTER_CENTER,
-        zoom: DEFAULT_ZOOM,
-        scrollWheelZoom: false, // Prevents accidental scroll trapping on desktop & mobile
-        touchZoom: false, // Prevents mobile pinch-zoom from trapping vertical page swipe
-        zoomControl: false, // We'll add custom positioned zoom control
-        dragging: true,
-      });
+        if (!isMounted || !mapContainerRef.current) return;
 
-      mapInstanceRef.current = map;
+        const isDark = document.documentElement.classList.contains("dark");
 
-      // Add zoom control at bottom right
-      L.control
-        .zoom({
-          position: "bottomright",
-        })
-        .addTo(map);
+        // Initialize Google Map
+        const map = new Map(mapContainerRef.current, {
+          center: MANCHESTER_CENTER,
+          zoom: DEFAULT_ZOOM,
+          // Use cooperative gesture handling to ensure page vertical scrolling works normally on mobile
+          gestureHandling: "cooperative",
+          disableDefaultUI: true,
+          zoomControl: true,
+          zoomControlOptions: {
+            position: google.maps.ControlPosition.RIGHT_BOTTOM,
+          },
+          styles: isDark ? DARK_MAP_STYLES : LIGHT_MAP_STYLES,
+          mapId: process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID || "DEMO_MAP_ID",
+        });
 
-      // Determine initial tile layer
-      const isDark = document.documentElement.classList.contains("dark");
-      const tileUrl = isDark
-        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+        mapInstanceRef.current = map;
 
-      const tileLayer = L.tileLayer(tileUrl, {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: "abcd",
-        maxZoom: 19,
-      }).addTo(map);
+        // Create Shared InfoWindow
+        const infoWindow = new InfoWindow({
+          maxWidth: 320,
+          minWidth: 260,
+        });
+        infoWindowRef.current = infoWindow;
 
-      tileLayerRef.current = tileLayer;
+        // Render markers for all active database-driven service locations
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const markers: Record<string, any> = {};
 
-      // Create Custom SVG Markers for each active location
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const markers: Record<string, any> = {};
+        activeLocations.forEach((loc) => {
+          if (loc.latitude && loc.longitude) {
+            const position = { lat: loc.latitude, lng: loc.longitude };
 
-      activeLocations.forEach((loc) => {
-        if (loc.latitude && loc.longitude) {
-          const customHtml = `
-            <div class="nextdrive-marker-pin group" data-loc-id="${loc.id}">
+            // Custom NextDrive Marker Pin DOM Element
+            const pinWrapper = document.createElement("div");
+            pinWrapper.className = "nextdrive-google-marker-pin group";
+            pinWrapper.innerHTML = `
               <div class="nextdrive-pulse-ring"></div>
               <div class="nextdrive-marker-body">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -145,136 +278,50 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
               <div class="nextdrive-marker-label">
                 ${loc.name.split("&")[0].trim()}
               </div>
-            </div>
-          `;
+            `;
 
-          const customIcon = L.divIcon({
-            className: "nextdrive-leaflet-div-icon",
-            html: customHtml,
-            iconSize: [44, 44],
-            iconAnchor: [22, 22],
-            popupAnchor: [0, -22],
-          });
-
-          const popupContent = document.createElement("div");
-          popupContent.className = "nextdrive-map-popup";
-          popupContent.innerHTML = `
-            <div class="p-4 max-w-[280px]">
-              <div class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-indigo-500 mb-1">
-                <span>📍 DVSA Test Zone</span>
-              </div>
-              <h4 class="text-sm font-bold text-slate-900 dark:text-white leading-tight">${loc.name}</h4>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">${loc.coverageText || "Intensive driving lessons & DVSA test prep"}</p>
-              
-              <div class="my-3 py-2 px-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-[11px]">
-                <span class="font-medium text-slate-700 dark:text-slate-300">🎯 ${loc.testCenterName}</span>
-                <span class="text-emerald-600 dark:text-emerald-400 font-bold">${loc.activeInstructors} ADIs</span>
-              </div>
-
-              <div class="flex flex-wrap gap-1 mb-3">
-                ${loc.postcodes.slice(0, 5).map((pc) => `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-200/70 dark:bg-slate-700/70 text-slate-800 dark:text-slate-200">${pc}</span>`).join("")}
-              </div>
-
-              <button
-                type="button"
-                id="btn-book-${loc.id}"
-                class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs cursor-pointer"
-              >
-                <span>Book Lesson in ${loc.name.split(" ")[0]}</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-              </button>
-            </div>
-          `;
-
-          const marker = L.marker([loc.latitude, loc.longitude], {
-            icon: customIcon,
-            title: loc.name,
-          })
-            .addTo(map)
-            .bindPopup(popupContent, {
-              className: "nextdrive-custom-leaflet-popup",
-              maxWidth: 320,
-              minWidth: 260,
-              closeButton: true,
+            const marker = new AdvancedMarkerElement({
+              map,
+              position,
+              title: loc.name,
+              content: pinWrapper,
             });
 
-          marker.on("click", () => {
-            setSelectedId(loc.id);
-          });
+            marker.addListener("click", () => {
+              handleSelectLocation(loc);
+            });
 
-          marker.on("popupopen", () => {
-            const btn = document.getElementById(`btn-book-${loc.id}`);
-            if (btn) {
-              btn.onclick = () => {
-                openBookingModalGlobal({
-                  area: loc.name,
-                  source: "map-marker-popup",
-                });
-              };
-            }
-          });
+            markers[loc.id] = marker;
+          }
+        });
 
-          markers[loc.id] = marker;
+        markersRef.current = markers;
+        setMapLoaded(true);
+        setMapError(false);
+      } catch (err) {
+        console.warn("Google Maps failed to initialize:", err);
+        if (isMounted) {
+          setMapError(true);
+          setMapLoaded(false);
         }
-      });
-
-      markersRef.current = markers;
-      setMapLoaded(true);
-
-      // Force render resize after load
-      setTimeout(() => {
-        if (map) {
-          map.invalidateSize();
-        }
-      }, 300);
+      }
     }
 
-    initMap();
+    initGoogleMap();
 
     return () => {
       isMounted = false;
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-      }
+      mapInstanceRef.current = null;
     };
-  }, [activeLocations]);
-
-  // Update Tile Layer when Theme changes
-  useEffect(() => {
-    if (!mapInstanceRef.current || !tileLayerRef.current) return;
-
-    const tileUrl = isDarkMode
-      ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-      : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
-
-    tileLayerRef.current.setUrl(tileUrl);
-  }, [isDarkMode]);
-
-  // Fly to location when selected
-  const handleSelectLocation = (loc: LocationArea) => {
-    setSelectedId(loc.id);
-
-    if (mapInstanceRef.current && loc.latitude && loc.longitude) {
-      mapInstanceRef.current.flyTo([loc.latitude, loc.longitude], 13, {
-        duration: 1.2,
-      });
-
-      const marker = markersRef.current[loc.id];
-      if (marker) {
-        setTimeout(() => {
-          marker.openPopup();
-        }, 1250);
-      }
-    }
-  };
+  }, [activeLocations, handleSelectLocation]);
 
   const handleResetView = () => {
     if (mapInstanceRef.current) {
-      mapInstanceRef.current.flyTo(MANCHESTER_CENTER, DEFAULT_ZOOM, {
-        duration: 1,
-      });
-      mapInstanceRef.current.closePopup();
+      mapInstanceRef.current.panTo(MANCHESTER_CENTER);
+      mapInstanceRef.current.setZoom(DEFAULT_ZOOM);
+      if (infoWindowRef.current) {
+        infoWindowRef.current.close();
+      }
     }
   };
 
@@ -320,38 +367,77 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
         {/* MAP CONTAINER (7 cols on lg screens = ~58%) */}
         <div className="lg:col-span-7 xl:col-span-7 flex flex-col">
           <div className="relative w-full h-[400px] sm:h-[480px] lg:h-[580px] rounded-3xl overflow-hidden border border-border bg-card shadow-lg">
-            {/* Map Canvas */}
-            <div
-              ref={mapContainerRef}
-              className="w-full h-full z-10"
-              style={{ minHeight: "100%" }}
-            />
+            {/* Real Google Map Canvas or Error Fallback */}
+            {!mapError ? (
+              <>
+                <div
+                  ref={mapContainerRef}
+                  className="w-full h-full z-10"
+                  style={{ minHeight: "100%" }}
+                />
 
-            {!mapLoaded && (
-              <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-card/80 backdrop-blur-xs">
-                <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
-                <span className="text-xs font-semibold text-muted-foreground">
-                  Initializing Manchester Map Canvas...
-                </span>
+                {!mapLoaded && (
+                  <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-card/80 backdrop-blur-xs">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+                    <span className="text-xs font-semibold text-muted-foreground">
+                      Initializing Google Maps Manchester Canvas...
+                    </span>
+                  </div>
+                )}
+
+                {/* Mobile Scroll Safety Notice Banner */}
+                <div className="absolute top-3 left-3 right-3 sm:right-auto z-20 pointer-events-none">
+                  <div className="inline-flex items-center gap-2 rounded-xl bg-card/90 dark:bg-slate-900/90 backdrop-blur-md px-3 py-1.5 border border-border text-[11px] font-medium text-foreground shadow-xs pointer-events-auto">
+                    <Compass className="h-3.5 w-3.5 text-primary shrink-0" />
+                    <span>Tap any marker to view test center &amp; instructors</span>
+                  </div>
+                </div>
+
+                {/* Reset View Button */}
+                <button
+                  onClick={handleResetView}
+                  className="absolute top-3 right-3 z-20 rounded-xl bg-card/90 dark:bg-slate-900/90 backdrop-blur-md p-2.5 border border-border text-foreground hover:text-primary transition shadow-xs"
+                  title="Reset Manchester Overview"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                </button>
+              </>
+            ) : (
+              /* REQUIRED ERROR STATE: Map temporarily unavailable */
+              <div className="relative w-full h-full flex flex-col items-center justify-center p-8 bg-gradient-to-b from-card via-surface-secondary/40 to-card text-center overflow-hidden">
+                {/* Subtle Manchester Geo Grid Background Graphic */}
+                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none bg-[radial-gradient(#4f46e5_1px,transparent_1px)] [background-size:16px_16px]" />
+
+                <div className="relative z-10 max-w-md mx-auto">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto mb-3.5 border border-amber-500/20 shadow-xs">
+                    <AlertCircle className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-base font-bold text-foreground">
+                    Map temporarily unavailable
+                  </h3>
+                  <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
+                    Our live Manchester driving hubs and DVSA test routes remain fully active. Select any area from the list to book your lessons.
+                  </p>
+
+                  <div className="mt-5 grid grid-cols-2 gap-2 text-left">
+                    {activeLocations.slice(0, 4).map((loc) => (
+                      <button
+                        key={loc.id}
+                        onClick={() => setSelectedId(loc.id)}
+                        className={`p-2.5 rounded-xl border text-xs transition text-left cursor-pointer ${
+                          selectedId === loc.id
+                            ? "border-primary bg-primary/10 text-foreground font-bold"
+                            : "border-border/60 bg-card/60 hover:border-primary/40 text-muted-foreground"
+                        }`}
+                      >
+                        <span className="block truncate font-semibold">{loc.name}</span>
+                        <span className="block text-[10px] text-primary truncate mt-0.5">🎯 {loc.testCenterName}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
-
-            {/* Mobile Scroll Safety Notice Banner */}
-            <div className="absolute top-3 left-3 right-3 sm:right-auto z-20 pointer-events-none">
-              <div className="inline-flex items-center gap-2 rounded-xl bg-card/90 dark:bg-slate-900/90 backdrop-blur-md px-3 py-1.5 border border-border text-[11px] font-medium text-foreground shadow-xs pointer-events-auto">
-                <Compass className="h-3.5 w-3.5 text-primary shrink-0" />
-                <span>Tap any marker to view test center &amp; instructors</span>
-              </div>
-            </div>
-
-            {/* Reset View Button */}
-            <button
-              onClick={handleResetView}
-              className="absolute top-3 right-3 z-20 rounded-xl bg-card/90 dark:bg-slate-900/90 backdrop-blur-md p-2.5 border border-border text-foreground hover:text-primary transition shadow-xs"
-              title="Reset Manchester Overview"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </button>
 
             {/* Active Test Center Floating Card Overlay */}
             {selectedId && (
@@ -387,10 +473,10 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
                         onClick={() =>
                           openBookingModalGlobal({
                             area: currentLoc.name,
-                            source: "map-floating-overlay",
+                            source: "google-maps-floating-card",
                           })
                         }
-                        className="mt-3 w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary hover:bg-primary/90 px-3 py-2 text-xs font-bold text-primary-foreground transition shadow-xs"
+                        className="mt-3 w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary hover:bg-primary/90 px-3 py-2 text-xs font-bold text-primary-foreground transition shadow-xs cursor-pointer"
                       >
                         <span>Book in {currentLoc.name.split(" ")[0]}</span>
                         <ArrowRight className="h-3.5 w-3.5" />
@@ -520,14 +606,9 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
         </div>
       </div>
 
-      {/* Global CSS for Custom Leaflet Markers and Dark/Light Popups */}
+      {/* Global CSS for Custom Google Maps Markers and Popups */}
       <style jsx global>{`
-        .nextdrive-leaflet-div-icon {
-          background: transparent !important;
-          border: none !important;
-        }
-
-        .nextdrive-marker-pin {
+        .nextdrive-google-marker-pin {
           position: relative;
           display: flex;
           align-items: center;
@@ -543,7 +624,7 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
           height: 38px;
           border-radius: 9999px;
           background-color: rgba(79, 70, 229, 0.45);
-          animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+          animation: nextdrive-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
         }
 
         .dark .nextdrive-pulse-ring {
@@ -571,7 +652,7 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
           box-shadow: 0 4px 14px rgba(6, 182, 212, 0.5);
         }
 
-        .nextdrive-marker-pin:hover .nextdrive-marker-body {
+        .nextdrive-google-marker-pin:hover .nextdrive-marker-body {
           transform: scale(1.18);
         }
 
@@ -593,48 +674,162 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
           border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Custom Leaflet Popup Styling */
-        .nextdrive-custom-leaflet-popup .leaflet-popup-content-wrapper {
-          padding: 0;
-          border-radius: 1.25rem;
-          background-color: #ffffff;
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-          border: 1px solid #e2e8f0;
-          overflow: hidden;
+        /* Custom Google InfoWindow Content */
+        .nextdrive-google-popup-content {
+          padding: 12px 14px;
+          font-family: inherit;
         }
 
-        .dark .nextdrive-custom-leaflet-popup .leaflet-popup-content-wrapper {
-          background-color: #0f172a;
-          border-color: #1e293b;
+        .popup-eyebrow {
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          color: #4f46e5;
+          margin-bottom: 2px;
+        }
+
+        .dark .popup-eyebrow {
+          color: #38bdf8;
+        }
+
+        .popup-title {
+          font-size: 14px;
+          font-weight: 700;
+          color: #0f172a;
+          margin: 0 0 4px 0;
+        }
+
+        .dark .popup-title {
           color: #f8fafc;
         }
 
-        .nextdrive-custom-leaflet-popup .leaflet-popup-content {
-          margin: 0;
-          line-height: normal;
+        .popup-desc {
+          font-size: 11px;
+          color: #64748b;
+          margin: 0 0 8px 0;
+          line-height: 1.4;
         }
 
-        .nextdrive-custom-leaflet-popup .leaflet-popup-tip {
-          background: #ffffff;
+        .dark .popup-desc {
+          color: #94a3b8;
         }
 
-        .dark .nextdrive-custom-leaflet-popup .leaflet-popup-tip {
-          background: #0f172a;
+        .popup-badge-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 6px 8px;
+          background: #f1f5f9;
+          border-radius: 8px;
+          font-size: 11px;
+          margin-bottom: 8px;
         }
 
-        .nextdrive-custom-leaflet-popup .leaflet-popup-close-button {
-          top: 10px !important;
-          right: 10px !important;
-          color: #94a3b8 !important;
-          padding: 4px !important;
+        .dark .popup-badge-row {
+          background: #1e293b;
         }
 
-        .nextdrive-custom-leaflet-popup .leaflet-popup-close-button:hover {
-          color: #0f172a !important;
+        .popup-badge-testcenter {
+          font-weight: 600;
+          color: #334155;
         }
 
-        .dark .nextdrive-custom-leaflet-popup .leaflet-popup-close-button:hover {
-          color: #ffffff !important;
+        .dark .popup-badge-testcenter {
+          color: #e2e8f0;
+        }
+
+        .popup-badge-instructors {
+          font-weight: 700;
+          color: #16a34a;
+        }
+
+        .dark .popup-badge-instructors {
+          color: #4ade80;
+        }
+
+        .popup-postcodes-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+          margin-bottom: 10px;
+        }
+
+        .popup-postcode-chip {
+          padding: 2px 6px;
+          background: #e2e8f0;
+          color: #1e293b;
+          font-family: monospace;
+          font-size: 10px;
+          font-weight: 600;
+          border-radius: 4px;
+        }
+
+        .dark .popup-postcode-chip {
+          background: #334155;
+          color: #f1f5f9;
+        }
+
+        .popup-book-btn {
+          width: 100%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          padding: 7px 12px;
+          background: #4f46e5;
+          color: #ffffff;
+          font-size: 12px;
+          font-weight: 700;
+          border-radius: 10px;
+          border: none;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+
+        .popup-book-btn:hover {
+          background: #4338ca;
+        }
+
+        /* Google Maps InfoWindow Container Overrides */
+        .gm-style .gm-style-iw-c {
+          padding: 0 !important;
+          border-radius: 1rem !important;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .dark .gm-style .gm-style-iw-c {
+          background-color: #0f172a !important;
+          border: 1px solid #1e293b !important;
+        }
+
+        .gm-style .gm-style-iw-d {
+          overflow: hidden !important;
+          padding: 0 !important;
+        }
+
+        .gm-style .gm-style-iw-tc::after {
+          background: #ffffff !important;
+        }
+
+        .dark .gm-style .gm-style-iw-tc::after {
+          background: #0f172a !important;
+        }
+
+        @keyframes nextdrive-ping {
+          75%, 100% {
+            transform: scale(2);
+            opacity: 0;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .nextdrive-pulse-ring {
+            animation: none !important;
+          }
+          .nextdrive-marker-body {
+            transition: none !important;
+          }
         }
       `}</style>
     </div>
