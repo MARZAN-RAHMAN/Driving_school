@@ -38,8 +38,15 @@ export function Navbar({ initialSettings }: NavbarProps = {}) {
   const [user, setUser] = useState<UserSession | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
     // Fetch live session
     fetch("/api/auth/me")
       .then((res) => (res.ok ? res.json() : null))
@@ -62,6 +69,8 @@ export function Navbar({ initialSettings }: NavbarProps = {}) {
         }
       })
       .catch(() => {});
+
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleLogout = async () => {
@@ -79,7 +88,13 @@ export function Navbar({ initialSettings }: NavbarProps = {}) {
   const assessmentPrice = settings?.hourlyRateManual ? Math.round(settings.hourlyRateManual * 2) : 75;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur-md transition-colors duration-200">
+    <header
+      className={`sticky top-0 z-50 w-full transition-all duration-300 border-b ${
+        scrolled
+          ? "glass-nav-scrolled border-border/80"
+          : "bg-card/90 backdrop-blur-md border-border/60"
+      }`}
+    >
       <div className="mx-auto flex h-20 w-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-5 xl:px-6 2xl:px-8">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-3 transition hover:opacity-90 shrink-0">

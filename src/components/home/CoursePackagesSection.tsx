@@ -16,6 +16,7 @@ import {
 import { LessonPackage } from "@/types";
 import { BookLessonButton } from "@/components/booking/BookLessonButton";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { AmbientHalo } from "@/components/ui/AmbientHalo";
 
 interface CoursePackagesSectionProps {
   packages: LessonPackage[];
@@ -54,11 +55,9 @@ export function CoursePackagesSection({ packages }: CoursePackagesSectionProps) 
       id="courses"
       className="relative py-20 lg:py-28 bg-surface-secondary/40 border-b border-border overflow-hidden transition-colors duration-200"
     >
-      {/* 1. Subtle Central Ambient Purple Glow */}
-      <div
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 h-[500px] w-[800px] rounded-full bg-primary/10 blur-[140px] opacity-70 dark:opacity-30"
-        aria-hidden="true"
-      />
+      {/* Ambient Halo Illumination System */}
+      <AmbientHalo position="center" variant="dual" size="xl" />
+      <AmbientHalo position="bottom-center" variant="accent" size="lg" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* 2. Section Header: Strong Premium Hierarchy */}

@@ -9,6 +9,7 @@ import {
   ArrowRight,
   Zap,
   ExternalLink,
+  Award,
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -19,6 +20,8 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { CoursePackagesSection } from "@/components/home/CoursePackagesSection";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { FaqAccordion } from "@/components/home/FaqAccordion";
+import { AmbientHalo } from "@/components/ui/AmbientHalo";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -83,10 +86,7 @@ export default async function HomePage() {
         {/* 3. SYLLABUS & PROGRESSION (#curriculum) */}
         {/* ========================================================================= */}
         <section id="curriculum" className="relative py-20 lg:py-28 border-b border-border bg-background overflow-hidden">
-          {/* Subtle ambient glow behind central content */}
-          <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center opacity-40 dark:opacity-20" aria-hidden="true">
-            <div className="h-[400px] w-[700px] rounded-full bg-primary/10 blur-[120px]" />
-          </div>
+          <AmbientHalo position="center" variant="primary" size="xl" />
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <NextDriveMethod
@@ -99,7 +99,10 @@ export default async function HomePage() {
         {/* ========================================================================= */}
         {/* 4. INSTRUCTORS FLEET SPOTLIGHT (#instructors) */}
         {/* ========================================================================= */}
-        <section id="instructors" className="py-20 lg:py-28 bg-surface-secondary/40 border-b border-border overflow-hidden">
+        <section id="instructors" className="relative py-20 lg:py-28 bg-surface-secondary/40 border-b border-border overflow-hidden">
+          <AmbientHalo position="top-right" variant="secondary" size="lg" />
+          <AmbientHalo position="bottom-left" variant="primary" size="lg" />
+
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <ScrollReveal animation="fade-up">
               <InstructorsCarousel instructors={instructors} />
@@ -110,21 +113,19 @@ export default async function HomePage() {
         {/* ========================================================================= */}
         {/* 5. COVERAGE & TEST CENTERS (#locations) */}
         {/* ========================================================================= */}
-        <section id="locations" className="py-20 lg:py-28 border-b border-border bg-background">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <ScrollReveal animation="fade-up" className="text-center max-w-2xl mx-auto">
-              <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                Manchester Coverage
-              </span>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-                Designated DVSA Driving Test Centers
-              </h2>
-              <p className="mt-3 text-sm text-muted-foreground">
-                We conduct intensive tuition directly on the official published test routes of your target test center.
-              </p>
-            </ScrollReveal>
+        <section id="locations" className="relative py-20 lg:py-28 border-b border-border bg-background overflow-hidden">
+          <AmbientHalo position="center" variant="dual" size="xl" />
 
-            <div className="mt-14 sm:mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <SectionHeader
+              eyebrow="MANCHESTER COVERAGE"
+              icon={MapPin}
+              title="Designated DVSA"
+              titleHighlight="Driving Test Centers"
+              subtitle="We conduct intensive tuition directly on the official published test routes of your target test center."
+            />
+
+            <div className="mt-12 sm:mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {locations.map((loc, idx) => (
                 <ScrollReveal
                   key={loc.id}
@@ -132,16 +133,26 @@ export default async function HomePage() {
                   delay={idx * 75}
                   className="h-full"
                 >
-                  <div className="rounded-2xl border border-border bg-card p-6 shadow-xs hover:border-primary/40 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between text-card-foreground h-full">
+                  <div className="relative rounded-2xl border border-border bg-card p-6 shadow-xs card-interactive flex flex-col justify-between text-card-foreground h-full overflow-hidden group">
+                    {/* Top ambient highlight on hover */}
+                    <div
+                      className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      aria-hidden="true"
+                    />
+
                     <div>
                       <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-primary" />
-                        <h3 className="text-sm font-bold text-card-foreground">{loc.name}</h3>
+                        <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
+                          <MapPin className="h-4 w-4" />
+                        </div>
+                        <h3 className="text-sm font-bold text-card-foreground group-hover:text-primary transition-colors">
+                          {loc.name}
+                        </h3>
                       </div>
 
-                      <div className="mt-3 rounded-xl bg-surface-secondary/70 p-3">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground block">
-                          Test Center
+                      <div className="mt-4 rounded-xl bg-surface-secondary/70 p-3 border border-border/60">
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground block font-mono">
+                          Official Test Center
                         </span>
                         <span className="text-xs font-semibold text-foreground mt-0.5 block">
                           🎯 {loc.testCenterName}
@@ -149,14 +160,14 @@ export default async function HomePage() {
                       </div>
 
                       <div className="mt-4">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground block mb-1.5">
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground block mb-2 font-mono">
                           Postcodes Covered
                         </span>
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-1.5">
                           {loc.postcodes.map((pc) => (
                             <span
                               key={pc}
-                              className="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground"
+                              className="rounded-md bg-muted px-2 py-0.5 font-mono text-[10px] font-semibold text-foreground border border-border/60"
                             >
                               {pc}
                             </span>
@@ -165,8 +176,12 @@ export default async function HomePage() {
                       </div>
                     </div>
 
-                    <div className="mt-6 pt-3 border-t border-border text-[11px] text-muted-foreground">
-                      {loc.activeInstructors} active ADI instructors on duty
+                    <div className="mt-6 pt-3.5 border-t border-border flex items-center justify-between text-[11px] text-muted-foreground">
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                        <span>{loc.activeInstructors} ADIs on duty</span>
+                      </span>
+                      <span className="font-semibold text-primary">Test Routes Ready</span>
                     </div>
                   </div>
                 </ScrollReveal>
@@ -178,21 +193,19 @@ export default async function HomePage() {
         {/* ========================================================================= */}
         {/* 6. VERIFIED STUDENT PASS STORIES (#reviews) */}
         {/* ========================================================================= */}
-        <section id="reviews" className="py-20 lg:py-28 bg-surface-secondary/40 border-b border-border">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <ScrollReveal animation="fade-up" className="text-center max-w-2xl mx-auto">
-              <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                Verified Test Results
-              </span>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-                Recent Student Pass Stories
-              </h2>
-              <p className="mt-3 text-sm text-muted-foreground">
-                Over 500 learners have earned their full UK driving license with {settings.businessName.split(" ")[0] || "NextDrive"}.
-              </p>
-            </ScrollReveal>
+        <section id="reviews" className="relative py-20 lg:py-28 bg-surface-secondary/40 border-b border-border overflow-hidden">
+          <AmbientHalo position="center" variant="tricolor" size="lg" />
 
-            <div className="mt-14 sm:mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <SectionHeader
+              eyebrow="VERIFIED TEST RESULTS"
+              icon={Award}
+              title="Recent Student"
+              titleHighlight="Pass Stories"
+              subtitle={`Over 500 learners have earned their full UK driving licence with ${settings.businessName.split(" ")[0] || "NextDrive"}.`}
+            />
+
+            <div className="mt-12 sm:mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
               {reviews.slice(0, 3).map((p, idx) => (
                 <ScrollReveal
                   key={p.id}
@@ -200,13 +213,20 @@ export default async function HomePage() {
                   delay={idx * 90}
                   className="h-full"
                 >
-                  <div className="rounded-2xl border border-border bg-card p-7 shadow-xs hover:border-primary/40 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between text-card-foreground h-full">
+                  <div className="relative rounded-2xl border border-border bg-card p-7 shadow-xs card-interactive flex flex-col justify-between text-card-foreground h-full overflow-hidden group">
+                    {/* Top ambient highlight on hover */}
+                    <div
+                      className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-success via-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      aria-hidden="true"
+                    />
+
                     <div>
                       <div className="flex items-center justify-between">
-                        <span className="rounded-full bg-success/10 px-2.5 py-0.5 text-[10px] font-bold text-success border border-success/20">
-                          {p.result}
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-0.5 text-[10px] font-bold text-success border border-success/20">
+                          <CheckCircle2 className="w-3 h-3" />
+                          <span>{p.result}</span>
                         </span>
-                        <span className="text-xs text-muted-foreground">{p.date}</span>
+                        <span className="text-xs text-muted-foreground font-mono">{p.date}</span>
                       </div>
 
                       <div className="mt-4 flex items-center gap-1">
@@ -215,7 +235,7 @@ export default async function HomePage() {
                         ))}
                       </div>
 
-                      <p className="mt-3 text-xs text-foreground/90 leading-relaxed italic">
+                      <p className="mt-3.5 text-xs text-foreground/90 leading-relaxed italic">
                         &quot;{p.quote}&quot;
                       </p>
                     </div>
@@ -223,14 +243,18 @@ export default async function HomePage() {
                     <div className="mt-6 pt-4 border-t border-border">
                       <div className="flex items-center justify-between">
                         <div>
-                          <div className="text-xs font-bold text-card-foreground">{p.student}</div>
-                          <div className="text-[11px] text-muted-foreground">Instructor: {p.instructor}</div>
+                          <div className="text-xs font-bold text-card-foreground group-hover:text-primary transition-colors">
+                            {p.student}
+                          </div>
+                          <div className="text-[11px] text-muted-foreground">
+                            Instructor: {p.instructor}
+                          </div>
                         </div>
                         <div className="text-right">
                           <span className="text-[10px] font-bold text-primary block">
                             🎯 {p.testCenter}
                           </span>
-                          <span className="text-[10px] text-success font-mono font-medium">
+                          <span className="text-[10px] text-success font-mono font-bold">
                             {p.minors}
                           </span>
                         </div>
@@ -246,19 +270,16 @@ export default async function HomePage() {
         {/* ========================================================================= */}
         {/* 7. FREQUENTLY ASKED QUESTIONS (#faqs) */}
         {/* ========================================================================= */}
-        <section id="faqs" className="py-20 lg:py-28 border-b border-border bg-background">
+        <section id="faqs" className="relative py-20 lg:py-28 border-b border-border bg-background overflow-hidden">
+          <AmbientHalo position="center" variant="primary" size="lg" />
+
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <ScrollReveal animation="fade-up" className="text-center max-w-2xl mx-auto">
-              <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                FAQ
-              </span>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-                Frequently Asked Questions
-              </h2>
-              <p className="mt-3 text-sm text-muted-foreground">
-                Everything you need to know about starting driving lessons, test bookings, and pricing.
-              </p>
-            </ScrollReveal>
+            <SectionHeader
+              eyebrow="FAQ &amp; ADVICE"
+              title="Frequently Asked"
+              titleHighlight="Questions"
+              subtitle="Everything you need to know about starting driving lessons, test bookings, and pricing."
+            />
 
             <ScrollReveal animation="fade-up" delay={120} className="mt-12 sm:mt-14 max-w-3xl mx-auto">
               <FaqAccordion faqs={faqs} />
@@ -270,36 +291,34 @@ export default async function HomePage() {
         {/* 8. MINIMALIST HIGH-IMPACT CALL TO ACTION (#contact) */}
         {/* ========================================================================= */}
         <section id="contact" className="relative py-20 lg:py-28 bg-card border-b border-border text-card-foreground overflow-hidden">
-          {/* Ambient background glow */}
-          <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center opacity-30 dark:opacity-20" aria-hidden="true">
-            <div className="h-[350px] w-[600px] rounded-full bg-primary/20 blur-[130px]" />
-          </div>
+          {/* Ambient background halo */}
+          <AmbientHalo position="center" variant="tricolor" size="full" />
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
             <ScrollReveal animation="fade-up">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-4 border border-primary/20">
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-4 border border-primary/20 backdrop-blur-xs">
                 <Zap className="w-3.5 h-3.5 fill-current" />
                 <span>START YOUR JOURNEY</span>
               </div>
               <h2 className="text-3xl font-extrabold tracking-tight sm:text-5xl text-foreground">
                 Ready to Get Behind the Wheel?
               </h2>
-              <p className="mt-4 text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
-                Book your introductory 2-hour assessment lesson today with our Grade A certified instructors across Manchester and begin your journey to a full UK driving license.
+              <p className="mt-4 text-sm sm:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
+                Book your introductory 2-hour assessment lesson today with our Grade A certified instructors across Manchester and begin your journey to a full UK driving licence.
               </p>
 
               <div className="mt-8 flex flex-col items-center justify-center gap-3.5 sm:flex-row">
                 <BookLessonButton
                   course="Introductory 2-Hour Assessment"
                   source="bottom-cta"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-7 py-4 text-sm font-semibold text-primary-foreground shadow-xs transition hover:bg-primary-hover sm:w-auto cursor-pointer"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-7 py-4 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition hover:bg-primary-hover sm:w-auto cursor-pointer"
                 >
                   Book Assessment Lesson (£{assessmentPrice})
                   <ArrowRight className="h-4 w-4" />
                 </BookLessonButton>
                 <a
                   href={phoneHref}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface-secondary px-7 py-4 text-sm font-semibold text-foreground shadow-xs transition hover:bg-muted sm:w-auto"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface-secondary/80 px-7 py-4 text-sm font-semibold text-foreground shadow-xs transition hover:bg-muted sm:w-auto"
                 >
                   <Phone className="h-4 w-4 text-primary" />
                   Call Hotline: {settings.phone}

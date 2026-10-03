@@ -4,6 +4,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ContactInquiryForm } from "@/components/contact/ContactInquiryForm";
 import { db } from "@/lib/db";
+import { AmbientHalo } from "@/components/ui/AmbientHalo";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,8 @@ export default async function ContactPage() {
       <main className="flex-1">
         {/* Header section */}
         <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-28 border-b border-border bg-surface-secondary/40">
+          <AmbientHalo position="center" variant="dual" size="xl" />
+
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-semibold text-foreground shadow-xs mb-6">
               <span className="flex h-2 w-2 rounded-full bg-success animate-pulse" />

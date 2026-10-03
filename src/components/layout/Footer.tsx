@@ -38,7 +38,17 @@ export async function Footer({
   const passRate = settings.firstTimePassRate || "89.4%";
 
   return (
-    <footer className="border-t border-border bg-card text-card-foreground transition-colors duration-200">
+    <footer className="relative border-t border-border bg-card text-card-foreground transition-colors duration-200 overflow-hidden">
+      {/* Subtle top ambient divider */}
+      <div
+        className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent pointer-events-none"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute -top-20 left-1/2 -translate-x-1/2 h-[100px] w-[500px] rounded-full bg-primary/10 blur-[80px] opacity-40 dark:opacity-20 select-none"
+        aria-hidden="true"
+      />
+
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-5">
           {/* Brand & Accreditation */}

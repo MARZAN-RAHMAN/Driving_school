@@ -40,6 +40,13 @@
   --error-foreground: #FFFFFF;
   --destructive: #DC2626;
   --destructive-foreground: #FFFFFF;
+
+  /* Ambient Halo Tokens - Light Mode */
+  --halo-primary: rgba(79, 70, 229, 0.09);
+  --halo-secondary: rgba(124, 58, 237, 0.07);
+  --halo-accent: rgba(6, 182, 212, 0.07);
+  --halo-blur: 120px;
+  --halo-opacity: 0.75;
 }
 
 .dark {
@@ -80,6 +87,13 @@
   --error-foreground: #0B1120;
   --destructive: #F87171;
   --destructive-foreground: #0B1120;
+
+  /* Ambient Halo Tokens - Dark Mode */
+  --halo-primary: rgba(129, 140, 248, 0.14);
+  --halo-secondary: rgba(167, 139, 250, 0.11);
+  --halo-accent: rgba(34, 211, 238, 0.09);
+  --halo-blur: 140px;
+  --halo-opacity: 0.45;
 
   /* Re-align dark mode utility fallbacks to guarantee consistency */
   --color-slate-950: #0B1120;
@@ -217,10 +231,67 @@ body {
   animation: featured-glow 5s ease-in-out infinite;
 }
 
+/* Subtle Organic Halo Pulse Animation */
+@keyframes halo-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: var(--halo-opacity);
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: calc(var(--halo-opacity) * 1.2);
+  }
+}
+
+.animate-halo-pulse {
+  animation: halo-pulse 8s ease-in-out infinite;
+}
+
+/* Premium Glass & Interactive Surfaces */
+.glass-panel {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glass-nav-scrolled {
+  background-color: var(--card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+}
+
+.dark .glass-nav-scrolled {
+  background-color: rgba(17, 24, 39, 0.88);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.card-interactive {
+  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1),
+              border-color 0.25s ease,
+              box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.card-interactive:hover {
+  transform: translateY(-4px);
+  border-color: rgba(79, 70, 229, 0.35);
+  box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.08), 0 4px 10px -4px rgba(0, 0, 0, 0.04);
+}
+
+.dark .card-interactive:hover {
+  border-color: rgba(129, 140, 248, 0.45);
+  box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.35), 0 4px 10px -4px rgba(0, 0, 0, 0.2);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-hero-float,
-  .animate-featured-glow {
+  .animate-featured-glow,
+  .animate-halo-pulse,
+  .card-interactive:hover {
     animation: none !important;
+    transform: none !important;
   }
 }
 

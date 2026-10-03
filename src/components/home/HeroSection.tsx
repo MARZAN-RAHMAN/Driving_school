@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { BusinessSettings } from "@/types";
 import { BookLessonButton } from "@/components/booking/BookLessonButton";
+import { AmbientHalo } from "@/components/ui/AmbientHalo";
 
 interface HeroSectionProps {
   settings: BusinessSettings;
@@ -55,18 +56,10 @@ export function HeroSection({ settings, assessmentPrice = 75 }: HeroSectionProps
   return (
     <section className="relative overflow-hidden pt-10 pb-16 sm:pt-14 sm:pb-20 lg:pt-16 lg:pb-24 border-b border-border bg-background transition-colors duration-200">
       {/* ========================================================================= */}
-      {/* 1. FUTURISTIC AMBIENT BACKGROUND GLOWS */}
+      {/* 1. FUTURISTIC AMBIENT BACKGROUND GLOWS (HALO EFFECT SYSTEM) */}
       {/* ========================================================================= */}
-      {/* Soft Purple Glow Behind Right Column */}
-      <div
-        className="pointer-events-none absolute right-0 top-1/4 -z-10 h-[500px] w-[500px] lg:w-[700px] rounded-full bg-primary/15 blur-[140px] opacity-75 dark:opacity-40"
-        aria-hidden="true"
-      />
-      {/* Subtle Central Radial Highlight */}
-      <div
-        className="pointer-events-none absolute left-1/4 top-1/2 -translate-y-1/2 -z-10 h-[450px] w-[450px] rounded-full bg-indigo-500/10 blur-[110px] opacity-50 dark:opacity-20"
-        aria-hidden="true"
-      />
+      <AmbientHalo position="top-right" variant="dual" size="full" />
+      <AmbientHalo position="left" variant="accent" size="lg" />
 
       {/* ========================================================================= */}
       {/* 2. MAIN CONTAINER & BALANCED TWO-COLUMN SPLIT */}
