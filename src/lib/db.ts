@@ -17,6 +17,7 @@ import {
   InquiryStatus,
   InstructorAvailability,
   InstructorDashboardSummary,
+  Account,
 } from "@/types";
 
 // Seeded In-Memory Database Repository with Real Relational Consistency
@@ -868,7 +869,34 @@ const initialBusinessSettings: BusinessSettings = {
   smsRemindersEnabled: true,
   instantDispatchAlerts: true,
   autoReviewInvites: true,
+
+  authProviders: {
+    google: true,
+    apple: true,
+    linkedin: true,
+    microsoft: false,
+    x: false,
+  },
 };
+
+const initialAccounts: Account[] = [
+  {
+    id: "acc_demo_01",
+    userId: "usr_member_03", // Marcus Thorne (Student)
+    provider: "google",
+    providerAccountId: "google_sub_1092837461928374",
+    createdAt: "2025-05-18T14:15:00Z",
+    updatedAt: "2025-05-18T14:15:00Z",
+  },
+  {
+    id: "acc_demo_02",
+    userId: "usr_inst_01", // Dave Miller (Instructor)
+    provider: "apple",
+    providerAccountId: "apple_sub_001928.8472918471.0921",
+    createdAt: "2025-03-01T08:00:00Z",
+    updatedAt: "2025-03-01T08:00:00Z",
+  },
+];
 
 const initialStudents: Student[] = [
   {
@@ -1081,8 +1109,9 @@ class DatabaseService {
   private reviews: ReviewItem[] = [...initialReviews];
   private faqs: FAQItem[] = [...initialFaqs];
   private businessSettings: BusinessSettings = { ...initialBusinessSettings };
+  private accounts: Account[] = [...initialAccounts];
 
-  // User queries
+  // User queries & mutations
   async getUsers(query?: string, roleFilter?: string): Promise<User[]> {
     let result = [...this.users];
     if (roleFilter && roleFilter !== "ALL") {
@@ -1103,6 +1132,148 @@ class DatabaseService {
 
   async getUserById(id: string): Promise<User | undefined> {
     return this.users.find((u) => u.id === id);
+  }
+
+  async createUser(userData: Omit<User, "id" | "createdAt" | "lastLogin">): Promise<User> {
+    const newUser: User = {
+      ...userData,
+      id: `usr_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      createdAt: new Date().toISOString(),
+      lastLogin: new Date().toISOString(),
+    };
+    this.users.unshift(newUser);
+    return newUser;
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User | null> {
+    const index = this.users.findIndex((u) => u.id === id);
+    if (index === -1) return null;
+    this.users[index] = { ...this.users[index], ...updates };
+    return this.users[index];
+  }
+
+  // Social Account Queries & Linking
+  async getAccountsByUserId(userId: string): Promise<Account[]> {
+    return this.accounts.filter((a) => a.userId === userId);
+  }
+
+  async getAccountByProvider(
+    provider: string,
+    providerAccountId: string
+  ): Promise<Account | undefined> {
+    const p = provider.toLowerCase().trim();
+    return this.accounts.find(
+      (a) => a.provider.toLowerCase() === p && a.providerAccountId === providerAccountId
+    );
+  }
+
+  async linkAccount(
+    userId: string,
+    provider: string,
+    providerAccountId: string
+  ): Promise<Account> {
+    const existing = await this.getAccountByProvider(provider, providerAccountId);
+    if (existing) {
+      if (existing.userId !== userId) {
+        throw new Error("This social account is already linked to another user profile.");
+      }
+      return existing;
+    }
+
+    const newAccount: Account = {
+      id: `acc_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      userId,
+      provider: provider.toLowerCase().trim(),
+      providerAccountId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    this.accounts.push(newAccount);
+    return newAccount;
+  }
+
+  async unlinkAccount(userId: string, provider: string): Promise<boolean> {
+    const p = provider.toLowerCase().trim();
+    const initialLen = this.accounts.length;
+    this.accounts = this.accounts.filter(
+      (a) => !(a.userId === userId && a.provider.toLowerCase() === p)
+    );
+    return this.accounts.length < initialLen;
+  }
+
+  async canUserUnlinkProvider(
+    userId: string,
+    provider: string
+  ): Promise<{ canUnlink: boolean; reason?: string }> {
+    const user = await this.getUserById(userId);
+    if (!user) {
+      return { canUnlink: false, reason: "User not found." };
+    }
+
+    const userAccounts = await this.getAccountsByUserId(userId);
+    const hasPassword = Boolean(user.passwordHash);
+    const otherAccounts = userAccounts.filter(
+      (a) => a.provider.toLowerCase() !== provider.toLowerCase()
+    );
+
+    if (!hasPassword && otherAccounts.length === 0) {
+      return {
+        canUnlink: false,
+        reason:
+          "Cannot disconnect your only authentication method. Please add another provider or set a password first.",
+      };
+    }
+
+    return { canUnlink: true };
+  }
+
+  // Instructor Application Approval Workflow
+  async approveInstructorApplication(
+    instructorId: string,
+    adminEmail: string
+  ): Promise<Instructor | null> {
+    const inst = await this.updateInstructor(instructorId, { status: "ACTIVE" });
+    if (!inst) return null;
+
+    // Activate the corresponding User record
+    const user = await this.getUserByEmail(inst.email);
+    if (user) {
+      await this.updateUser(user.id, { status: "ACTIVE" });
+    }
+
+    await this.addAuditLog({
+      action: "INSTRUCTOR_APPLICATION_APPROVED",
+      actorEmail: adminEmail,
+      target: `Instructor ${inst.name} (${inst.badgeNumber}) approved to active fleet`,
+      ip: "127.0.0.1",
+      severity: "SUCCESS",
+    });
+
+    return inst;
+  }
+
+  async rejectInstructorApplication(
+    instructorId: string,
+    adminEmail: string
+  ): Promise<Instructor | null> {
+    const inst = await this.updateInstructor(instructorId, { status: "REJECTED" });
+    if (!inst) return null;
+
+    // Deactivate the corresponding User record
+    const user = await this.getUserByEmail(inst.email);
+    if (user) {
+      await this.updateUser(user.id, { status: "INACTIVE" });
+    }
+
+    await this.addAuditLog({
+      action: "INSTRUCTOR_APPLICATION_REJECTED",
+      actorEmail: adminEmail,
+      target: `Instructor application for ${inst.name} (${inst.email}) rejected`,
+      ip: "127.0.0.1",
+      severity: "WARNING",
+    });
+
+    return inst;
   }
 
   // Content queries
@@ -1624,6 +1795,16 @@ class DatabaseService {
     this.businessSettings = {
       ...this.businessSettings,
       ...newSettings,
+      authProviders: {
+        ...(this.businessSettings.authProviders || {
+          google: true,
+          apple: true,
+          linkedin: true,
+          microsoft: false,
+          x: false,
+        }),
+        ...(newSettings.authProviders || {}),
+      },
     };
     return { ...this.businessSettings };
   }

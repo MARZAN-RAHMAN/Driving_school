@@ -14,6 +14,7 @@ import {
   Lock,
 } from "lucide-react";
 import { Instructor } from "@/types";
+import { ConnectedAccountsCard } from "@/components/shared/ConnectedAccountsCard";
 
 interface InstructorProfileClientProps {
   instructor: Instructor;
@@ -203,6 +204,9 @@ export function InstructorProfileClient({
           </button>
         </div>
       </form>
+
+      {/* Connected Social Accounts */}
+      <ConnectedAccountsCard userRole="INSTRUCTOR" />
     </div>
   );
 }

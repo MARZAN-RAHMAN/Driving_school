@@ -67,6 +67,36 @@ export async function PUT(req: NextRequest) {
       );
     }
 
+    if (body.action === "approve") {
+      const approved = await db.approveInstructorApplication(body.id, "admin@nexuscore.dev");
+      if (!approved) {
+        return NextResponse.json(
+          { success: false, error: "Instructor not found" },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json({
+        success: true,
+        instructor: approved,
+        message: "Instructor application approved successfully",
+      });
+    }
+
+    if (body.action === "reject") {
+      const rejected = await db.rejectInstructorApplication(body.id, "admin@nexuscore.dev");
+      if (!rejected) {
+        return NextResponse.json(
+          { success: false, error: "Instructor not found" },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json({
+        success: true,
+        instructor: rejected,
+        message: "Instructor application rejected",
+      });
+    }
+
     const updated = await db.updateInstructor(body.id, body);
     if (!updated) {
       return NextResponse.json(

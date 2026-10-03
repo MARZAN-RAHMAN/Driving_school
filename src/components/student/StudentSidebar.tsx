@@ -13,6 +13,7 @@ import {
   Bell,
   X,
   GraduationCap,
+  Settings,
 } from "lucide-react";
 import { Student } from "@/types";
 
@@ -65,6 +66,11 @@ export function StudentSidebar({
       label: "My Profile",
       href: "/student/profile",
       icon: User,
+    },
+    {
+      label: "Account Settings",
+      href: "/student/settings",
+      icon: Settings,
     },
   ];
 

@@ -11,7 +11,17 @@ import {
   CheckCircle2,
   AlertCircle,
   RotateCcw,
+  KeyRound,
+  ShieldAlert,
+  Info,
 } from "lucide-react";
+import {
+  GoogleIcon,
+  AppleIcon,
+  LinkedInIcon,
+  MicrosoftIcon,
+  XIcon,
+} from "@/components/ui/SocialIcons";
 import { BusinessSettings } from "@/types";
 
 interface BusinessSettingsFormProps {
@@ -23,7 +33,7 @@ export function BusinessSettingsForm({
 }: BusinessSettingsFormProps) {
   const [settings, setSettings] = useState<BusinessSettings>(initialSettings);
   const [activeTab, setActiveTab] = useState<
-    "profile" | "scheduling" | "rates" | "compliance" | "notifications"
+    "profile" | "scheduling" | "rates" | "compliance" | "notifications" | "auth"
   >("profile");
   const [isSaving, setIsSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{
@@ -38,6 +48,25 @@ export function BusinessSettingsForm({
     setSettings((prev) => ({
       ...prev,
       [field]: value,
+    }));
+    if (statusMessage) setStatusMessage(null);
+  };
+
+  const handleAuthProviderToggle = (
+    provider: "google" | "apple" | "linkedin" | "microsoft" | "x",
+    enabled: boolean
+  ) => {
+    setSettings((prev) => ({
+      ...prev,
+      authProviders: {
+        google: true,
+        apple: true,
+        linkedin: true,
+        microsoft: false,
+        x: false,
+        ...(prev.authProviders || {}),
+        [provider]: enabled,
+      },
     }));
     if (statusMessage) setStatusMessage(null);
   };
@@ -157,6 +186,19 @@ export function BusinessSettingsForm({
         >
           <Bell className="h-4 w-4" />
           Notifications & Alerts
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("auth")}
+          className={`flex items-center gap-2 border-b-2 px-3.5 pb-3 text-xs font-semibold whitespace-nowrap transition ${
+            activeTab === "auth"
+              ? "border-indigo-600 text-indigo-600 dark:border-indigo-500 dark:text-indigo-400"
+              : "border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          }`}
+        >
+          <KeyRound className="h-4 w-4" />
+          Authentication Providers
         </button>
       </div>
 
@@ -700,6 +742,205 @@ export function BusinessSettingsForm({
                   </span>
                 </div>
               </label>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 6: Authentication Providers & Single Sign-On */}
+        {activeTab === "auth" && (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                Social Sign-In & Authentication Providers
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Configure OAuth identity providers available for Student and Instructor registration and login.
+              </p>
+            </div>
+
+            {/* Admin Security Isolation Banner */}
+            <div className="rounded-xl border border-amber-200 dark:border-amber-900/60 bg-amber-50/70 dark:bg-amber-950/30 p-4 flex items-start gap-3">
+              <ShieldAlert className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <div className="text-xs space-y-1">
+                <p className="font-semibold text-amber-900 dark:text-amber-200">
+                  Strict Admin Authentication Isolation Active
+                </p>
+                <p className="text-amber-800 dark:text-amber-300/90 leading-relaxed">
+                  Social authentication is enabled exclusively for <strong>Student</strong> and <strong>Instructor</strong> accounts.
+                  Administrator logins strictly require verified email and encrypted password credentials with zero public OAuth registration.
+                </p>
+              </div>
+            </div>
+
+            {/* Providers Toggles */}
+            <div className="grid grid-cols-1 gap-3">
+              {/* Google */}
+              <div className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850 p-4 transition hover:bg-slate-50 dark:hover:bg-slate-800/60">
+                <div className="flex items-center gap-3.5">
+                  <div className="h-10 w-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-750 flex items-center justify-center shadow-xs">
+                    <GoogleIcon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white">
+                        Google Workspace &amp; Accounts
+                      </span>
+                      <span className="rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-2 py-0.2 text-[10px] font-semibold">
+                        Primary (Student &amp; Instructor)
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      1-click authentication using verified Google OpenID Connect profile and email.
+                    </p>
+                  </div>
+                </div>
+
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.authProviders?.google ?? true}
+                    onChange={(e) => handleAuthProviderToggle("google", e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-indigo-600"></div>
+                </label>
+              </div>
+
+              {/* Apple */}
+              <div className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850 p-4 transition hover:bg-slate-50 dark:hover:bg-slate-800/60">
+                <div className="flex items-center gap-3.5">
+                  <div className="h-10 w-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-750 flex items-center justify-center shadow-xs">
+                    <AppleIcon className="h-5 w-5 text-slate-900 dark:text-white" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white">
+                        Sign in with Apple
+                      </span>
+                      <span className="rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-2 py-0.2 text-[10px] font-semibold">
+                        Primary (Student &amp; Instructor)
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      Native iOS and macOS Apple ID sign-in with private email relay support.
+                    </p>
+                  </div>
+                </div>
+
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.authProviders?.apple ?? true}
+                    onChange={(e) => handleAuthProviderToggle("apple", e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-indigo-600"></div>
+                </label>
+              </div>
+
+              {/* LinkedIn */}
+              <div className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850 p-4 transition hover:bg-slate-50 dark:hover:bg-slate-800/60">
+                <div className="flex items-center gap-3.5">
+                  <div className="h-10 w-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-750 flex items-center justify-center shadow-xs">
+                    <LinkedInIcon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white">
+                        LinkedIn OAuth 2.0
+                      </span>
+                      <span className="rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 px-2 py-0.2 text-[10px] font-semibold">
+                        Instructor Career Focus
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      Professional identity authentication for Approved Driving Instructors (ADIs).
+                    </p>
+                  </div>
+                </div>
+
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.authProviders?.linkedin ?? true}
+                    onChange={(e) => handleAuthProviderToggle("linkedin", e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-indigo-600"></div>
+                </label>
+              </div>
+
+              {/* Microsoft */}
+              <div className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850 p-4 transition hover:bg-slate-50 dark:hover:bg-slate-800/60">
+                <div className="flex items-center gap-3.5">
+                  <div className="h-10 w-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-750 flex items-center justify-center shadow-xs">
+                    <MicrosoftIcon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white">
+                        Microsoft Entra ID / Live
+                      </span>
+                      <span className="rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-2 py-0.2 text-[10px] font-semibold">
+                        Optional
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      Support school, university, and personal Outlook/Microsoft account logins.
+                    </p>
+                  </div>
+                </div>
+
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.authProviders?.microsoft ?? false}
+                    onChange={(e) => handleAuthProviderToggle("microsoft", e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-indigo-600"></div>
+                </label>
+              </div>
+
+              {/* X */}
+              <div className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850 p-4 transition hover:bg-slate-50 dark:hover:bg-slate-800/60">
+                <div className="flex items-center gap-3.5">
+                  <div className="h-10 w-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-750 flex items-center justify-center shadow-xs">
+                    <XIcon className="h-4 w-4 text-slate-900 dark:text-white" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white">
+                        X (formerly Twitter)
+                      </span>
+                      <span className="rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-2 py-0.2 text-[10px] font-semibold">
+                        Optional
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      OAuth 2.0 social authentication using X profiles.
+                    </p>
+                  </div>
+                </div>
+
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.authProviders?.x ?? false}
+                    onChange={(e) => handleAuthProviderToggle("x", e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-indigo-600"></div>
+                </label>
+              </div>
+            </div>
+
+            {/* Development / Test Simulator Info */}
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 p-4 flex items-start gap-3">
+              <Info className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
+              <div className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                <strong>Local Development Simulator:</strong> When running in development without external OAuth API credentials configured in <code>.env</code>, NextDrive redirects to an interactive local consent screen (<code>/auth/mock-oauth</code>) for fast verification without external cloud dependencies.
+              </div>
             </div>
           </div>
         )}

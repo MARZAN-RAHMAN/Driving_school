@@ -36,6 +36,11 @@ export default async function InstructorLayout({
     instructor = allInstructors.find((i) => i.id === "inst_01") || allInstructors[0];
   }
 
+  // Pending instructors have not been approved yet; render child page directly without operational sidebar
+  if (user.status === "PENDING") {
+    return <>{children}</>;
+  }
+
   return (
     <InstructorLayoutClient user={user} instructor={instructor}>
       {children}

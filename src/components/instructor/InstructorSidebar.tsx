@@ -16,6 +16,7 @@ import {
   Car,
   X,
   ShieldCheck,
+  Settings,
 } from "lucide-react";
 import { Instructor } from "@/types";
 
@@ -74,6 +75,11 @@ export function InstructorSidebar({
       label: "Profile & Credentials",
       href: "/instructor/profile",
       icon: UserCheck,
+    },
+    {
+      label: "Account Settings",
+      href: "/instructor/settings",
+      icon: Settings,
     },
   ];
 

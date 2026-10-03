@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { User, Phone, MapPin, FileText, Save, CheckCircle2, ShieldCheck } from "lucide-react";
 import { Student } from "@/types";
+import { ConnectedAccountsCard } from "@/components/shared/ConnectedAccountsCard";
 
 interface StudentProfileClientProps {
   student: Student;
@@ -165,6 +166,9 @@ export function StudentProfileClient({ student }: StudentProfileClientProps) {
           </div>
         </form>
       </div>
+
+      {/* Connected Social Accounts */}
+      <ConnectedAccountsCard userRole="STUDENT" />
     </div>
   );
 }

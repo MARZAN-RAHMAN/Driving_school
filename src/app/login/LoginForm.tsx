@@ -20,6 +20,7 @@ import {
   Check,
   ChevronDown,
 } from "lucide-react";
+import { GoogleIcon, AppleIcon, LinkedInIcon } from "@/components/ui/SocialIcons";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface LoginFormProps {
@@ -690,6 +691,77 @@ export function LoginForm({ initialError, initialCallbackUrl }: LoginFormProps) 
                 </div>
               )}
 
+              {/* Social Authentication Options (Student & Instructor only; Admin is strictly email/password) */}
+              {activeRole === "STUDENT" && (
+                <div className="space-y-2 mb-5">
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link
+                      href="/api/auth/oauth/google?role=STUDENT&mode=login"
+                      prefetch={false}
+                      className="h-10 flex items-center justify-center gap-2 rounded-xl border border-border bg-surface-secondary/60 hover:bg-surface-secondary hover:border-muted-foreground/30 text-xs font-semibold text-foreground transition-all shadow-2xs cursor-pointer"
+                    >
+                      <GoogleIcon size={16} />
+                      <span>Google</span>
+                    </Link>
+                    <Link
+                      href="/api/auth/oauth/apple?role=STUDENT&mode=login"
+                      prefetch={false}
+                      className="h-10 flex items-center justify-center gap-2 rounded-xl border border-border bg-surface-secondary/60 hover:bg-surface-secondary hover:border-muted-foreground/30 text-xs font-semibold text-foreground transition-all shadow-2xs cursor-pointer"
+                    >
+                      <AppleIcon size={16} />
+                      <span>Apple</span>
+                    </Link>
+                  </div>
+                  <div className="relative my-3 text-center">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-border" />
+                    </div>
+                    <span className="relative bg-card px-2.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      or sign in with password
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {activeRole === "INSTRUCTOR" && (
+                <div className="space-y-2 mb-5">
+                  <div className="grid grid-cols-3 gap-2">
+                    <Link
+                      href="/api/auth/oauth/google?role=INSTRUCTOR&mode=login"
+                      prefetch={false}
+                      className="h-10 flex items-center justify-center gap-1.5 rounded-xl border border-border bg-surface-secondary/60 hover:bg-surface-secondary hover:border-muted-foreground/30 text-xs font-semibold text-foreground transition-all shadow-2xs cursor-pointer"
+                    >
+                      <GoogleIcon size={16} />
+                      <span>Google</span>
+                    </Link>
+                    <Link
+                      href="/api/auth/oauth/apple?role=INSTRUCTOR&mode=login"
+                      prefetch={false}
+                      className="h-10 flex items-center justify-center gap-1.5 rounded-xl border border-border bg-surface-secondary/60 hover:bg-surface-secondary hover:border-muted-foreground/30 text-xs font-semibold text-foreground transition-all shadow-2xs cursor-pointer"
+                    >
+                      <AppleIcon size={16} />
+                      <span>Apple</span>
+                    </Link>
+                    <Link
+                      href="/api/auth/oauth/linkedin?role=INSTRUCTOR&mode=login"
+                      prefetch={false}
+                      className="h-10 flex items-center justify-center gap-1.5 rounded-xl border border-border bg-surface-secondary/60 hover:bg-surface-secondary hover:border-muted-foreground/30 text-xs font-semibold text-foreground transition-all shadow-2xs cursor-pointer"
+                    >
+                      <LinkedInIcon size={16} />
+                      <span>LinkedIn</span>
+                    </Link>
+                  </div>
+                  <div className="relative my-3 text-center">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-border" />
+                    </div>
+                    <span className="relative bg-card px-2.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      or sign in with password
+                    </span>
+                  </div>
+                </div>
+              )}
+
               {/* Authentication Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -770,6 +842,35 @@ export function LoginForm({ initialError, initialCallbackUrl }: LoginFormProps) 
                   )}
                 </button>
               </form>
+
+              {/* Registration Alternative Links */}
+              {activeRole === "STUDENT" && (
+                <div className="mt-4 text-center">
+                  <p className="text-xs text-muted-foreground">
+                    New learner driver?{" "}
+                    <Link
+                      href="/student/signup"
+                      className="font-semibold text-primary hover:underline"
+                    >
+                      Create student account &rarr;
+                    </Link>
+                  </p>
+                </div>
+              )}
+
+              {activeRole === "INSTRUCTOR" && (
+                <div className="mt-4 text-center">
+                  <p className="text-xs text-muted-foreground">
+                    New driving instructor?{" "}
+                    <Link
+                      href="/instructor/signup"
+                      className="font-semibold text-primary hover:underline"
+                    >
+                      Apply to join NextDrive &rarr;
+                    </Link>
+                  </p>
+                </div>
+              )}
 
               {/* Security Trust Indicator */}
               <div className="mt-5 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">

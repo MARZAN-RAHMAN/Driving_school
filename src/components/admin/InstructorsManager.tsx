@@ -13,6 +13,10 @@ import {
   CheckCircle2,
   AlertCircle,
   ShieldCheck,
+  UserCheck,
+  UserX,
+  Clock,
+  Filter,
 } from "lucide-react";
 import { Instructor, TransmissionType } from "@/types";
 
@@ -25,6 +29,8 @@ export function InstructorsManager({ initialInstructors }: InstructorsManagerPro
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<"ALL" | "ACTIVE" | "PENDING" | "OTHER">("ALL");
   const [notification, setNotification] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const [form, setForm] = useState({
@@ -139,12 +145,149 @@ export function InstructorsManager({ initialInstructors }: InstructorsManagerPro
     }
   };
 
+  const handleApprove = async (id: string, name: string) => {
+    setActionLoading(id);
+    setNotification(null);
+    try {
+      const res = await fetch("/api/admin/instructors", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, action: "approve" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to approve instructor");
+
+      setInstructors((prev) =>
+        prev.map((i) => (i.id === id ? data.instructor : i))
+      );
+      setNotification({
+        type: "success",
+        text: `Instructor ${name} has been approved and activated for teaching!`,
+      });
+      setTimeout(() => setNotification(null), 4000);
+    } catch (err) {
+      setNotification({
+        type: "error",
+        text: err instanceof Error ? err.message : "Failed to approve application",
+      });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleReject = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to reject the application for ${name}?`)) return;
+    setActionLoading(id);
+    setNotification(null);
+    try {
+      const res = await fetch("/api/admin/instructors", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, action: "reject" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to reject instructor");
+
+      setInstructors((prev) =>
+        prev.map((i) => (i.id === id ? data.instructor : i))
+      );
+      setNotification({
+        type: "success",
+        text: `Instructor application for ${name} has been rejected.`,
+      });
+      setTimeout(() => setNotification(null), 4000);
+    } catch (err) {
+      setNotification({
+        type: "error",
+        text: err instanceof Error ? err.message : "Failed to reject application",
+      });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const pendingCount = instructors.filter((i) => i.status === "PENDING").length;
+  const activeCount = instructors.filter((i) => i.status === "ACTIVE").length;
+
+  const filteredInstructors = instructors.filter((i) => {
+    if (activeFilter === "ACTIVE") return i.status === "ACTIVE";
+    if (activeFilter === "PENDING") return i.status === "PENDING";
+    if (activeFilter === "OTHER") return i.status !== "ACTIVE" && i.status !== "PENDING";
+    return true;
+  });
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-end">
+      {/* Header and Filter Tabs */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 overflow-x-auto">
+          <button
+            type="button"
+            onClick={() => setActiveFilter("ALL")}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+              activeFilter === "ALL"
+                ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <span>All Fleet</span>
+            <span className="rounded-full bg-slate-200 dark:bg-slate-800 px-1.5 py-0.2 text-[10px] font-mono">
+              {instructors.length}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveFilter("ACTIVE")}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+              activeFilter === "ACTIVE"
+                ? "bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-xs"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <span>Active Instructors</span>
+            <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 px-1.5 py-0.2 text-[10px] font-mono">
+              {activeCount}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveFilter("PENDING")}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+              activeFilter === "PENDING"
+                ? "bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-xs"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <span>Pending Applications</span>
+            {pendingCount > 0 ? (
+              <span className="rounded-full bg-amber-500 text-white px-1.5 py-0.2 text-[10px] font-mono font-bold animate-pulse">
+                {pendingCount}
+              </span>
+            ) : (
+              <span className="rounded-full bg-slate-200 dark:bg-slate-800 px-1.5 py-0.2 text-[10px] font-mono">
+                0
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveFilter("OTHER")}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+              activeFilter === "OTHER"
+                ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <span>On Leave / Archive</span>
+          </button>
+        </div>
+
         <button
           onClick={openCreateModal}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-indigo-700 transition"
+          className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-indigo-700 transition"
         >
           <Plus className="h-4 w-4" />
           <span>Register ADI Instructor</span>
@@ -169,109 +312,200 @@ export function InstructorsManager({ initialInstructors }: InstructorsManagerPro
       )}
 
       {/* Instructors Grid */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {instructors.map((inst) => (
-          <div
-            key={inst.id}
-            className="flex flex-col justify-between rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xs transition hover:shadow-md"
-          >
-            <div>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <img
-                      src={inst.avatar}
-                      alt={inst.name}
-                      className="h-12 w-12 rounded-full object-cover ring-2 ring-indigo-50 dark:ring-indigo-950/60"
-                    />
-                    <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
+      {filteredInstructors.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 p-12 text-center bg-white dark:bg-slate-900">
+          <Clock className="h-8 w-8 text-slate-400 mx-auto mb-2 opacity-50" />
+          <h4 className="text-sm font-bold text-slate-900 dark:text-white">No instructors in this category</h4>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            {activeFilter === "PENDING"
+              ? "All submitted instructor applications have been verified and processed."
+              : "No instructors found for this status view."}
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {filteredInstructors.map((inst) => (
+            <div
+              key={inst.id}
+              className={`flex flex-col justify-between rounded-2xl border bg-white dark:bg-slate-900 p-6 shadow-xs transition hover:shadow-md ${
+                inst.status === "PENDING"
+                  ? "border-amber-300/80 dark:border-amber-600/50 ring-1 ring-amber-400/20"
+                  : inst.status === "REJECTED"
+                  ? "border-rose-200 dark:border-rose-900/50 opacity-80"
+                  : "border-slate-200/80 dark:border-slate-800"
+              }`}
+            >
+              <div>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <img
+                        src={inst.avatar}
+                        alt={inst.name}
+                        className="h-12 w-12 rounded-full object-cover ring-2 ring-indigo-50 dark:ring-indigo-950/60"
+                      />
+                      <span
+                        className={`absolute bottom-0 right-0 h-3 w-3 rounded-full ring-2 ring-white dark:ring-slate-900 ${
+                          inst.status === "ACTIVE"
+                            ? "bg-emerald-500"
+                            : inst.status === "PENDING"
+                            ? "bg-amber-500"
+                            : inst.status === "REJECTED"
+                            ? "bg-rose-500"
+                            : "bg-slate-400"
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white">{inst.name}</h3>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="rounded bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:text-slate-300">
+                          {inst.badgeNumber}
+                        </span>
+                        {inst.status === "PENDING" && (
+                          <span className="rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 px-1.5 py-0.2 text-[9px] font-bold uppercase tracking-wider">
+                            Pending
+                          </span>
+                        )}
+                        {inst.status === "REJECTED" && (
+                          <span className="rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30 px-1.5 py-0.2 text-[9px] font-bold uppercase tracking-wider">
+                            Rejected
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">{inst.name}</h3>
-                    <span className="rounded bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:text-slate-300">
-                      {inst.badgeNumber}
+
+                  <div className="flex items-center gap-1 rounded-md bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 text-xs font-bold text-amber-700 dark:text-amber-300 font-mono">
+                    <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                    <span>{inst.rating.toFixed(1)}</span>
+                  </div>
+                </div>
+
+                {/* Pending Application Review Alert */}
+                {inst.status === "PENDING" && (
+                  <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 space-y-2">
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 dark:text-amber-300">
+                      <Clock className="h-3.5 w-3.5 shrink-0" />
+                      <span>Awaiting ADI Verification</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                      Application submitted with badge <span className="font-mono font-semibold text-slate-900 dark:text-white">{inst.badgeNumber}</span>. Approve to authorize teaching dispatch.
+                    </p>
+                    <div className="flex items-center gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => handleApprove(inst.id, inst.name)}
+                        disabled={actionLoading === inst.id}
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition disabled:opacity-50"
+                      >
+                        <UserCheck className="h-3.5 w-3.5" />
+                        <span>{actionLoading === inst.id ? "Approving..." : "Approve & Activate"}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleReject(inst.id, inst.name)}
+                        disabled={actionLoading === inst.id}
+                        className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-rose-200 dark:border-rose-900/60 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition disabled:opacity-50"
+                      >
+                        <UserX className="h-3.5 w-3.5" />
+                        <span>Reject</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Rejected Application Card Banner */}
+                {inst.status === "REJECTED" && (
+                  <div className="mt-4 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 space-y-2">
+                    <p className="text-[11px] text-rose-700 dark:text-rose-300 font-medium">
+                      This application was rejected. You can reconsider and approve them into the fleet.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => handleApprove(inst.id, inst.name)}
+                      disabled={actionLoading === inst.id}
+                      className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition disabled:opacity-50"
+                    >
+                      <UserCheck className="h-3.5 w-3.5" />
+                      <span>{actionLoading === inst.id ? "Approving..." : "Re-Approve Application"}</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* Vehicle & Transmission */}
+                <div className="mt-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 p-3 space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-500 dark:text-slate-400">Transmission</span>
+                    <span
+                      className={`rounded px-1.5 py-0.2 text-[10px] font-bold ${
+                        inst.transmission === "MANUAL"
+                          ? "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300"
+                          : inst.transmission === "AUTOMATIC"
+                          ? "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300"
+                          : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
+                      }`}
+                    >
+                      {inst.transmission === "BOTH" ? "Dual (Manual & Auto)" : inst.transmission}
                     </span>
                   </div>
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+                    <Car className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                    <span className="truncate">{inst.vehicle}</span>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-1 rounded-md bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 text-xs font-bold text-amber-700 dark:text-amber-300 font-mono">
-                  <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                  <span>{inst.rating.toFixed(1)}</span>
+                {/* Contact Info */}
+                <div className="mt-4 space-y-1 text-xs text-slate-500 dark:text-slate-400">
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-3.5 w-3.5 text-slate-400" />
+                    <a href={`tel:${inst.phone}`} className="hover:text-indigo-600 dark:hover:text-indigo-400">
+                      {inst.phone}
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-3.5 w-3.5 text-slate-400" />
+                    <a href={`mailto:${inst.email}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 truncate">
+                      {inst.email}
+                    </a>
+                  </div>
                 </div>
               </div>
 
-              {/* Vehicle & Transmission */}
-              <div className="mt-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 p-3 space-y-1.5">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-500 dark:text-slate-400">Transmission</span>
-                  <span
-                    className={`rounded px-1.5 py-0.2 text-[10px] font-bold ${
-                      inst.transmission === "MANUAL"
-                        ? "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300"
-                        : inst.transmission === "AUTOMATIC"
-                        ? "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300"
-                        : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
-                    }`}
+              {/* Performance Stats & Actions */}
+              <div className="mt-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-3 text-xs">
+                  <div>
+                    <span className="block text-[10px] text-slate-400 uppercase">Passes</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white">{inst.totalPasses}</span>
+                  </div>
+                  <div>
+                    <span className="block text-[10px] text-slate-400 uppercase">Students</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white">{inst.activeStudents}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => openEditModal(inst)}
+                    className="rounded-lg p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                    title="Edit Instructor"
                   >
-                    {inst.transmission === "BOTH" ? "Dual (Manual & Auto)" : inst.transmission}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
-                  <Car className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                  <span className="truncate">{inst.vehicle}</span>
-                </div>
-              </div>
-
-              {/* Contact Info */}
-              <div className="mt-4 space-y-1 text-xs text-slate-500 dark:text-slate-400">
-                <div className="flex items-center gap-2">
-                  <Phone className="h-3.5 w-3.5 text-slate-400" />
-                  <a href={`tel:${inst.phone}`} className="hover:text-indigo-600 dark:hover:text-indigo-400">
-                    {inst.phone}
-                  </a>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="h-3.5 w-3.5 text-slate-400" />
-                  <a href={`mailto:${inst.email}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 truncate">
-                    {inst.email}
-                  </a>
+                    <Edit2 className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(inst.id, inst.name)}
+                    className="rounded-lg p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
+                    title="Remove Instructor"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </div>
               </div>
             </div>
-
-            {/* Performance Stats & Actions */}
-            <div className="mt-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-              <div className="flex items-center gap-3 text-xs">
-                <div>
-                  <span className="block text-[10px] text-slate-400 uppercase">Passes</span>
-                  <span className="font-mono font-bold text-slate-900 dark:text-white">{inst.totalPasses}</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] text-slate-400 uppercase">Students</span>
-                  <span className="font-mono font-bold text-slate-900 dark:text-white">{inst.activeStudents}</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => openEditModal(inst)}
-                  className="rounded-lg p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
-                  title="Edit Instructor"
-                >
-                  <Edit2 className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  onClick={() => handleDelete(inst.id, inst.name)}
-                  className="rounded-lg p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
-                  title="Remove Instructor"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Modal */}
       {modalOpen && (
@@ -379,8 +613,10 @@ export function InstructorsManager({ initialInstructors }: InstructorsManagerPro
                     className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-850 px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-indigo-600 focus:outline-none"
                   >
                     <option value="ACTIVE">ACTIVE (On Road)</option>
+                    <option value="PENDING">PENDING (Awaiting Approval)</option>
                     <option value="ON_LEAVE">ON LEAVE</option>
                     <option value="INACTIVE">INACTIVE</option>
+                    <option value="REJECTED">REJECTED (Application Denied)</option>
                   </select>
                 </div>
               </div>

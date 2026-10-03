@@ -24,6 +24,10 @@ export default async function InstructorDashboardPage() {
     redirect("/student?error=unauthorized_instructor_access");
   }
 
+  if (user.status === "PENDING") {
+    redirect("/instructor/application-status");
+  }
+
   // Find instructor record matching email
   let instructor = await db.getInstructorByEmail(user.email);
   if (!instructor) {

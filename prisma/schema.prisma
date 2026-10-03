@@ -44,9 +44,23 @@ model User {
   
   contentItems ContentItem[]
   auditLogs    AuditLog[]
+  accounts     Account[]
 
   @@index([email])
   @@index([role])
+}
+
+model Account {
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          String
+  providerAccountId String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model ContentItem {

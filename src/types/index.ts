@@ -110,6 +110,23 @@ export interface InstructorAvailability {
   unavailableDates: string[];
 }
 
+export interface Account {
+  id: string;
+  userId: string;
+  provider: string; // "google" | "apple" | "linkedin" | "microsoft" | "x"
+  providerAccountId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type InstructorStatus =
+  | "ACTIVE"
+  | "ON_LEAVE"
+  | "INACTIVE"
+  | "PENDING"
+  | "REJECTED"
+  | "SUSPENDED";
+
 export interface Instructor {
   id: string;
   name: string;
@@ -121,13 +138,15 @@ export interface Instructor {
   rating: number;
   totalPasses: number;
   activeStudents: number;
-  status: "ACTIVE" | "ON_LEAVE" | "INACTIVE";
+  status: InstructorStatus;
   vehicle: string;
   grade?: string;
   bio?: string;
   areas?: string[];
   qualifications?: string[];
   availability?: InstructorAvailability;
+  applicationDate?: string;
+  yearsExperience?: number;
 }
 
 export interface LessonPackage {
@@ -349,4 +368,13 @@ export interface BusinessSettings {
   smsRemindersEnabled: boolean;
   instantDispatchAlerts: boolean;
   autoReviewInvites: boolean;
+
+  // Social Authentication Providers
+  authProviders?: {
+    google: boolean;
+    apple: boolean;
+    linkedin: boolean;
+    microsoft: boolean;
+    x: boolean;
+  };
 }
