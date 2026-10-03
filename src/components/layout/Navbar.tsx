@@ -132,7 +132,7 @@ export function Navbar({ initialSettings }: NavbarProps = {}) {
           : "bg-card/95 backdrop-blur-md border-border/60 shadow-2xs"
       }`}
     >
-      <div className="mx-auto flex h-16 sm:h-20 w-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-5 xl:px-6 2xl:px-8">
+      <div className="mx-auto flex h-16 sm:h-20 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 sm:gap-3 transition hover:opacity-90 shrink-0">
           {settings?.logoUrl ? (
@@ -173,48 +173,48 @@ export function Navbar({ initialSettings }: NavbarProps = {}) {
           </div>
         </Link>
 
-        {/* Desktop Nav Links (Visible on lg screens 1024px+) */}
-        <nav className="hidden items-center gap-1.5 xl:gap-3 2xl:gap-5 lg:flex shrink-0">
+        {/* Desktop Nav Links (Visible on lg screens 1024px+) with comfortable separation from brand */}
+        <nav className="hidden items-center gap-1 xl:gap-2.5 2xl:gap-3.5 lg:flex shrink-0 lg:ml-7 xl:ml-10">
           <Link
             href="/#courses"
-            className="whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
+            className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
           >
             Courses &amp; Pricing
           </Link>
           <Link
             href="/#instructors"
-            className="whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
+            className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
           >
             Instructors Fleet
           </Link>
           <Link
             href="/#locations"
-            className="whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
+            className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
           >
             Test Centers
           </Link>
           <Link
             href="/#reviews"
-            className="whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
+            className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
           >
             Pass Stories
           </Link>
           <Link
             href="/#faqs"
-            className="whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
+            className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
           >
             FAQ
           </Link>
           <Link
             href="/contact"
-            className="whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
+            className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
           >
             Contact
           </Link>
         </nav>
 
         {/* Desktop Actions & Theme Toggle */}
-        <div className="hidden items-center gap-2 xl:gap-2.5 lg:flex shrink-0 ml-3 xl:ml-5 2xl:ml-7">
+        <div className="hidden items-center gap-2 xl:gap-2.5 lg:flex shrink-0">
           <div className="hidden xl:block h-4 w-px bg-border shrink-0" aria-hidden="true" />
           <a
             href={phoneHref}

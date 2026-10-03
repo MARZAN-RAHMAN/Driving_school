@@ -54,7 +54,7 @@ export function HeroSection({ settings, assessmentPrice = 75 }: HeroSectionProps
     "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1200&fit=crop";
 
   return (
-    <section className="relative overflow-hidden pt-10 pb-16 sm:pt-14 sm:pb-20 lg:pt-16 lg:pb-24 border-b border-border bg-background transition-colors duration-200">
+    <section className="relative overflow-hidden pt-10 pb-14 sm:pt-14 sm:pb-18 lg:pt-20 lg:pb-24 xl:pt-24 xl:pb-28 border-b border-border bg-background transition-colors duration-200">
       {/* ========================================================================= */}
       {/* 1. FUTURISTIC AMBIENT BACKGROUND GLOWS (HALO EFFECT SYSTEM) */}
       {/* ========================================================================= */}
@@ -65,7 +65,7 @@ export function HeroSection({ settings, assessmentPrice = 75 }: HeroSectionProps
       {/* 2. MAIN CONTAINER & BALANCED TWO-COLUMN SPLIT */}
       {/* ========================================================================= */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-10 xl:gap-14 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 xl:gap-16 items-center">
           {/* ===================================================================== */}
           {/* LEFT COLUMN: Authority, Value Proposition & Action (6 cols on lg) */}
           {/* ===================================================================== */}
@@ -93,7 +93,7 @@ export function HeroSection({ settings, assessmentPrice = 75 }: HeroSectionProps
 
             {/* 2. Authoritative Main Headline */}
             <h1
-              className={`text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-foreground leading-[1.08] transition-all duration-600 delay-100 ${
+              className={`text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1] transition-all duration-600 delay-100 ${
                 mounted && !prefersReducedMotion
                   ? "opacity-100 translate-y-0"
                   : mounted
@@ -112,7 +112,7 @@ export function HeroSection({ settings, assessmentPrice = 75 }: HeroSectionProps
 
             {/* 3. Crisp Supporting Text */}
             <p
-              className={`mt-5 sm:mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-[540px] font-normal transition-all duration-600 delay-200 ${
+              className={`mt-5 sm:mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-[520px] font-normal transition-all duration-600 delay-200 ${
                 mounted && !prefersReducedMotion
                   ? "opacity-100 translate-y-0"
                   : mounted
@@ -125,7 +125,7 @@ export function HeroSection({ settings, assessmentPrice = 75 }: HeroSectionProps
 
             {/* 4. CTA Group */}
             <div
-              className={`mt-7 sm:mt-9 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4 w-full sm:w-auto transition-all duration-600 delay-300 ${
+              className={`mt-7 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4 w-full sm:w-auto transition-all duration-600 delay-300 ${
                 mounted && !prefersReducedMotion
                   ? "opacity-100 translate-y-0"
                   : mounted
@@ -183,7 +183,7 @@ export function HeroSection({ settings, assessmentPrice = 75 }: HeroSectionProps
           >
             {/* Ambient Background Vehicle Orbit Ring */}
             <div
-              className="absolute -inset-4 sm:-inset-6 rounded-3xl sm:rounded-[36px] border border-primary/20 bg-gradient-to-tr from-primary/10 via-transparent to-primary/5 -z-10 blur-xs transition-transform duration-500"
+              className="absolute -inset-3 sm:-inset-4 rounded-3xl sm:rounded-[36px] border border-primary/20 bg-gradient-to-tr from-primary/10 via-transparent to-primary/5 -z-10 blur-xs transition-transform duration-500"
               aria-hidden="true"
             />
 
@@ -254,7 +254,7 @@ export function HeroSection({ settings, assessmentPrice = 75 }: HeroSectionProps
         {/* ========================================================================= */}
         {/* 3. REFINED TRUST STRIP (Factual Service Features) */}
         {/* ========================================================================= */}
-        <div className="mt-14 sm:mt-16 pt-8 border-t border-border">
+        <div className="mt-14 sm:mt-16 lg:mt-20 pt-8 border-t border-border/70">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
             {/* Feature 1 */}
             <div className="flex items-center gap-3 p-3.5 sm:p-4 rounded-xl bg-surface-secondary/50 border border-border/60 shadow-2xs transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xs">
