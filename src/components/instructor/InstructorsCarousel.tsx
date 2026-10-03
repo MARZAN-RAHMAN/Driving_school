@@ -63,8 +63,16 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
     };
   }, [updateDimensions]);
 
-  // Lock body scroll when instructor profile modal is open; cleanly restore on close
+  // Breakpoint & dimensions calculation
+  // Desktop (>= 1024px): 3 cards | Tablet (768px - 1023px): 2 cards | Mobile (< 768px): 1 card
+  const isMobile = viewportWidth > 0 ? viewportWidth < 768 : false;
+  const isTablet = viewportWidth > 0 ? viewportWidth >= 768 && viewportWidth < 1024 : false;
+  const itemsPerView = isMobile ? 1 : isTablet ? 2 : 3;
+  const gap = isMobile ? 16 : 24; // 16px on mobile, 24px (1.5rem) on tablet & desktop
+
+  // On desktop dialogs, lock body scroll; on mobile, keep page scrolling natural with zero scroll locking
   useEffect(() => {
+    if (isMobile) return;
     if (selectedInstructor) {
       document.body.style.overflow = "hidden";
     } else {
@@ -73,15 +81,26 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
     return () => {
       document.body.style.overflow = "";
     };
+  }, [selectedInstructor, isMobile]);
+
+  // Reset modal scroll position to top whenever a new instructor is selected
+  const modalScrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (selectedInstructor && modalScrollRef.current) {
+      modalScrollRef.current.scrollTop = 0;
+    }
   }, [selectedInstructor]);
 
   // Dynamically measure actual sticky header height for seamless mobile positioning
-  const [headerHeight, setHeaderHeight] = useState(80);
+  const [headerHeight, setHeaderHeight] = useState(64);
   useEffect(() => {
     const updateHeaderHeight = () => {
       const headerEl = document.querySelector("header");
       if (headerEl) {
-        setHeaderHeight(headerEl.offsetHeight || 80);
+        const measured = Math.round(headerEl.getBoundingClientRect().height);
+        if (measured > 0) {
+          setHeaderHeight(measured);
+        }
       }
     };
     updateHeaderHeight();
@@ -99,13 +118,6 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [selectedInstructor]);
-
-  // Breakpoint & dimensions calculation
-  // Desktop (>= 1024px): 3 cards | Tablet (768px - 1023px): 2 cards | Mobile (< 768px): 1 card
-  const isMobile = viewportWidth > 0 ? viewportWidth < 768 : false;
-  const isTablet = viewportWidth > 0 ? viewportWidth >= 768 && viewportWidth < 1024 : false;
-  const itemsPerView = isMobile ? 1 : isTablet ? 2 : 3;
-  const gap = isMobile ? 16 : 24; // 16px on mobile, 24px (1.5rem) on tablet & desktop
 
   const total = activeInstructors.length;
   const maxIndex = Math.max(0, total - itemsPerView);
@@ -516,9 +528,13 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
       {/* 5. Instructor Profile & Credentials View / Modal */}
       {selectedInstructor && (
         <div
+          ref={modalScrollRef}
           className="fixed inset-0 z-40 sm:z-50 flex flex-col justify-start sm:items-center sm:justify-center overflow-y-auto overscroll-contain bg-black/60 backdrop-blur-xs transition-opacity duration-200"
           style={{
-            paddingTop: isMobile ? `${headerHeight}px` : undefined,
+            paddingTop: isMobile
+              ? `calc(var(--mobile-header-height, ${headerHeight}px) + 12px)`
+              : undefined,
+            paddingBottom: isMobile ? "24px" : undefined,
           }}
           role="dialog"
           aria-modal="true"
@@ -526,44 +542,51 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
           onClick={() => setSelectedInstructor(null)}
         >
           <div
-            className="relative w-full max-w-full sm:max-w-xl sm:min-h-0 bg-card text-card-foreground shadow-2xl p-4 sm:p-7 rounded-t-3xl sm:rounded-2xl border-t border-border sm:border max-h-none sm:max-h-[88vh] overflow-visible sm:overflow-y-auto flex flex-col justify-between my-0 sm:my-auto"
+            className="relative w-full max-w-full sm:max-w-xl sm:min-h-0 bg-card text-card-foreground shadow-2xl p-4 sm:p-7 rounded-t-3xl sm:rounded-2xl border border-border max-h-none sm:max-h-[88vh] overflow-visible sm:overflow-y-auto flex flex-col justify-between my-0 sm:my-auto"
             style={{
-              minHeight: isMobile ? `calc(100dvh - ${headerHeight}px)` : undefined,
+              minHeight: isMobile
+                ? `calc(100dvh - var(--mobile-header-height, ${headerHeight}px) - 24px)`
+                : undefined,
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Mobile Sticky Sub-header Bar (Visible on mobile only) */}
-            <div className="sticky top-0 z-30 -mx-4 -mt-4 px-4 py-3 bg-card/95 backdrop-blur-md border-b border-border flex items-center justify-between sm:hidden shadow-xs">
+            {/* Mobile Profile Navigation Row (Completely visible below fixed header with 12px breathing room) */}
+            <div className="flex items-center justify-between gap-2 sm:hidden w-full pb-3.5 mb-4 border-b border-border/80">
+              {/* LEFT: Back to Fleet */}
               <button
                 type="button"
                 onClick={() => setSelectedInstructor(null)}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground py-2 px-1 min-h-[44px] cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-secondary text-foreground hover:bg-muted active:scale-95 transition-all text-xs font-semibold min-h-[44px] shrink-0 border border-border/80 cursor-pointer shadow-2xs"
                 aria-label="Back to instructors fleet"
               >
                 <ChevronLeft className="w-4 h-4 text-primary shrink-0" />
-                <span>Back to Fleet</span>
+                <span className="whitespace-nowrap">Back to Fleet</span>
               </button>
 
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
-                  {selectedInstructor.grade || "Grade A ADI"}
+              {/* CENTER/RIGHT: Grade A Badge */}
+              <div className="flex items-center justify-center min-w-0 flex-1 px-1">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-primary/10 text-primary border border-primary/20 truncate max-w-full">
+                  <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span className="truncate">{selectedInstructor.grade || "Grade A ADI"}</span>
                 </span>
-                <button
-                  type="button"
-                  onClick={() => setSelectedInstructor(null)}
-                  className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
-                  aria-label="Close instructor profile"
-                >
-                  <X className="w-5 h-5" />
-                </button>
               </div>
+
+              {/* RIGHT: Close Button */}
+              <button
+                type="button"
+                onClick={() => setSelectedInstructor(null)}
+                className="inline-flex items-center justify-center rounded-xl bg-surface-secondary text-muted-foreground hover:text-foreground hover:bg-muted active:scale-95 transition-all min-h-[44px] min-w-[44px] shrink-0 border border-border/80 cursor-pointer shadow-2xs"
+                aria-label="Close instructor profile"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
             {/* Desktop Close Button (Visible on sm+ screens) */}
             <button
               type="button"
               onClick={() => setSelectedInstructor(null)}
-              className="hidden sm:flex absolute top-4 right-4 p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer z-20 min-h-[44px] min-w-[44px] items-center justify-center"
+              className="hidden sm:flex absolute top-5 right-5 p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer z-20 min-h-[44px] min-w-[44px] items-center justify-center border border-border/60"
               aria-label="Close instructor profile"
             >
               <X className="w-5 h-5" />
@@ -571,7 +594,7 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
 
             <div>
               {/* Mobile Hero Image: Responsive full width card */}
-              <div className="sm:hidden relative w-full aspect-[16/10] rounded-2xl overflow-hidden bg-muted/60 mt-3 border border-border shadow-xs">
+              <div className="sm:hidden relative w-full aspect-[16/10] rounded-2xl overflow-hidden bg-muted/60 border border-border shadow-xs">
                 <img
                   src={selectedInstructor.avatar}
                   alt={`${selectedInstructor.name}, DVSA Grade A driving instructor`}

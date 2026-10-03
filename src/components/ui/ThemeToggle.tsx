@@ -29,7 +29,7 @@ export function ThemeToggle({ className = "", showLabel = false }: ThemeTogglePr
       type="button"
       onClick={toggleTheme}
       suppressHydrationWarning
-      className={`group relative inline-flex items-center justify-center rounded-xl border border-slate-200/80 bg-white/80 p-2 text-slate-700 shadow-xs backdrop-blur-xs transition hover:border-slate-300 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-850 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0 ${className}`}
+      className={`group relative inline-flex items-center justify-center min-h-[44px] min-w-[44px] rounded-xl border border-slate-200/80 bg-white/80 p-2 text-slate-700 shadow-xs backdrop-blur-xs transition hover:border-slate-300 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-850 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer shrink-0 ${className}`}
       aria-label="Toggle dark/light theme"
       title="Toggle dark/light theme"
     >

@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -85,6 +85,30 @@ export function Navbar({ initialSettings }: NavbarProps = {}) {
     };
   }, [mobileMenuOpen]);
 
+  // Dynamically sync actual rendered header height to CSS custom variables
+  const headerRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      if (headerRef.current) {
+        const height = Math.round(headerRef.current.getBoundingClientRect().height);
+        if (height > 0) {
+          document.documentElement.style.setProperty("--site-header-height", `${height}px`);
+          document.documentElement.style.setProperty("--mobile-header-height", `${height}px`);
+        }
+      }
+    };
+    updateHeaderHeight();
+    const ro = new ResizeObserver(updateHeaderHeight);
+    if (headerRef.current) {
+      ro.observe(headerRef.current);
+    }
+    window.addEventListener("resize", updateHeaderHeight);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", updateHeaderHeight);
+    };
+  }, []);
+
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     setUser(null);
@@ -101,29 +125,30 @@ export function Navbar({ initialSettings }: NavbarProps = {}) {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 border-b ${
+      ref={headerRef}
+      className={`sticky top-0 z-50 w-full transition-all duration-300 border-b pt-[env(safe-area-inset-top,0px)] ${
         scrolled
-          ? "glass-nav-scrolled border-border/80"
-          : "bg-card/90 backdrop-blur-md border-border/60"
+          ? "glass-nav-scrolled border-border/80 shadow-xs"
+          : "bg-card/95 backdrop-blur-md border-border/60 shadow-2xs"
       }`}
     >
-      <div className="mx-auto flex h-20 w-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-5 xl:px-6 2xl:px-8">
+      <div className="mx-auto flex h-16 sm:h-20 w-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-5 xl:px-6 2xl:px-8">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-3 transition hover:opacity-90 shrink-0">
+        <Link href="/" className="flex items-center gap-2.5 sm:gap-3 transition hover:opacity-90 shrink-0">
           {settings?.logoUrl ? (
             <img
               src={settings.logoUrl}
               alt={businessName}
-              className="h-10 w-10 sm:h-11 sm:w-11 rounded-2xl object-cover shadow-xs ring-1 ring-border shrink-0"
+              className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl object-cover shadow-xs ring-1 ring-border shrink-0"
             />
           ) : (
-            <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-xs shrink-0">
-              <Car className="h-5 w-5" />
+            <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl bg-primary text-primary-foreground shadow-xs shrink-0">
+              <Car className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
             </div>
           )}
           <div className="shrink-0">
             <div className="flex items-center gap-1.5">
-              <span className="text-lg sm:text-xl font-bold tracking-tight text-foreground font-sans whitespace-nowrap">
+              <span className="text-base sm:text-xl font-bold tracking-tight text-foreground font-sans whitespace-nowrap">
                 {businessName.includes("NextDrive") ? (
                   <>
                     Next<span className="text-primary">Drive</span>
@@ -137,12 +162,12 @@ export function Navbar({ initialSettings }: NavbarProps = {}) {
                 )}
               </span>
               {logoBadge && (
-                <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary whitespace-nowrap">
+                <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[9px] sm:text-[10px] font-bold text-primary whitespace-nowrap">
                   {logoBadge}
                 </span>
               )}
             </div>
-            <span className="block text-[10px] font-medium tracking-wide uppercase text-muted-foreground whitespace-nowrap">
+            <span className="block text-[9px] sm:text-[10px] font-medium tracking-wide uppercase text-muted-foreground whitespace-nowrap">
               {tagline}
             </span>
           </div>
@@ -269,7 +294,7 @@ export function Navbar({ initialSettings }: NavbarProps = {}) {
           <ThemeToggle />
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="rounded-xl border border-border bg-card p-2 text-foreground shadow-xs hover:bg-muted"
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border border-border bg-card p-2 text-foreground shadow-xs hover:bg-muted active:scale-95 transition-all cursor-pointer"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
