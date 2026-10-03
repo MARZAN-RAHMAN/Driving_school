@@ -1,6 +1,7 @@
 import React from "react";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { AdminHeader } from "@/components/admin/AdminHeader";
+import { AdminMainContent } from "@/components/admin/AdminMainContent";
+import { AdminSidebarProvider } from "@/context/AdminSidebarContext";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
@@ -27,15 +28,16 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-200">
-      {/* Sidebar navigation */}
-      <AdminSidebar userRole={session.user.role} user={session.user} />
+    <AdminSidebarProvider>
+      <div className="min-h-screen bg-background text-foreground transition-colors duration-200">
+        {/* Sidebar navigation (Desktop Collapsible & Mobile Drawer) */}
+        <AdminSidebar userRole={session.user.role} user={session.user} />
 
-      {/* Main content column */}
-      <div className="flex flex-1 flex-col lg:pl-64">
-        <AdminHeader user={session.user} />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+        {/* Main content column with dynamic responsive padding */}
+        <AdminMainContent user={session.user}>
+          {children}
+        </AdminMainContent>
       </div>
-    </div>
+    </AdminSidebarProvider>
   );
 }

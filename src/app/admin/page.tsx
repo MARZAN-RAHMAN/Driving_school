@@ -4,8 +4,6 @@ import {
   CalendarCheck,
   Car,
   GraduationCap,
-  Award,
-  Clock,
   Plus,
   ArrowRight,
   ExternalLink,
@@ -36,15 +34,15 @@ export default async function AdminDashboardPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
               Operations Control Center
             </h1>
-            <span className="inline-flex items-center rounded-full bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-600/20">
-              <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="inline-flex items-center rounded-full bg-success/15 px-2.5 py-0.5 text-xs font-semibold text-success ring-1 ring-inset ring-success/20">
+              <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
               Live Operations
             </span>
           </div>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-xs text-muted-foreground">
             Driving School Fleet Dispatch, Lesson Scheduling &amp; Business Performance
           </p>
         </div>
@@ -53,29 +51,29 @@ export default async function AdminDashboardPage() {
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/admin/bookings"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-xs transition hover:bg-primary-hover"
           >
             <Plus className="h-3.5 w-3.5" />
             New Booking
           </Link>
           <Link
             href="/admin/customers"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm transition hover:bg-slate-50 dark:hover:bg-slate-800"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3.5 py-2 text-xs font-semibold text-foreground shadow-xs transition hover:bg-muted"
           >
-            <GraduationCap className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
+            <GraduationCap className="h-3.5 w-3.5 text-muted-foreground" />
             Learner Roster
           </Link>
           <Link
             href="/admin/instructors"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm transition hover:bg-slate-50 dark:hover:bg-slate-800"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3.5 py-2 text-xs font-semibold text-foreground shadow-xs transition hover:bg-muted"
           >
-            <Car className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
+            <Car className="h-3.5 w-3.5 text-muted-foreground" />
             Instructor Fleet
           </Link>
           <Link
             href="/"
             target="_blank"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm transition hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold text-muted-foreground shadow-xs transition hover:bg-muted hover:text-primary"
           >
             Public Site
             <ExternalLink className="h-3.5 w-3.5" />
@@ -157,19 +155,19 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Main Grid Row 3: Live Audit & Authorization Stream */}
-      <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xs">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-xs text-card-foreground">
+        <div className="flex items-center justify-between pb-4 border-b border-border">
           <div>
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
               Live Event &amp; RBAC Security Stream
             </h2>
-            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               Real-time audit log, user logins, and administrative dispatch events
             </p>
           </div>
           <Link
             href="/admin/logs"
-            className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary-hover hover:underline"
           >
             All Logs
             <ArrowRight className="h-3.5 w-3.5" />
@@ -177,11 +175,11 @@ export default async function AdminDashboardPage() {
         </div>
 
         {logs.length === 0 ? (
-          <div className="py-8 text-center text-xs text-slate-400 dark:text-slate-500">
+          <div className="py-8 text-center text-xs text-muted-foreground">
             No data available
           </div>
         ) : (
-          <div className="mt-4 divide-y divide-slate-100 dark:divide-slate-800">
+          <div className="mt-4 divide-y divide-border">
             {logs.map((log) => {
               const isSuccess = log.severity === "SUCCESS";
               const isWarning = log.severity === "WARNING";
@@ -194,25 +192,25 @@ export default async function AdminDashboardPage() {
                       <span
                         className={`mt-1 h-2 w-2 rounded-full shrink-0 ${
                           isSuccess
-                            ? "bg-emerald-500"
+                            ? "bg-success"
                             : isWarning
-                            ? "bg-amber-500"
+                            ? "bg-warning"
                             : isFailed
-                            ? "bg-rose-500"
-                            : "bg-slate-400"
+                            ? "bg-error"
+                            : "bg-muted-foreground"
                         }`}
                       />
                       <div>
-                        <p className="text-xs font-mono font-semibold text-slate-900 dark:text-white">
+                        <p className="text-xs font-mono font-semibold text-foreground">
                           {log.action}
                         </p>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                        <p className="text-[11px] text-muted-foreground mt-0.5">
                           Actor:{" "}
-                          <span className="font-medium text-slate-700 dark:text-slate-300">
+                          <span className="font-medium text-foreground">
                             {log.actorEmail}
                           </span>
                         </p>
-                        <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                        <p className="text-[11px] text-muted-foreground">
                           Target: {log.target}
                         </p>
                       </div>
@@ -222,17 +220,17 @@ export default async function AdminDashboardPage() {
                       <span
                         className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[9px] font-bold ${
                           isSuccess
-                            ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300"
+                            ? "bg-success/15 text-success"
                             : isWarning
-                            ? "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300"
+                            ? "bg-warning/15 text-warning"
                             : isFailed
-                            ? "bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
+                            ? "bg-error/15 text-error"
+                            : "bg-muted text-muted-foreground"
                         }`}
                       >
                         {log.severity}
                       </span>
-                      <p className="mt-1 text-[10px] text-slate-400 dark:text-slate-500 font-mono">
+                      <p className="mt-1 text-[10px] text-muted-foreground font-mono">
                         {log.timestamp.slice(11, 19)}
                       </p>
                     </div>
@@ -243,14 +241,14 @@ export default async function AdminDashboardPage() {
           </div>
         )}
 
-        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-          <span className="text-[11px] text-slate-400">
+        <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
+          <span className="text-[11px] text-muted-foreground">
             System status: Operational (RBAC &amp; DVSA compliance verified)
           </span>
           <Link
             href="/api/health"
             target="_blank"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-success hover:underline"
           >
             <Activity className="h-3.5 w-3.5" />
             Live System Telemetry
