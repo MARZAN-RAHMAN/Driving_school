@@ -18,6 +18,10 @@ import {
   InstructorAvailability,
   InstructorDashboardSummary,
   Account,
+  PopupCampaign,
+  PopupFieldConfig,
+  PopupAnalyticsEvent,
+  PopupAnalyticsSummary,
 } from "@/types";
 
 // Seeded In-Memory Database Repository with Real Relational Consistency
@@ -1095,6 +1099,254 @@ const initialInquiries: ContactInquiry[] = [
   },
 ];
 
+export const defaultPopupFields: PopupFieldConfig[] = [
+  {
+    id: "f_name",
+    fieldKey: "name",
+    label: "Full Name",
+    placeholder: "e.g. Liam Gallagher",
+    fieldType: "text",
+    isEnabled: true,
+    isRequired: true,
+    displayOrder: 1,
+  },
+  {
+    id: "f_email",
+    fieldKey: "email",
+    label: "Email Address",
+    placeholder: "e.g. liam@example.com",
+    fieldType: "email",
+    isEnabled: true,
+    isRequired: true,
+    displayOrder: 2,
+  },
+  {
+    id: "f_phone",
+    fieldKey: "phone",
+    label: "Telephone Number",
+    placeholder: "e.g. 07123 456789",
+    fieldType: "tel",
+    isEnabled: true,
+    isRequired: true,
+    displayOrder: 3,
+  },
+  {
+    id: "f_course",
+    fieldKey: "course",
+    label: "Target Driving Course",
+    placeholder: "Select your course",
+    fieldType: "select",
+    options: [
+      "Beginner Driving Lessons",
+      "Manual Driving Lessons",
+      "Automatic Driving Lessons",
+      "Intensive Driving Course",
+      "Refresher Driving Lessons",
+      "Pass Plus & Motorway",
+    ],
+    isEnabled: true,
+    isRequired: true,
+    displayOrder: 4,
+  },
+  {
+    id: "f_area",
+    fieldKey: "area",
+    label: "Manchester Service Area",
+    placeholder: "Select your area",
+    fieldType: "select",
+    options: [
+      "Central & North Manchester",
+      "South Manchester & Didsbury",
+      "Trafford & Sale",
+      "Salford & Bury",
+      "Stockport & Greater Manchester",
+      "Oldham & Rochdale",
+    ],
+    isEnabled: true,
+    isRequired: true,
+    displayOrder: 5,
+  },
+  {
+    id: "f_transmission",
+    fieldKey: "transmission",
+    label: "Transmission Preference",
+    placeholder: "Manual or Automatic?",
+    fieldType: "select",
+    options: ["Manual", "Automatic", "Either / Open to Advice"],
+    isEnabled: true,
+    isRequired: false,
+    displayOrder: 6,
+  },
+  {
+    id: "f_postcode",
+    fieldKey: "postcode",
+    label: "Postcode",
+    placeholder: "e.g. M1 1AE",
+    fieldType: "text",
+    isEnabled: true,
+    isRequired: false,
+    displayOrder: 7,
+  },
+  {
+    id: "f_provisional",
+    fieldKey: "provisionalLicence",
+    label: "Provisional Licence Status",
+    placeholder: "Do you have a UK provisional licence?",
+    fieldType: "select",
+    options: ["Yes, I have one", "No, not yet", "Applying soon"],
+    isEnabled: false,
+    isRequired: false,
+    displayOrder: 8,
+  },
+  {
+    id: "f_preferredDate",
+    fieldKey: "preferredDate",
+    label: "Preferred Start Date",
+    placeholder: "Select target date",
+    fieldType: "date",
+    isEnabled: false,
+    isRequired: false,
+    displayOrder: 9,
+  },
+  {
+    id: "f_preferredTime",
+    fieldKey: "preferredTime",
+    label: "Preferred Time of Day",
+    placeholder: "Select time window",
+    fieldType: "select",
+    options: ["Morning (8am - 12pm)", "Afternoon (12pm - 4pm)", "Evening (4pm - 8pm)", "Weekend Anytime"],
+    isEnabled: false,
+    isRequired: false,
+    displayOrder: 10,
+  },
+  {
+    id: "f_howFound",
+    fieldKey: "howFound",
+    label: "How did you hear about us?",
+    placeholder: "How did you find NextDrive?",
+    fieldType: "select",
+    options: ["Google", "Google Maps", "Instagram", "TikTok", "Recommendation", "Passed Student", "Other"],
+    isEnabled: false,
+    isRequired: false,
+    displayOrder: 11,
+  },
+  {
+    id: "f_message",
+    fieldKey: "message",
+    label: "Message / Specific Goals",
+    placeholder: "Any previous driving experience or specific goals...",
+    fieldType: "textarea",
+    isEnabled: true,
+    isRequired: false,
+    displayOrder: 12,
+  },
+];
+
+export const initialPopupCampaign: PopupCampaign = {
+  id: "popup_main",
+  name: "Book Your Driving Lesson",
+  isEnabled: true,
+  status: "PUBLISHED",
+
+  title: "Ready to Start Driving?",
+  subtitle: "Book your first lesson with NextDrive Academy.",
+  description: "Tell us a little about yourself and our DVSA Grade A team will match you with a top-rated local instructor.",
+  buttonText: "Book My Lesson",
+  successTitle: "Lesson Request Received!",
+  successMessage: "Thank you! Your request has been received. Our senior dispatch team will review instructor schedules and contact you shortly.",
+  trustBadgeText: "✓ 89.4% First-Time Pass Rate • Modern Dual-Control Fleet • Certified Grade A ADIs",
+  afterSubmissionAction: "show_success",
+
+  triggerType: "time",
+  delaySeconds: 10,
+  mobileDelaySeconds: 15,
+  scrollPercentage: 50,
+  showCountdown: false,
+
+  frequency: "once_per_session",
+  dismissalRule: "cooldown_days",
+  cooldownDays: 7,
+
+  showDesktop: true,
+  showTablet: true,
+  showMobile: true,
+  targetPages: ["/", "/#courses", "/#locations"],
+  excludedPages: ["/admin", "/instructor", "/student", "/login", "/signup", "/auth"],
+
+  position: "center",
+  size: "medium",
+  theme: "auto",
+  animation: "fade_scale",
+  animationDurationMs: 300,
+  backdropEnabled: true,
+  backdropOpacity: 40,
+
+  fields: [...defaultPopupFields],
+
+  createdAt: "2026-10-01T00:00:00Z",
+  updatedAt: "2026-10-03T00:00:00Z",
+  publishedAt: "2026-10-03T00:00:00Z",
+};
+
+export const initialPopupAnalyticsEvents: PopupAnalyticsEvent[] = [
+  {
+    id: "pevt_01",
+    popupId: "popup_main",
+    event: "popup_impression",
+    pageUrl: "/",
+    deviceType: "desktop",
+    timestamp: "2026-10-02T10:14:00Z",
+  },
+  {
+    id: "pevt_02",
+    popupId: "popup_main",
+    event: "popup_opened",
+    pageUrl: "/",
+    deviceType: "desktop",
+    timestamp: "2026-10-02T10:14:10Z",
+  },
+  {
+    id: "pevt_03",
+    popupId: "popup_main",
+    event: "popup_form_started",
+    pageUrl: "/",
+    deviceType: "desktop",
+    timestamp: "2026-10-02T10:14:15Z",
+  },
+  {
+    id: "pevt_04",
+    popupId: "popup_main",
+    event: "popup_submitted",
+    pageUrl: "/",
+    deviceType: "desktop",
+    timestamp: "2026-10-02T10:14:45Z",
+  },
+  {
+    id: "pevt_05",
+    popupId: "popup_main",
+    event: "popup_impression",
+    pageUrl: "/",
+    deviceType: "mobile",
+    timestamp: "2026-10-02T11:00:00Z",
+  },
+  {
+    id: "pevt_06",
+    popupId: "popup_main",
+    event: "popup_opened",
+    pageUrl: "/",
+    deviceType: "mobile",
+    timestamp: "2026-10-02T11:00:15Z",
+  },
+  {
+    id: "pevt_07",
+    popupId: "popup_main",
+    event: "popup_dismissed",
+    pageUrl: "/",
+    deviceType: "mobile",
+    timestamp: "2026-10-02T11:00:20Z",
+  },
+];
+
 class DatabaseService {
   private users: User[] = [...initialUsers];
   private students: Student[] = [...initialStudents];
@@ -1110,6 +1362,9 @@ class DatabaseService {
   private faqs: FAQItem[] = [...initialFaqs];
   private businessSettings: BusinessSettings = { ...initialBusinessSettings };
   private accounts: Account[] = [...initialAccounts];
+  private popupCampaign: PopupCampaign = { ...initialPopupCampaign };
+  private publishedPopupCampaign: PopupCampaign = { ...initialPopupCampaign };
+  private popupAnalyticsEvents: PopupAnalyticsEvent[] = [...initialPopupAnalyticsEvents];
 
   // User queries & mutations
   async getUsers(query?: string, roleFilter?: string): Promise<User[]> {
@@ -2008,6 +2263,97 @@ class DatabaseService {
       booking.status = status;
     }
     return booking;
+  }
+
+  // Popup Campaign & Lead Capture System
+  async getPopupCampaign(publishedOnly: boolean = false): Promise<PopupCampaign> {
+    const source = publishedOnly ? this.publishedPopupCampaign : this.popupCampaign;
+    return JSON.parse(JSON.stringify(source));
+  }
+
+  async updatePopupCampaign(updates: Partial<PopupCampaign>): Promise<PopupCampaign> {
+    this.popupCampaign = {
+      ...this.popupCampaign,
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+    if (updates.fields) {
+      this.popupCampaign.fields = updates.fields.map((f, idx) => ({
+        ...f,
+        displayOrder: f.displayOrder ?? idx + 1,
+      }));
+    }
+    return JSON.parse(JSON.stringify(this.popupCampaign));
+  }
+
+  async publishPopupCampaign(): Promise<PopupCampaign> {
+    const now = new Date().toISOString();
+    this.popupCampaign.status = "PUBLISHED";
+    this.popupCampaign.publishedAt = now;
+    this.popupCampaign.updatedAt = now;
+    this.publishedPopupCampaign = JSON.parse(JSON.stringify(this.popupCampaign));
+
+    await this.addAuditLog({
+      action: "POPUP_CONFIG_PUBLISHED",
+      actorEmail: "admin@nextdrive.uk",
+      target: `Popup Campaign: ${this.popupCampaign.name}`,
+      ip: "127.0.0.1",
+      severity: "SUCCESS",
+    });
+
+    return JSON.parse(JSON.stringify(this.publishedPopupCampaign));
+  }
+
+  async resetPopupCampaign(): Promise<PopupCampaign> {
+    this.popupCampaign = JSON.parse(JSON.stringify(initialPopupCampaign));
+    this.popupCampaign.status = "DRAFT";
+    this.popupCampaign.updatedAt = new Date().toISOString();
+    return JSON.parse(JSON.stringify(this.popupCampaign));
+  }
+
+  async recordPopupEvent(
+    eventData: Omit<PopupAnalyticsEvent, "id" | "timestamp">
+  ): Promise<PopupAnalyticsEvent> {
+    const newEvent: PopupAnalyticsEvent = {
+      id: `pevt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      timestamp: new Date().toISOString(),
+      ...eventData,
+    };
+    this.popupAnalyticsEvents.unshift(newEvent);
+    // Keep max 2500 events in memory
+    if (this.popupAnalyticsEvents.length > 2500) {
+      this.popupAnalyticsEvents = this.popupAnalyticsEvents.slice(0, 2500);
+    }
+    return newEvent;
+  }
+
+  async getPopupAnalytics(): Promise<PopupAnalyticsSummary> {
+    const events = this.popupAnalyticsEvents;
+    const impressions = events.filter((e) => e.event === "popup_impression").length;
+    const opened = events.filter((e) => e.event === "popup_opened").length;
+    const dismissed = events.filter((e) => e.event === "popup_dismissed").length;
+    const formStarted = events.filter((e) => e.event === "popup_form_started").length;
+    const submitted = events.filter((e) => e.event === "popup_submitted").length;
+
+    const conversionRate =
+      opened > 0 ? ((submitted / opened) * 100).toFixed(1) + "%" : "0.0%";
+
+    const eventsByDevice = {
+      desktop: events.filter((e) => e.deviceType === "desktop").length,
+      tablet: events.filter((e) => e.deviceType === "tablet").length,
+      mobile: events.filter((e) => e.deviceType === "mobile").length,
+    };
+
+    return {
+      impressions,
+      opened,
+      dismissed,
+      formStarted,
+      submitted,
+      conversionRate,
+      eventsByDevice,
+      recentEvents: events.slice(0, 30),
+    };
   }
 }
 

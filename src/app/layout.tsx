@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { db } from "@/lib/db";
 import { BookingModalProvider } from "@/context/BookingModalContext";
+import { ConfigurableWebsitePopup } from "@/components/booking/ConfigurableWebsitePopup";
 import "./globals.css";
 
 export const dynamic = "force-dynamic";
@@ -73,7 +74,10 @@ export default function RootLayout({
         className="min-h-full flex flex-col antialiased bg-background text-foreground transition-colors duration-200"
         suppressHydrationWarning
       >
-        <BookingModalProvider>{children}</BookingModalProvider>
+        <BookingModalProvider>
+          {children}
+          <ConfigurableWebsitePopup />
+        </BookingModalProvider>
       </body>
     </html>
   );

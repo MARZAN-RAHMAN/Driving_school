@@ -25,6 +25,7 @@ import {
   PanelLeftOpen,
   ExternalLink,
   X,
+  Megaphone,
 } from "lucide-react";
 import { User, UserRole } from "@/types";
 import { useAdminSidebar } from "@/context/AdminSidebarContext";
@@ -138,6 +139,17 @@ const navSections: NavSection[] = [
         name: "Media",
         href: "/admin/media",
         icon: ImageIcon,
+      },
+    ],
+  },
+  {
+    title: "MARKETING",
+    items: [
+      {
+        name: "Popup Manager",
+        href: "/admin/popup",
+        icon: Megaphone,
+        badge: "Active",
       },
     ],
   },

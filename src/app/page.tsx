@@ -17,7 +17,6 @@ import { FaqAccordion } from "@/components/home/FaqAccordion";
 import { AmbientHalo } from "@/components/ui/AmbientHalo";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ServiceLocationsMap } from "@/components/home/ServiceLocationsMap";
-import { VisitorBookingPopupTrigger } from "@/components/booking/VisitorBookingPopupTrigger";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -234,9 +233,6 @@ export default async function HomePage() {
           phoneHref={phoneHref}
           assessmentPrice={assessmentPrice}
         />
-
-        {/* Timed visitor booking popup trigger (fires once per session after 10s) */}
-        <VisitorBookingPopupTrigger delayMs={10000} />
       </main>
 
       <Footer settings={settings} packages={packages} locations={locations} />

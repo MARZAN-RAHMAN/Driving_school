@@ -110,3 +110,82 @@ model SystemMetric {
   description String
   updatedAt   DateTime @updatedAt
 }
+
+model PopupCampaign {
+  id                    String                @id @default("popup_main")
+  name                  String                @default("Book Your Driving Lesson")
+  isEnabled             Boolean               @default(true)
+  status                String                @default("PUBLISHED")
+  
+  title                 String                @default("Ready to Start Driving?")
+  subtitle              String                @default("Book your first lesson with NextDrive Academy.")
+  description           String                @default("Tell us a little about yourself and our DVSA Grade A team will match you with a top-rated local instructor.")
+  buttonText            String                @default("Book My Lesson")
+  successTitle          String                @default("Lesson Request Received!")
+  successMessage        String                @default("Thank you! Your request has been received. Our senior dispatch team will review instructor schedules and contact you shortly.")
+  trustBadgeText        String?               @default("✓ 89.4% First-Time Pass Rate • Modern Dual-Control Fleet • Grade A Instructors")
+  afterSubmissionAction String                @default("show_success")
+  customRedirectUrl     String?
+
+  triggerType           String                @default("time")
+  delaySeconds          Int                   @default(10)
+  mobileDelaySeconds    Int                   @default(15)
+  scrollPercentage      Int                   @default(50)
+  showCountdown         Boolean               @default(false)
+
+  frequency             String                @default("once_per_session")
+  dismissalRule         String                @default("cooldown_days")
+  cooldownDays          Int                   @default(7)
+
+  showDesktop           Boolean               @default(true)
+  showTablet            Boolean               @default(true)
+  showMobile            Boolean               @default(true)
+  targetPages           String[]              @default(["/", "/#courses", "/#locations"])
+  excludedPages         String[]              @default(["/admin", "/instructor", "/student", "/login", "/signup", "/auth"])
+
+  position              String                @default("center")
+  size                  String                @default("medium")
+  theme                 String                @default("auto")
+  animation             String                @default("fade_scale")
+  animationDurationMs   Int                   @default(300)
+  backdropEnabled       Boolean               @default(true)
+  backdropOpacity       Int                   @default(40)
+
+  fields                PopupField[]
+  analyticsEvents       PopupAnalyticsEvent[]
+
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+  publishedAt           DateTime?
+}
+
+model PopupField {
+  id                    String        @id @default(uuid())
+  popupId               String
+  popup                 PopupCampaign @relation(fields: [popupId], references: [id], onDelete: Cascade)
+  fieldKey              String
+  label                 String
+  placeholder           String?
+  fieldType             String        @default("text")
+  options               String[]      @default([])
+  isEnabled             Boolean       @default(true)
+  isRequired            Boolean       @default(false)
+  displayOrder          Int           @default(0)
+
+  @@index([popupId])
+  @@index([displayOrder])
+}
+
+model PopupAnalyticsEvent {
+  id                    String        @id @default(uuid())
+  popupId               String
+  popup                 PopupCampaign @relation(fields: [popupId], references: [id], onDelete: Cascade)
+  event                 String
+  pageUrl               String        @default("/")
+  deviceType            String        @default("desktop")
+  timestamp             DateTime      @default(now())
+
+  @@index([popupId])
+  @@index([event])
+  @@index([timestamp])
+}

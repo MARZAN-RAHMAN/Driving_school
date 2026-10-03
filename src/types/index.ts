@@ -378,3 +378,129 @@ export interface BusinessSettings {
     x: boolean;
   };
 }
+
+export type PopupTriggerType =
+  | "time"
+  | "exit_intent"
+  | "scroll"
+  | "button"
+  | "time_scroll"
+  | "manual";
+
+export type PopupFrequency =
+  | "every_visit"
+  | "once_per_session"
+  | "once_per_day"
+  | "once_3_days"
+  | "once_7_days"
+  | "once_30_days"
+  | "never_after_submission";
+
+export type PopupAfterDismissal = "session" | "cooldown_days";
+
+export type PopupAfterSubmission =
+  | "show_success"
+  | "close"
+  | "redirect_booking"
+  | "redirect_custom";
+
+export type PopupPosition = "center" | "bottom_right" | "bottom_left" | "bottom_center";
+export type PopupSize = "small" | "medium" | "large";
+export type PopupTheme = "auto" | "light" | "dark";
+export type PopupAnimation = "fade_scale" | "fade" | "slide_up" | "slide_down" | "none";
+
+export interface PopupFieldConfig {
+  id: string;
+  fieldKey: string;
+  label: string;
+  placeholder?: string;
+  fieldType: "text" | "email" | "tel" | "select" | "textarea" | "date" | "time";
+  options?: string[];
+  isEnabled: boolean;
+  isRequired: boolean;
+  displayOrder: number;
+}
+
+export interface PopupCampaign {
+  id: string;
+  name: string;
+  isEnabled: boolean;
+  status: "DRAFT" | "PUBLISHED";
+
+  // Content
+  title: string;
+  subtitle: string;
+  description: string;
+  buttonText: string;
+  successTitle: string;
+  successMessage: string;
+  trustBadgeText?: string;
+  afterSubmissionAction: PopupAfterSubmission;
+  customRedirectUrl?: string;
+
+  // Trigger & Timing
+  triggerType: PopupTriggerType;
+  delaySeconds: number;
+  mobileDelaySeconds: number;
+  scrollPercentage: number;
+  showCountdown: boolean;
+
+  // Frequency
+  frequency: PopupFrequency;
+  dismissalRule: PopupAfterDismissal;
+  cooldownDays: number;
+
+  // Device & Page Targeting
+  showDesktop: boolean;
+  showTablet: boolean;
+  showMobile: boolean;
+  targetPages: string[];
+  excludedPages?: string[];
+
+  // Design
+  position: PopupPosition;
+  size: PopupSize;
+  theme: PopupTheme;
+  animation: PopupAnimation;
+  animationDurationMs: number;
+  backdropEnabled: boolean;
+  backdropOpacity: number;
+
+  // Form Fields
+  fields: PopupFieldConfig[];
+
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string;
+}
+
+export interface PopupAnalyticsEvent {
+  id: string;
+  popupId: string;
+  event:
+    | "popup_impression"
+    | "popup_opened"
+    | "popup_dismissed"
+    | "popup_form_started"
+    | "popup_form_field_completed"
+    | "popup_submitted"
+    | "popup_error";
+  pageUrl: string;
+  deviceType: "desktop" | "tablet" | "mobile";
+  timestamp: string;
+}
+
+export interface PopupAnalyticsSummary {
+  impressions: number;
+  opened: number;
+  dismissed: number;
+  formStarted: number;
+  submitted: number;
+  conversionRate: string;
+  eventsByDevice: {
+    desktop: number;
+    tablet: number;
+    mobile: number;
+  };
+  recentEvents: PopupAnalyticsEvent[];
+}
