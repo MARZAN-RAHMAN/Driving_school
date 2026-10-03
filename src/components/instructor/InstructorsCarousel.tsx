@@ -75,6 +75,31 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
     };
   }, [selectedInstructor]);
 
+  // Dynamically measure actual sticky header height for seamless mobile positioning
+  const [headerHeight, setHeaderHeight] = useState(80);
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      const headerEl = document.querySelector("header");
+      if (headerEl) {
+        setHeaderHeight(headerEl.offsetHeight || 80);
+      }
+    };
+    updateHeaderHeight();
+    window.addEventListener("resize", updateHeaderHeight);
+    return () => window.removeEventListener("resize", updateHeaderHeight);
+  }, []);
+
+  // Global Escape key to dismiss instructor profile
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && selectedInstructor) {
+        setSelectedInstructor(null);
+      }
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [selectedInstructor]);
+
   // Breakpoint & dimensions calculation
   // Desktop (>= 1024px): 3 cards | Tablet (768px - 1023px): 2 cards | Mobile (< 768px): 1 card
   const isMobile = viewportWidth > 0 ? viewportWidth < 768 : false;
@@ -488,144 +513,248 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
         </div>
       </div>
 
-      {/* 5. Instructor Profile & Credentials Modal */}
+      {/* 5. Instructor Profile & Credentials View / Modal */}
       {selectedInstructor && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 overscroll-contain"
+          className="fixed inset-0 z-40 sm:z-50 flex flex-col justify-start sm:items-center sm:justify-center overflow-y-auto overscroll-contain bg-black/60 backdrop-blur-xs transition-opacity duration-200"
+          style={{
+            paddingTop: isMobile ? `${headerHeight}px` : undefined,
+          }}
           role="dialog"
           aria-modal="true"
           aria-labelledby="instructor-modal-title"
           onClick={() => setSelectedInstructor(null)}
         >
           <div
-            className="relative w-full max-w-lg rounded-2xl border border-border bg-card text-card-foreground shadow-2xl p-5 sm:p-7 overflow-hidden max-h-[90vh] overflow-y-auto overscroll-contain"
+            className="relative w-full max-w-full sm:max-w-xl sm:min-h-0 bg-card text-card-foreground shadow-2xl p-4 sm:p-7 rounded-t-3xl sm:rounded-2xl border-t border-border sm:border max-h-none sm:max-h-[88vh] overflow-visible sm:overflow-y-auto flex flex-col justify-between my-0 sm:my-auto"
+            style={{
+              minHeight: isMobile ? `calc(100dvh - ${headerHeight}px)` : undefined,
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close Button: 44px touch area */}
+            {/* Mobile Sticky Sub-header Bar (Visible on mobile only) */}
+            <div className="sticky top-0 z-30 -mx-4 -mt-4 px-4 py-3 bg-card/95 backdrop-blur-md border-b border-border flex items-center justify-between sm:hidden shadow-xs">
+              <button
+                type="button"
+                onClick={() => setSelectedInstructor(null)}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground py-2 px-1 min-h-[44px] cursor-pointer"
+                aria-label="Back to instructors fleet"
+              >
+                <ChevronLeft className="w-4 h-4 text-primary shrink-0" />
+                <span>Back to Fleet</span>
+              </button>
+
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
+                  {selectedInstructor.grade || "Grade A ADI"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedInstructor(null)}
+                  className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  aria-label="Close instructor profile"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Desktop Close Button (Visible on sm+ screens) */}
             <button
               type="button"
               onClick={() => setSelectedInstructor(null)}
-              className="absolute top-4 right-4 p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+              className="hidden sm:flex absolute top-4 right-4 p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer z-20 min-h-[44px] min-w-[44px] items-center justify-center"
               aria-label="Close instructor profile"
             >
               <X className="w-5 h-5" />
             </button>
 
-            {/* Profile Header */}
-            <div className="flex items-start gap-4 pr-8">
-              <img
-                src={selectedInstructor.avatar}
-                alt={selectedInstructor.name}
-                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover ring-2 ring-primary/30 shrink-0"
-              />
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3
-                    id="instructor-modal-title"
-                    className="text-lg sm:text-xl font-bold text-foreground truncate"
-                  >
-                    {selectedInstructor.name}
-                  </h3>
-                  <span className="rounded bg-muted px-2 py-0.5 font-mono text-[10px] font-bold text-muted-foreground border border-border shrink-0">
+            <div>
+              {/* Mobile Hero Image: Responsive full width card */}
+              <div className="sm:hidden relative w-full aspect-[16/10] rounded-2xl overflow-hidden bg-muted/60 mt-3 border border-border shadow-xs">
+                <img
+                  src={selectedInstructor.avatar}
+                  alt={`${selectedInstructor.name}, DVSA Grade A driving instructor`}
+                  className="w-full h-full object-cover object-top"
+                  loading="eager"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      selectedInstructor.name
+                    )}&background=4F46E5&color=fff&size=512`;
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-white text-[11px] font-semibold border border-white/10 shadow-xs">
+                    <ShieldCheck className="w-3.5 h-3.5 text-accent" />
+                    <span>{selectedInstructor.grade || "Grade A ADI"}</span>
+                  </span>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-white/90 font-mono text-[10px] font-bold border border-white/10">
                     {selectedInstructor.badgeNumber}
                   </span>
                 </div>
+              </div>
 
-                <div className="mt-1 flex items-center gap-2 text-xs flex-wrap">
-                  <div className="flex items-center gap-1 font-bold text-amber-500">
+              {/* Desktop Profile Header (Horizontal) */}
+              <div className="hidden sm:flex items-start gap-4 pr-10">
+                <img
+                  src={selectedInstructor.avatar}
+                  alt={selectedInstructor.name}
+                  className="w-20 h-20 rounded-2xl object-cover ring-2 ring-primary/30 shrink-0"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      selectedInstructor.name
+                    )}&background=4F46E5&color=fff&size=512`;
+                  }}
+                />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3
+                      id="instructor-modal-title"
+                      className="text-lg sm:text-xl font-bold text-foreground truncate"
+                    >
+                      {selectedInstructor.name}
+                    </h3>
+                    <span className="rounded bg-muted px-2 py-0.5 font-mono text-[10px] font-bold text-muted-foreground border border-border shrink-0">
+                      {selectedInstructor.badgeNumber}
+                    </span>
+                  </div>
+
+                  <div className="mt-1 flex items-center gap-2 text-xs flex-wrap">
+                    <div className="flex items-center gap-1 font-bold text-amber-500">
+                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                      <span>{selectedInstructor.rating.toFixed(1)}</span>
+                    </div>
+                    <span className="text-muted-foreground font-medium">
+                      ({selectedInstructor.totalPasses} verified passes)
+                    </span>
+                  </div>
+
+                  <div className="mt-1 text-xs text-primary font-semibold">
+                    {selectedInstructor.grade || "DVSA Grade A Approved Driving Instructor"}
+                  </div>
+                </div>
+              </div>
+
+              {/* Mobile Profile Header Info (Below Mobile Hero Image) */}
+              <div className="sm:hidden mt-3.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-success/10 text-success border border-success/20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                    AVAILABLE FOR BOOKING
+                  </span>
+                  <span className="rounded bg-muted px-2 py-0.5 font-mono text-[10px] font-bold text-muted-foreground border border-border">
+                    DVSA Certified
+                  </span>
+                </div>
+
+                <h3
+                  id="instructor-modal-title-mobile"
+                  className="text-2xl font-extrabold text-foreground mt-2 break-words leading-tight"
+                >
+                  {selectedInstructor.name}
+                </h3>
+                <p className="text-xs text-muted-foreground font-medium mt-0.5">
+                  {selectedInstructor.grade || "DVSA Grade A Approved Driving Instructor"}
+                </p>
+
+                <div className="mt-2.5 flex items-center gap-2 text-xs flex-wrap">
+                  <div className="flex items-center gap-1 font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20">
                     <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                     <span>{selectedInstructor.rating.toFixed(1)}</span>
                   </div>
                   <span className="text-muted-foreground font-medium">
-                    ({selectedInstructor.totalPasses} verified passes)
+                    {selectedInstructor.totalPasses} verified passes
+                  </span>
+                  <span className="text-muted-foreground/40">•</span>
+                  <span className="text-muted-foreground text-[11px]">
+                    {selectedInstructor.activeStudents} active learners
                   </span>
                 </div>
+              </div>
 
-                <div className="mt-1 text-xs text-primary font-semibold">
-                  {selectedInstructor.grade || "DVSA Grade A Approved Driving Instructor"}
+              {/* Vehicle & Specs (Responsive, wrapping, min-w-0) */}
+              <div className="mt-5 rounded-2xl bg-surface-secondary/70 p-4 border border-border w-full min-w-0">
+                <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
+                  <Car className="w-4 h-4 text-primary shrink-0" />
+                  <span>Dual-Control Fleet Vehicle:</span>
                 </div>
-              </div>
-            </div>
-
-            {/* Vehicle & Specs */}
-            <div className="mt-5 rounded-xl bg-surface-secondary/70 p-4 border border-border">
-              <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
-                <Car className="w-4 h-4 text-primary" />
-                <span>Dual-Control Fleet Vehicle:</span>
-              </div>
-              <p className="mt-1 text-xs text-muted-foreground font-medium">
-                {selectedInstructor.vehicle}
-              </p>
-              <div className="mt-2.5 flex items-center gap-2 flex-wrap">
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
-                  {selectedInstructor.transmission === "BOTH"
-                    ? "Dual Transmission"
-                    : `${selectedInstructor.transmission} Specialist`}
-                </span>
-                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-success">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  Available for booking
-                </span>
-              </div>
-            </div>
-
-            {/* Bio */}
-            {selectedInstructor.bio && (
-              <div className="mt-5">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  About Instructor
-                </h4>
-                <p className="mt-1.5 text-xs sm:text-sm text-foreground leading-relaxed">
-                  {selectedInstructor.bio}
+                <p className="mt-1.5 text-xs sm:text-sm font-bold text-foreground break-words leading-snug">
+                  {selectedInstructor.vehicle}
                 </p>
-              </div>
-            )}
-
-            {/* Qualifications */}
-            {selectedInstructor.qualifications && selectedInstructor.qualifications.length > 0 && (
-              <div className="mt-5">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Accreditations &amp; Certifications
-                </h4>
-                <ul className="mt-2 space-y-1.5 text-xs text-foreground">
-                  {selectedInstructor.qualifications.map((q, i) => (
-                    <li key={i} className="flex items-center gap-2">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-success shrink-0" />
-                      <span>{q}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Areas Covered */}
-            {selectedInstructor.areas && selectedInstructor.areas.length > 0 && (
-              <div className="mt-5">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Test Centers &amp; Areas Covered
-                </h4>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {selectedInstructor.areas.map((a, i) => (
-                    <span
-                      key={i}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-muted text-foreground text-[11px] font-medium border border-border"
-                    >
-                      <MapPin className="w-3 h-3 text-primary" />
-                      {a}
-                    </span>
-                  ))}
+                <div className="mt-3 flex items-center gap-2 flex-wrap">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
+                    {selectedInstructor.transmission === "BOTH"
+                      ? "Dual Transmission"
+                      : `${selectedInstructor.transmission} Specialist`}
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-success bg-success/10 px-2 py-0.5 rounded-md border border-success/20">
+                    <CheckCircle2 className="w-3 h-3 text-success shrink-0" />
+                    He-Man Dual Controls Fitted
+                  </span>
                 </div>
               </div>
-            )}
 
-            {/* Modal Bottom CTA */}
-            <div className="mt-7 pt-5 border-t border-border flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
+              {/* Bio */}
+              {selectedInstructor.bio && (
+                <div className="mt-5">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground font-mono">
+                    About Instructor
+                  </h4>
+                  <p className="mt-2 text-xs sm:text-sm text-foreground/90 leading-relaxed break-words">
+                    {selectedInstructor.bio}
+                  </p>
+                </div>
+              )}
+
+              {/* Qualifications */}
+              {selectedInstructor.qualifications && selectedInstructor.qualifications.length > 0 && (
+                <div className="mt-5">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground font-mono">
+                    Accreditations &amp; Certifications
+                  </h4>
+                  <ul className="mt-2 space-y-2 text-xs text-foreground">
+                    {selectedInstructor.qualifications.map((q, i) => (
+                      <li key={i} className="flex items-start gap-2 leading-relaxed">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-success shrink-0 mt-0.5" />
+                        <span className="break-words">{q}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Areas Covered */}
+              {selectedInstructor.areas && selectedInstructor.areas.length > 0 && (
+                <div className="mt-5">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground font-mono">
+                    Test Centres &amp; Areas Covered
+                  </h4>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {selectedInstructor.areas.map((a, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-muted text-foreground text-[11px] font-medium border border-border"
+                      >
+                        <MapPin className="w-3 h-3 text-primary shrink-0" />
+                        <span>{a}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Action Buttons: Stacked on mobile with 44px min touch targets; side-by-side on sm+ */}
+            <div className="mt-8 pt-5 border-t border-border flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3 pb-8 sm:pb-0">
               <button
                 type="button"
                 onClick={() => setSelectedInstructor(null)}
-                className="w-full sm:w-auto px-4 py-2.5 min-h-[44px] rounded-xl border border-border bg-card text-foreground hover:bg-muted text-xs font-semibold transition-colors cursor-pointer"
+                className="w-full sm:w-auto px-5 py-3 min-h-[44px] rounded-xl border border-border bg-surface-secondary text-foreground hover:bg-muted text-xs sm:text-sm font-semibold transition-colors cursor-pointer order-2 sm:order-1"
               >
-                Close
+                Close Profile
               </button>
 
               <BookLessonButton
@@ -636,11 +765,11 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                 }
                 source={`instructor-modal-${selectedInstructor.name.toLowerCase().replace(/\s+/g, "-")}`}
                 onClick={() => setSelectedInstructor(null)}
-                className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-5 py-2.5 min-h-[44px] rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 min-h-[44px] rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground text-xs sm:text-sm font-bold shadow-xs transition-colors cursor-pointer order-1 sm:order-2"
               >
-                <Sparkles className="w-3.5 h-3.5" />
+                <Sparkles className="w-4 h-4 shrink-0" />
                 <span>Book Lessons With {selectedInstructor.name.split(" ")[0]}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-4 h-4 shrink-0" />
               </BookLessonButton>
             </div>
           </div>
