@@ -1,11 +1,9 @@
-"use client";
-
 import React from "react";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 interface SectionHeaderProps {
   eyebrow?: string;
-  icon?: React.ComponentType<{ className?: string }>;
+  icon?: React.ReactNode;
   title: string;
   titleHighlight?: string;
   subtitle?: string;
@@ -16,7 +14,7 @@ interface SectionHeaderProps {
 
 export function SectionHeader({
   eyebrow,
-  icon: Icon,
+  icon,
   title,
   titleHighlight,
   subtitle,
@@ -38,7 +36,7 @@ export function SectionHeader({
               centered ? "" : "self-start"
             }`}
           >
-            {Icon && <Icon className="w-3.5 h-3.5 shrink-0" />}
+            {icon && <span className="inline-flex shrink-0">{icon}</span>}
             <span>{eyebrow}</span>
           </div>
         </ScrollReveal>

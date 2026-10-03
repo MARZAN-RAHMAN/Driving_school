@@ -119,7 +119,7 @@ export default async function HomePage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader
               eyebrow="MANCHESTER COVERAGE"
-              icon={MapPin}
+              icon={<MapPin className="w-3.5 h-3.5" />}
               title="Designated DVSA"
               titleHighlight="Driving Test Centers"
               subtitle="We conduct intensive tuition directly on the official published test routes of your target test center."
@@ -199,7 +199,7 @@ export default async function HomePage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader
               eyebrow="VERIFIED TEST RESULTS"
-              icon={Award}
+              icon={<Award className="w-3.5 h-3.5" />}
               title="Recent Student"
               titleHighlight="Pass Stories"
               subtitle={`Over 500 learners have earned their full UK driving licence with ${settings.businessName.split(" ")[0] || "NextDrive"}.`}
