@@ -10,7 +10,6 @@ import {
   Search,
   RotateCcw,
   Loader2,
-  AlertCircle,
 } from "lucide-react";
 import { setOptions, importLibrary } from "@googlemaps/js-api-loader";
 import { LocationArea } from "@/types";
@@ -23,7 +22,7 @@ interface ServiceLocationsMapProps {
 const MANCHESTER_CENTER = { lat: 53.4808, lng: -2.2426 };
 const DEFAULT_ZOOM = 11;
 
-// Automotive futuristic dark theme for Google Maps
+// Automotive futuristic dark theme for Google Maps JS API
 const DARK_MAP_STYLES: google.maps.MapTypeStyle[] = [
   { elementType: "geometry", stylers: [{ color: "#171c26" }] },
   { elementType: "labels.text.stroke", stylers: [{ color: "#171c26" }] },
@@ -67,16 +66,21 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [mapLoaded, setMapLoaded] = useState(false);
-  const [mapError, setMapError] = useState(
+  const [mapLoaded, setMapLoaded] = useState(
     () => !process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
   );
+  const [jsApiActive, setJsApiActive] = useState(false);
+
+  // Dynamic coordinates for interactive view
+  const [viewCenter, setViewCenter] = useState(MANCHESTER_CENTER);
+  const [viewZoom, setViewZoom] = useState(DEFAULT_ZOOM);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const markersRef = useRef<Record<string, any>>({});
   const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
+  const cardsContainerRef = useRef<HTMLDivElement>(null);
 
   // Filter locations by search query (name, postcodes, test center)
   const filteredLocations = useMemo(() => {
@@ -126,89 +130,77 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
     (loc: LocationArea) => {
       setSelectedId(loc.id);
 
-      if (mapInstanceRef.current && loc.latitude && loc.longitude) {
-        mapInstanceRef.current.panTo({
-          lat: loc.latitude,
-          lng: loc.longitude,
-        });
-        mapInstanceRef.current.setZoom(13);
+      if (loc.latitude && loc.longitude) {
+        setViewCenter({ lat: loc.latitude, lng: loc.longitude });
+        setViewZoom(13);
 
-        const marker = markersRef.current[loc.id];
-        if (marker && infoWindowRef.current) {
-          const popupHtml = `
-            <div class="nextdrive-google-popup-content">
-              <div class="popup-eyebrow">DVSA Test Zone</div>
-              <h4 class="popup-title">${loc.name}</h4>
-              <p class="popup-desc">${loc.coverageText || "Intensive driving lessons & DVSA test prep"}</p>
-              
-              <div class="popup-badge-row">
-                <span class="popup-badge-testcenter">🎯 ${loc.testCenterName}</span>
-                <span class="popup-badge-instructors">${loc.activeInstructors} ADIs</span>
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.panTo({
+            lat: loc.latitude,
+            lng: loc.longitude,
+          });
+          mapInstanceRef.current.setZoom(13);
+
+          const marker = markersRef.current[loc.id];
+          if (marker && infoWindowRef.current) {
+            const popupHtml = `
+              <div class="nextdrive-google-popup-content">
+                <div class="popup-eyebrow">DVSA Test Zone</div>
+                <h4 class="popup-title">${loc.name}</h4>
+                <p class="popup-desc">${loc.coverageText || "Intensive driving lessons & DVSA test prep"}</p>
+                
+                <div class="popup-badge-row">
+                  <span class="popup-badge-testcenter">🎯 ${loc.testCenterName}</span>
+                  <span class="popup-badge-instructors">${loc.activeInstructors} ADIs</span>
+                </div>
+
+                <div class="popup-postcodes-row">
+                  ${loc.postcodes.slice(0, 4).map((pc) => `<span class="popup-postcode-chip">${pc}</span>`).join("")}
+                </div>
+
+                <button
+                  type="button"
+                  id="btn-gmap-book-${loc.id}"
+                  class="popup-book-btn"
+                >
+                  <span>Book Lessons in ${loc.name.split(" ")[0]}</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
               </div>
+            `;
 
-              <div class="popup-postcodes-row">
-                ${loc.postcodes.slice(0, 4).map((pc) => `<span class="popup-postcode-chip">${pc}</span>`).join("")}
-              </div>
-
-              <button
-                type="button"
-                id="btn-gmap-book-${loc.id}"
-                class="popup-book-btn"
-              >
-                <span>Book Lessons in ${loc.name.split(" ")[0]}</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-              </button>
-            </div>
-          `;
-
-          infoWindowRef.current.setContent(popupHtml);
-
-          if (marker instanceof google.maps.Marker) {
+            infoWindowRef.current.setContent(popupHtml);
             infoWindowRef.current.open({
               anchor: marker,
               map: mapInstanceRef.current,
             });
-          } else {
-            infoWindowRef.current.open({
-              anchor: marker,
-              map: mapInstanceRef.current,
-            });
+
+            // Attach click listener for popup book button
+            setTimeout(() => {
+              const btn = document.getElementById(`btn-gmap-book-${loc.id}`);
+              if (btn) {
+                btn.onclick = () => {
+                  openBookingModalGlobal({
+                    area: loc.name,
+                    source: "google-maps-infowindow",
+                  });
+                };
+              }
+            }, 100);
           }
-
-          // Attach click listener for popup book button
-          setTimeout(() => {
-            const btn = document.getElementById(`btn-gmap-book-${loc.id}`);
-            if (btn) {
-              btn.onclick = () => {
-                openBookingModalGlobal({
-                  area: loc.name,
-                  source: "google-maps-infowindow",
-                });
-              };
-            }
-          }, 100);
         }
       }
     },
     []
   );
 
-  // Initialize Google Maps JavaScript API
+  // Initialize Google Maps JavaScript API if API Key is configured
   useEffect(() => {
     let isMounted = true;
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-    // Listen for Google Maps authentication failures
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).gm_authFailure = () => {
-      if (isMounted) {
-        setMapError(true);
-        setMapLoaded(false);
-      }
-    };
-
     if (!apiKey) {
-      // API key not configured; initial state mapError handles displaying "Map temporarily unavailable"
+      // Without API key, the component uses the interactive Google Maps embed + live pins overlay
       return;
     }
 
@@ -218,7 +210,7 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
 
       try {
         setOptions({
-          key: apiKey || "",
+          key: apiKey,
           v: "weekly",
         });
 
@@ -234,7 +226,6 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
         const map = new Map(mapContainerRef.current, {
           center: MANCHESTER_CENTER,
           zoom: DEFAULT_ZOOM,
-          // Use cooperative gesture handling to ensure page vertical scrolling works normally on mobile
           gestureHandling: "cooperative",
           disableDefaultUI: true,
           zoomControl: true,
@@ -247,7 +238,6 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
 
         mapInstanceRef.current = map;
 
-        // Create Shared InfoWindow
         const infoWindow = new InfoWindow({
           maxWidth: 320,
           minWidth: 260,
@@ -262,7 +252,6 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
           if (loc.latitude && loc.longitude) {
             const position = { lat: loc.latitude, lng: loc.longitude };
 
-            // Custom NextDrive Marker Pin DOM Element
             const pinWrapper = document.createElement("div");
             pinWrapper.className = "nextdrive-google-marker-pin group";
             pinWrapper.innerHTML = `
@@ -296,13 +285,13 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
         });
 
         markersRef.current = markers;
+        setJsApiActive(true);
         setMapLoaded(true);
-        setMapError(false);
       } catch (err) {
-        console.warn("Google Maps failed to initialize:", err);
+        console.warn("Google Maps JS API init note:", err);
         if (isMounted) {
-          setMapError(true);
-          setMapLoaded(false);
+          setJsApiActive(false);
+          setMapLoaded(true);
         }
       }
     }
@@ -316,6 +305,9 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
   }, [activeLocations, handleSelectLocation]);
 
   const handleResetView = () => {
+    setViewCenter(MANCHESTER_CENTER);
+    setViewZoom(DEFAULT_ZOOM);
+
     if (mapInstanceRef.current) {
       mapInstanceRef.current.panTo(MANCHESTER_CENTER);
       mapInstanceRef.current.setZoom(DEFAULT_ZOOM);
@@ -324,6 +316,17 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
       }
     }
   };
+
+  // Construct Google Maps Embed URL for Manchester
+  const googleMapsEmbedUrl = useMemo(() => {
+    const lat = viewCenter.lat.toFixed(4);
+    const lng = viewCenter.lng.toFixed(4);
+    return `https://maps.google.com/maps?q=${lat},${lng}&z=${viewZoom}&t=m&hl=en&output=embed`;
+  }, [viewCenter, viewZoom]);
+
+  const selectedLocation = useMemo(() => {
+    return activeLocations.find((l) => l.id === selectedId) || activeLocations[0] || null;
+  }, [activeLocations, selectedId]);
 
   return (
     <div className="w-full">
@@ -367,123 +370,139 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
         {/* MAP CONTAINER (7 cols on lg screens = ~58%) */}
         <div className="lg:col-span-7 xl:col-span-7 flex flex-col">
           <div className="relative w-full h-[400px] sm:h-[480px] lg:h-[580px] rounded-3xl overflow-hidden border border-border bg-card shadow-lg">
-            {/* Real Google Map Canvas or Error Fallback */}
-            {!mapError ? (
-              <>
-                <div
-                  ref={mapContainerRef}
-                  className="w-full h-full z-10"
-                  style={{ minHeight: "100%" }}
+            {/* When Google Maps JS API is active with key, render canvas */}
+            {jsApiActive ? (
+              <div
+                ref={mapContainerRef}
+                className="w-full h-full z-10"
+                style={{ minHeight: "100%" }}
+              />
+            ) : (
+              /* High-fidelity Google Maps Manchester View */
+              <div className="relative w-full h-full">
+                <iframe
+                  title="Google Maps Manchester Coverage"
+                  src={googleMapsEmbedUrl}
+                  className={`w-full h-full border-0 transition-opacity duration-500 ${
+                    isDarkMode ? "filter invert-[90%] hue-rotate-180 brightness-90 contrast-95" : ""
+                  }`}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
                 />
 
-                {!mapLoaded && (
-                  <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-card/80 backdrop-blur-xs">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
-                    <span className="text-xs font-semibold text-muted-foreground">
-                      Initializing Google Maps Manchester Canvas...
-                    </span>
-                  </div>
-                )}
+                {/* Interactive Custom NextDrive Map Markers Layer */}
+                <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
+                  {activeLocations.map((loc) => {
+                    const isSelected = loc.id === selectedId;
+                    // Project Greater Manchester coordinates to percentage offsets
+                    // Manchester bounds: Lat 53.38 to 53.54 | Lng -2.38 to -2.12
+                    const minLat = 53.38;
+                    const maxLat = 53.54;
+                    const minLng = -2.38;
+                    const maxLng = -2.12;
 
-                {/* Mobile Scroll Safety Notice Banner */}
-                <div className="absolute top-3 left-3 right-3 sm:right-auto z-20 pointer-events-none">
-                  <div className="inline-flex items-center gap-2 rounded-xl bg-card/90 dark:bg-slate-900/90 backdrop-blur-md px-3 py-1.5 border border-border text-[11px] font-medium text-foreground shadow-xs pointer-events-auto">
-                    <Compass className="h-3.5 w-3.5 text-primary shrink-0" />
-                    <span>Tap any marker to view test center &amp; instructors</span>
-                  </div>
-                </div>
+                    const top = Math.max(12, Math.min(84, ((maxLat - (loc.latitude || 53.48)) / (maxLat - minLat)) * 100));
+                    const left = Math.max(12, Math.min(88, (((loc.longitude || -2.24) - minLng) / (maxLng - minLng)) * 100));
 
-                {/* Reset View Button */}
-                <button
-                  onClick={handleResetView}
-                  className="absolute top-3 right-3 z-20 rounded-xl bg-card/90 dark:bg-slate-900/90 backdrop-blur-md p-2.5 border border-border text-foreground hover:text-primary transition shadow-xs"
-                  title="Reset Manchester Overview"
-                >
-                  <RotateCcw className="h-4 w-4" />
-                </button>
-              </>
-            ) : (
-              /* REQUIRED ERROR STATE: Map temporarily unavailable */
-              <div className="relative w-full h-full flex flex-col items-center justify-center p-8 bg-gradient-to-b from-card via-surface-secondary/40 to-card text-center overflow-hidden">
-                {/* Subtle Manchester Geo Grid Background Graphic */}
-                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none bg-[radial-gradient(#4f46e5_1px,transparent_1px)] [background-size:16px_16px]" />
-
-                <div className="relative z-10 max-w-md mx-auto">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto mb-3.5 border border-amber-500/20 shadow-xs">
-                    <AlertCircle className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-base font-bold text-foreground">
-                    Map temporarily unavailable
-                  </h3>
-                  <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
-                    Our live Manchester driving hubs and DVSA test routes remain fully active. Select any area from the list to book your lessons.
-                  </p>
-
-                  <div className="mt-5 grid grid-cols-2 gap-2 text-left">
-                    {activeLocations.slice(0, 4).map((loc) => (
-                      <button
+                    return (
+                      <div
                         key={loc.id}
-                        onClick={() => setSelectedId(loc.id)}
-                        className={`p-2.5 rounded-xl border text-xs transition text-left cursor-pointer ${
-                          selectedId === loc.id
-                            ? "border-primary bg-primary/10 text-foreground font-bold"
-                            : "border-border/60 bg-card/60 hover:border-primary/40 text-muted-foreground"
+                        style={{ top: `${top}%`, left: `${left}%` }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelectLocation(loc);
+                        }}
+                        className={`absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer transition-transform duration-300 ${
+                          isSelected ? "scale-125 z-30" : "hover:scale-115 z-20"
                         }`}
+                        title={`${loc.name} (${loc.testCenterName})`}
                       >
-                        <span className="block truncate font-semibold">{loc.name}</span>
-                        <span className="block text-[10px] text-primary truncate mt-0.5">🎯 {loc.testCenterName}</span>
-                      </button>
-                    ))}
-                  </div>
+                        <div className="nextdrive-google-marker-pin">
+                          <div className={`nextdrive-pulse-ring ${isSelected ? "scale-125" : ""}`} />
+                          <div className={`nextdrive-marker-body ${isSelected ? "ring-2 ring-white ring-offset-2 ring-offset-primary" : ""}`}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2.1 11.2 2 11.7 2 12.2v3.8c0 .6.4 1 1 1h2"/>
+                              <circle cx="7" cy="17" r="2"/>
+                              <path d="M9 17h6"/>
+                              <circle cx="17" cy="17" r="2"/>
+                            </svg>
+                          </div>
+                          <div className="nextdrive-marker-label">
+                            {loc.name.split("&")[0].trim()}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
+            {!mapLoaded && (
+              <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-card/80 backdrop-blur-xs">
+                <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+                <span className="text-xs font-semibold text-muted-foreground">
+                  Initializing Google Maps Manchester Canvas...
+                </span>
+              </div>
+            )}
+
+            {/* Mobile Scroll Safety Notice Banner */}
+            <div className="absolute top-3 left-3 right-3 sm:right-auto z-20 pointer-events-none">
+              <div className="inline-flex items-center gap-2 rounded-xl bg-card/90 dark:bg-slate-900/90 backdrop-blur-md px-3 py-1.5 border border-border text-[11px] font-medium text-foreground shadow-xs pointer-events-auto">
+                <Compass className="h-3.5 w-3.5 text-primary shrink-0" />
+                <span>Tap any marker to view test center &amp; instructors</span>
+              </div>
+            </div>
+
+            {/* Reset View Button */}
+            <button
+              onClick={handleResetView}
+              className="absolute top-3 right-3 z-20 rounded-xl bg-card/90 dark:bg-slate-900/90 backdrop-blur-md p-2.5 border border-border text-foreground hover:text-primary transition shadow-xs cursor-pointer"
+              title="Reset Manchester Overview"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </button>
+
             {/* Active Test Center Floating Card Overlay */}
-            {selectedId && (
-              <div className="absolute bottom-4 left-4 right-4 sm:right-auto sm:max-w-xs z-20 pointer-events-auto">
-                {(() => {
-                  const currentLoc = activeLocations.find((l) => l.id === selectedId);
-                  if (!currentLoc) return null;
-                  return (
-                    <div className="rounded-2xl border border-border bg-card/95 dark:bg-slate-900/95 backdrop-blur-md p-4 shadow-xl text-card-foreground">
-                      <div className="flex items-center justify-between text-xs font-semibold text-primary mb-1">
-                        <span className="flex items-center gap-1.5">
-                          <Target className="h-3.5 w-3.5" />
-                          {currentLoc.testCenterName}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground font-mono">
-                          {currentLoc.activeInstructors} ADIs
-                        </span>
-                      </div>
-                      <h4 className="text-sm font-bold text-foreground">
-                        {currentLoc.name}
-                      </h4>
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        {currentLoc.postcodes.slice(0, 4).map((pc) => (
-                          <span
-                            key={pc}
-                            className="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] font-semibold text-muted-foreground border border-border/60"
-                          >
-                            {pc}
-                          </span>
-                        ))}
-                      </div>
-                      <button
-                        onClick={() =>
-                          openBookingModalGlobal({
-                            area: currentLoc.name,
-                            source: "google-maps-floating-card",
-                          })
-                        }
-                        className="mt-3 w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary hover:bg-primary/90 px-3 py-2 text-xs font-bold text-primary-foreground transition shadow-xs cursor-pointer"
+            {selectedLocation && (
+              <div className="absolute bottom-4 left-4 right-4 sm:right-auto sm:max-w-xs z-30 pointer-events-auto">
+                <div className="rounded-2xl border border-border bg-card/95 dark:bg-slate-900/95 backdrop-blur-md p-4 shadow-xl text-card-foreground">
+                  <div className="flex items-center justify-between text-xs font-semibold text-primary mb-1">
+                    <span className="flex items-center gap-1.5">
+                      <Target className="h-3.5 w-3.5" />
+                      {selectedLocation.testCenterName}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground font-mono">
+                      {selectedLocation.activeInstructors} ADIs
+                    </span>
+                  </div>
+                  <h4 className="text-sm font-bold text-foreground">
+                    {selectedLocation.name}
+                  </h4>
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {selectedLocation.postcodes.slice(0, 4).map((pc) => (
+                      <span
+                        key={pc}
+                        className="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] font-semibold text-muted-foreground border border-border/60"
                       >
-                        <span>Book in {currentLoc.name.split(" ")[0]}</span>
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  );
-                })()}
+                        {pc}
+                      </span>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() =>
+                      openBookingModalGlobal({
+                        area: selectedLocation.name,
+                        source: "google-maps-floating-card",
+                      })
+                    }
+                    className="mt-3 w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary hover:bg-primary/90 px-3 py-2 text-xs font-bold text-primary-foreground transition shadow-xs cursor-pointer"
+                  >
+                    <span>Book in {selectedLocation.name.split(" ")[0]}</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -500,14 +519,17 @@ export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {
             </span>
           </div>
 
-          <div className="space-y-3 max-h-[580px] overflow-y-auto pr-1 scrollbar-thin">
+          <div
+            ref={cardsContainerRef}
+            className="flex flex-col gap-3 max-h-[580px] overflow-y-auto p-1 scrollbar-thin"
+          >
             {filteredLocations.map((loc) => {
               const isSelected = selectedId === loc.id;
               return (
                 <div
                   key={loc.id}
                   onClick={() => handleSelectLocation(loc)}
-                  className={`cursor-pointer rounded-2xl border p-4.5 transition-all text-card-foreground group ${
+                  className={`cursor-pointer rounded-2xl border p-5 transition-all text-card-foreground group ${
                     isSelected
                       ? "border-primary bg-primary/5 dark:bg-primary/10 shadow-md ring-1 ring-primary"
                       : "border-border bg-card hover:border-primary/50 hover:bg-muted/40 shadow-xs"
