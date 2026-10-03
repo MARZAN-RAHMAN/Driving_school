@@ -207,40 +207,35 @@ export async function Footer({
             </ul>
           </div>
 
-          {/* Column 3: Platform Governance */}
+          {/* Column 3: Academy & Support Links */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">
-              Quick Links
+              Academy &amp; Support
             </h3>
             <ul className="mt-4 space-y-2.5 text-xs text-muted-foreground">
               <li>
+                <Link href="/#reviews" className="hover:text-primary transition">
+                  Pass Stories &amp; Reviews
+                </Link>
+              </li>
+              <li>
+                <Link href="/#curriculum" className="hover:text-primary transition">
+                  DVSA Training Syllabus
+                </Link>
+              </li>
+              <li>
+                <Link href="/#faqs" className="hover:text-primary transition">
+                  Frequently Asked Questions
+                </Link>
+              </li>
+              <li>
                 <Link href="/contact" className="hover:text-primary transition">
-                  Contact Us
+                  Contact &amp; Inquiries
                 </Link>
               </li>
               <li>
                 <Link href="/login" className="hover:text-primary transition">
-                  Student / Instructor Login
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin" className="hover:text-primary transition">
-                  Admin Control Center
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin/cms" className="hover:text-primary transition">
-                  Homepage CMS
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin/settings" className="hover:text-primary transition">
-                  Business Settings &amp; Rates
-                </Link>
-              </li>
-              <li>
-                <Link href="/api/health" target="_blank" className="hover:text-primary transition">
-                  System Health Telemetry
+                  Student &amp; Instructor Login
                 </Link>
               </li>
             </ul>

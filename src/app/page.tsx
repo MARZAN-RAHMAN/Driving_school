@@ -1,23 +1,17 @@
-/* eslint-disable @next/next/no-img-element */
 import React from "react";
-import Link from "next/link";
 import {
   Star,
   CheckCircle2,
   MapPin,
-  Phone,
-  ArrowRight,
-  Zap,
-  ExternalLink,
   Award,
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { BookLessonButton } from "@/components/booking/BookLessonButton";
 import { InstructorsCarousel } from "@/components/instructor/InstructorsCarousel";
 import { NextDriveMethod } from "@/components/home/NextDriveMethod";
 import { HeroSection } from "@/components/home/HeroSection";
 import { CoursePackagesSection } from "@/components/home/CoursePackagesSection";
+import { FinalCtaSection } from "@/components/home/FinalCtaSection";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { FaqAccordion } from "@/components/home/FaqAccordion";
 import { AmbientHalo } from "@/components/ui/AmbientHalo";
@@ -288,100 +282,13 @@ export default async function HomePage() {
         </section>
 
         {/* ========================================================================= */}
-        {/* 8. MINIMALIST HIGH-IMPACT CALL TO ACTION (#contact) */}
+        {/* 8. PREMIUM FINAL CALL TO ACTION (#contact) */}
         {/* ========================================================================= */}
-        <section id="contact" className="relative py-20 lg:py-28 bg-card border-b border-border text-card-foreground overflow-hidden">
-          {/* Ambient background halo */}
-          <AmbientHalo position="center" variant="tricolor" size="full" />
-
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-            <ScrollReveal animation="fade-up">
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-4 border border-primary/20 backdrop-blur-xs">
-                <Zap className="w-3.5 h-3.5 fill-current" />
-                <span>START YOUR JOURNEY</span>
-              </div>
-              <h2 className="text-3xl font-extrabold tracking-tight sm:text-5xl text-foreground">
-                Ready to Get Behind the Wheel?
-              </h2>
-              <p className="mt-4 text-sm sm:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
-                Book your introductory 2-hour assessment lesson today with our Grade A certified instructors across Manchester and begin your journey to a full UK driving licence.
-              </p>
-
-              <div className="mt-8 flex flex-col items-center justify-center gap-3.5 sm:flex-row">
-                <BookLessonButton
-                  course="Introductory 2-Hour Assessment"
-                  source="bottom-cta"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-7 py-4 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition hover:bg-primary-hover sm:w-auto cursor-pointer"
-                >
-                  Book Assessment Lesson (£{assessmentPrice})
-                  <ArrowRight className="h-4 w-4" />
-                </BookLessonButton>
-                <a
-                  href={phoneHref}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface-secondary/80 px-7 py-4 text-sm font-semibold text-foreground shadow-xs transition hover:bg-muted sm:w-auto"
-                >
-                  <Phone className="h-4 w-4 text-primary" />
-                  Call Hotline: {settings.phone}
-                </a>
-              </div>
-
-              {/* High-trust proof badges */}
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-success" />
-                  Grade A DVSA Instructors
-                </span>
-                <span className="text-muted-foreground/30">•</span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-success" />
-                  Dual-Control Modern Fleet
-                </span>
-                <span className="text-muted-foreground/30">•</span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-success" />
-                  Door-to-Door Manchester Pickup
-                </span>
-              </div>
-            </ScrollReveal>
-          </div>
-        </section>
-
-        {/* ========================================================================= */}
-        {/* 9. ENGINEERING SPECIFICATIONS & ARCHITECTURE STATUS (Preserved) */}
-        {/* ========================================================================= */}
-        <section id="architecture" className="py-12 bg-surface-secondary/60 border-t border-border">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <ScrollReveal animation="fade">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                    Full-Stack Architecture &amp; System Telemetry
-                  </span>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Next.js App Router • Prisma PostgreSQL Models • HMAC Edge RBAC • Zero TypeScript Errors
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <Link
-                    href="/admin"
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground shadow-xs hover:bg-muted transition-colors"
-                  >
-                    Admin Dashboard
-                  </Link>
-                  <Link
-                    href="/api/health"
-                    target="_blank"
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-xs hover:bg-primary-hover transition-colors"
-                  >
-                    Live Health API
-                    <ExternalLink className="h-3 w-3" />
-                  </Link>
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
-        </section>
+        <FinalCtaSection
+          phone={settings.phone}
+          phoneHref={phoneHref}
+          assessmentPrice={assessmentPrice}
+        />
       </main>
 
       <Footer settings={settings} packages={packages} locations={locations} />
