@@ -16,6 +16,8 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { FaqAccordion } from "@/components/home/FaqAccordion";
 import { AmbientHalo } from "@/components/ui/AmbientHalo";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { ServiceLocationsMap } from "@/components/home/ServiceLocationsMap";
+import { VisitorBookingPopupTrigger } from "@/components/booking/VisitorBookingPopupTrigger";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -114,72 +116,15 @@ export default async function HomePage() {
             <SectionHeader
               eyebrow="MANCHESTER COVERAGE"
               icon={<MapPin className="w-3.5 h-3.5" />}
-              title="Designated DVSA"
-              titleHighlight="Driving Test Centers"
-              subtitle="We conduct intensive tuition directly on the official published test routes of your target test center."
+              title="Interactive Service"
+              titleHighlight="Locations & Test Centers"
+              subtitle="Explore our active Greater Manchester coverage zones, designated DVSA test hubs, and live instructor dispatch."
             />
 
-            <div className="mt-12 sm:mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {locations.map((loc, idx) => (
-                <ScrollReveal
-                  key={loc.id}
-                  animation="fade-up"
-                  delay={idx * 75}
-                  className="h-full"
-                >
-                  <div className="relative rounded-2xl border border-border bg-card p-6 shadow-xs card-interactive flex flex-col justify-between text-card-foreground h-full overflow-hidden group">
-                    {/* Top ambient highlight on hover */}
-                    <div
-                      className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      aria-hidden="true"
-                    />
-
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
-                          <MapPin className="h-4 w-4" />
-                        </div>
-                        <h3 className="text-sm font-bold text-card-foreground group-hover:text-primary transition-colors">
-                          {loc.name}
-                        </h3>
-                      </div>
-
-                      <div className="mt-4 rounded-xl bg-surface-secondary/70 p-3 border border-border/60">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground block font-mono">
-                          Official Test Center
-                        </span>
-                        <span className="text-xs font-semibold text-foreground mt-0.5 block">
-                          🎯 {loc.testCenterName}
-                        </span>
-                      </div>
-
-                      <div className="mt-4">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground block mb-2 font-mono">
-                          Postcodes Covered
-                        </span>
-                        <div className="flex flex-wrap gap-1.5">
-                          {loc.postcodes.map((pc) => (
-                            <span
-                              key={pc}
-                              className="rounded-md bg-muted px-2 py-0.5 font-mono text-[10px] font-semibold text-foreground border border-border/60"
-                            >
-                              {pc}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-6 pt-3.5 border-t border-border flex items-center justify-between text-[11px] text-muted-foreground">
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
-                        <span>{loc.activeInstructors} ADIs on duty</span>
-                      </span>
-                      <span className="font-semibold text-primary">Test Routes Ready</span>
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
+            <div className="mt-10 sm:mt-14">
+              <ScrollReveal animation="fade-up">
+                <ServiceLocationsMap locations={locations} />
+              </ScrollReveal>
             </div>
           </div>
         </section>
@@ -289,6 +234,9 @@ export default async function HomePage() {
           phoneHref={phoneHref}
           assessmentPrice={assessmentPrice}
         />
+
+        {/* Timed visitor booking popup trigger (fires once per session after 10s) */}
+        <VisitorBookingPopupTrigger delayMs={10000} />
       </main>
 
       <Footer settings={settings} packages={packages} locations={locations} />

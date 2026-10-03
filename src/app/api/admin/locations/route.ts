@@ -21,11 +21,33 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const postcodes = Array.isArray(body.postcodes)
+      ? body.postcodes
+      : body.postcodes
+      ? body.postcodes.split(",").map((p: string) => p.trim().toUpperCase()).filter(Boolean)
+      : [];
+
+    const slug =
+      body.slug ||
+      body.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+
     const location = await db.createLocation({
-      name: body.name,
-      postcodes: Array.isArray(body.postcodes) ? body.postcodes : (body.postcodes ? body.postcodes.split(",").map((p: string) => p.trim()) : []),
+      name: body.name.trim(),
+      slug,
+      description: body.description?.trim() || "",
+      coverageText: body.coverageText?.trim() || "DVSA test route & intensive tuition",
+      postcodes,
       activeInstructors: Number(body.activeInstructors) || 1,
-      testCenterName: body.testCenterName,
+      testCenterName: body.testCenterName.trim(),
+      latitude: body.latitude !== undefined && body.latitude !== "" ? Number(body.latitude) : 53.4808,
+      longitude: body.longitude !== undefined && body.longitude !== "" ? Number(body.longitude) : -2.2426,
+      isActive: body.isActive !== undefined ? Boolean(body.isActive) : true,
+      displayOrder: body.displayOrder !== undefined ? Number(body.displayOrder) : 10,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     });
 
     await db.addAuditLog({
@@ -58,10 +80,35 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    const updated = await db.updateLocation(body.id, {
+    const updatePayload: Record<string, unknown> = {
       ...body,
-      postcodes: Array.isArray(body.postcodes) ? body.postcodes : (body.postcodes ? body.postcodes.split(",").map((p: string) => p.trim()) : undefined),
-    });
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (body.postcodes !== undefined) {
+      updatePayload.postcodes = Array.isArray(body.postcodes)
+        ? body.postcodes
+        : body.postcodes
+        ? body.postcodes.split(",").map((p: string) => p.trim().toUpperCase()).filter(Boolean)
+        : [];
+    }
+    if (body.latitude !== undefined && body.latitude !== "") {
+      updatePayload.latitude = Number(body.latitude);
+    }
+    if (body.longitude !== undefined && body.longitude !== "") {
+      updatePayload.longitude = Number(body.longitude);
+    }
+    if (body.activeInstructors !== undefined) {
+      updatePayload.activeInstructors = Number(body.activeInstructors);
+    }
+    if (body.displayOrder !== undefined) {
+      updatePayload.displayOrder = Number(body.displayOrder);
+    }
+    if (body.isActive !== undefined) {
+      updatePayload.isActive = Boolean(body.isActive);
+    }
+
+    const updated = await db.updateLocation(body.id, updatePayload);
 
     if (!updated) {
       return NextResponse.json(

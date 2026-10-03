@@ -460,30 +460,82 @@ const initialLocations: LocationArea[] = [
   {
     id: "loc_01",
     name: "Central & North Manchester",
+    slug: "central-north-manchester",
+    description: "Professional driving tuition across Manchester City Centre, Northern Quarter, Ancoats, Cheetham Hill, and North Manchester test routes.",
     postcodes: ["M1", "M2", "M3", "M4", "M8"],
     activeInstructors: 4,
     testCenterName: "Cheetham Hill DTC",
+    latitude: 53.4808,
+    longitude: -2.2426,
+    coverageText: "Manual & Automatic driving lessons",
+    isActive: true,
+    displayOrder: 1,
+    createdAt: "2025-01-10T08:00:00Z",
+    updatedAt: "2025-01-10T08:00:00Z",
   },
   {
     id: "loc_02",
     name: "South Manchester & Didsbury",
+    slug: "south-manchester-didsbury",
+    description: "Door-to-door learner pickups across West Didsbury, Fallowfield, Withington, Chorlton, and South Manchester.",
     postcodes: ["M14", "M19", "M20", "M21"],
     activeInstructors: 5,
     testCenterName: "West Didsbury DTC",
+    latitude: 53.4167,
+    longitude: -2.2333,
+    coverageText: "Intensive courses & weekly tuition",
+    isActive: true,
+    displayOrder: 2,
+    createdAt: "2025-01-10T08:00:00Z",
+    updatedAt: "2025-01-10T08:00:00Z",
   },
   {
     id: "loc_03",
     name: "Trafford & Sale",
+    slug: "trafford-sale",
+    description: "Structured practical test preparation around Sale, Stretford, Old Trafford, Urmston, and Sale DTC routes.",
     postcodes: ["M32", "M33", "M16", "M17"],
     activeInstructors: 3,
     testCenterName: "Sale DTC",
+    latitude: 53.4244,
+    longitude: -2.3225,
+    coverageText: "Grade A instructor dual-control lessons",
+    isActive: true,
+    displayOrder: 3,
+    createdAt: "2025-01-10T08:00:00Z",
+    updatedAt: "2025-01-10T08:00:00Z",
   },
   {
     id: "loc_04",
     name: "Salford & Bury",
+    slug: "salford-bury",
+    description: "Expert instruction across Salford Quays, Eccles, Swinton, Prestwich, Whitefield, and Bury test center routes.",
     postcodes: ["M5", "M6", "M7", "BL9"],
     activeInstructors: 3,
     testCenterName: "Bury DTC",
+    latitude: 53.4875,
+    longitude: -2.2901,
+    coverageText: "DVSA mock test simulation & pass plus",
+    isActive: true,
+    displayOrder: 4,
+    createdAt: "2025-01-10T08:00:00Z",
+    updatedAt: "2025-01-10T08:00:00Z",
+  },
+  {
+    id: "loc_05",
+    name: "Stockport & Cheadle",
+    slug: "stockport-cheadle",
+    description: "High-pass-rate driving courses servicing Stockport town center, Cheadle, Bramhall, Hazel Grove, and Bredbury DTC.",
+    postcodes: ["SK1", "SK2", "SK3", "SK8"],
+    activeInstructors: 4,
+    testCenterName: "Bredbury DTC",
+    latitude: 53.4106,
+    longitude: -2.1575,
+    coverageText: "Manual & Automatic fleet coverage",
+    isActive: true,
+    displayOrder: 5,
+    createdAt: "2025-01-10T08:00:00Z",
+    updatedAt: "2025-01-10T08:00:00Z",
   },
 ];
 
@@ -1151,8 +1203,12 @@ class DatabaseService {
   }
 
   // Driving School: Service Locations
-  async getLocations(): Promise<LocationArea[]> {
-    return this.locations;
+  async getLocations(activeOnly?: boolean): Promise<LocationArea[]> {
+    let locs = [...this.locations];
+    if (activeOnly) {
+      locs = locs.filter((l) => l.isActive !== false);
+    }
+    return locs.sort((a, b) => (a.displayOrder || 99) - (b.displayOrder || 99));
   }
 
   // Driving School: Dashboard Summary

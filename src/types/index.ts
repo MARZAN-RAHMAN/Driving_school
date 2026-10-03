@@ -146,10 +146,19 @@ export interface LessonPackage {
 export interface LocationArea {
   id: string;
   name: string;
+  slug?: string;
+  description?: string;
   postcodes: string[];
   boroughs?: string;
   activeInstructors: number;
   testCenterName: string;
+  latitude?: number;
+  longitude?: number;
+  coverageText?: string;
+  isActive?: boolean;
+  displayOrder?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export type ProvisionalLicenceStatus = "Yes" | "No" | "Applying soon";

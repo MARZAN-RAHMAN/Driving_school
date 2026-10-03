@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const [lessonPackages, locations] = await Promise.all([
       db.getLessonPackages(),
-      db.getLocations(),
+      db.getLocations(true),
     ]);
 
     const courses = lessonPackages.map((pkg) => ({
