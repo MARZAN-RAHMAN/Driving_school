@@ -23,6 +23,23 @@ interface InstructorsCarouselProps {
   instructors: Instructor[];
 }
 
+/**
+ * Ensures instructor profile photos are framed as professional portraits
+ * with natural headroom, hair, neck, and shoulders, preventing aggressive
+ * CDN face-zooming or forehead/chin cropping.
+ */
+function getFramedAvatar(url?: string): string {
+  if (!url) return "";
+  if (url.includes("images.unsplash.com")) {
+    return url
+      .replace(/([?&])w=\d+/, "$1w=800")
+      .replace(/([?&])h=\d+/, "$1h=800")
+      .replace(/([?&])crop=faces(&|$)/g, "$1")
+      .replace(/[?&]$/, "");
+  }
+  return url;
+}
+
 export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
   // Only display active instructors
   const activeInstructors = instructors.filter(
@@ -340,14 +357,14 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                       : "border-border shadow-xs hover:border-primary/40 hover:shadow-md"
                   }`}
                 >
-                  {/* Instructor Image */}
-                  <div className="relative aspect-[16/11] sm:aspect-[4/3] w-full overflow-hidden bg-muted/60">
+                  {/* Instructor Image Frame: Consistent 4/3 portrait photography aspect ratio */}
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted/60">
                     <img
-                      src={inst.avatar}
+                      src={getFramedAvatar(inst.avatar)}
                       alt={imageAlt}
                       loading="lazy"
                       decoding="async"
-                      className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-cover object-[center_20%] transition-transform duration-500 sm:group-hover:scale-[1.02]"
                       onError={(e) => {
                         const target = e.currentTarget;
                         target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
@@ -356,40 +373,18 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                       }}
                     />
 
-                    {/* Subtle Overlay Gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-80" />
+                    {/* Subtle Overlay Gradient at bottom for badges readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent pointer-events-none" />
 
-                    {/* Floating Badges */}
-                    <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-white text-[10px] sm:text-[11px] font-semibold border border-white/10 shadow-xs">
-                        <ShieldCheck className="w-3.5 h-3.5 text-accent" />
-                        {inst.grade || "Grade A ADI"}
+                    {/* Bottom Badges: Grade A on left, ADI badge number on right (Headroom & face kept 100% clear) */}
+                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs gap-2">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-white text-[11px] font-semibold border border-white/15 shadow-xs">
+                        <ShieldCheck className="w-3.5 h-3.5 text-accent shrink-0" />
+                        <span>{inst.grade || "Grade A ADI"}</span>
                       </span>
-                    </div>
 
-                    <div className="absolute top-3 right-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-white/90 font-mono text-[10px] font-bold border border-white/10">
+                      <span className="inline-flex items-center px-2 py-1 rounded-lg bg-black/60 backdrop-blur-md text-white/90 font-mono text-[10px] font-bold border border-white/15 shadow-xs">
                         {inst.badgeNumber}
-                      </span>
-                    </div>
-
-                    {/* Vehicle pill on image: constrained to prevent overflow on 375px */}
-                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs gap-1.5">
-                      <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-card/90 dark:bg-card/90 backdrop-blur-md text-foreground text-[11px] sm:text-xs font-semibold shadow-xs min-w-0 max-w-[72%]">
-                        <Car className="w-3.5 h-3.5 text-primary shrink-0" />
-                        <span className="truncate">{inst.vehicle.replace(/\s*\(Dual Controls\)/i, "")}</span>
-                      </span>
-
-                      <span
-                        className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider backdrop-blur-md shrink-0 ${
-                          inst.transmission === "MANUAL"
-                            ? "bg-primary text-primary-foreground"
-                            : inst.transmission === "AUTOMATIC"
-                            ? "bg-secondary text-secondary-foreground"
-                            : "bg-accent text-accent-foreground"
-                        }`}
-                      >
-                        {inst.transmission}
                       </span>
                     </div>
                   </div>
@@ -403,9 +398,10 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                           <h3 className="text-lg sm:text-xl font-bold text-card-foreground group-hover:text-primary transition-colors truncate">
                             {inst.name}
                           </h3>
-                          <p className="text-xs text-muted-foreground font-medium mt-0.5">
-                            DVSA Certified Driving Instructor
-                          </p>
+                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium mt-1">
+                            <Car className="w-3.5 h-3.5 text-primary shrink-0" />
+                            <span className="truncate">{inst.vehicle.replace(/\s*\(Dual Controls\)/i, "")}</span>
+                          </div>
                         </div>
 
                         {/* Availability Status Badge */}
@@ -594,11 +590,11 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
 
             <div>
               {/* Mobile Hero Image: Responsive full width card */}
-              <div className="sm:hidden relative w-full aspect-[16/10] rounded-2xl overflow-hidden bg-muted/60 border border-border shadow-xs">
+              <div className="sm:hidden relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-muted/60 border border-border shadow-xs">
                 <img
-                  src={selectedInstructor.avatar}
+                  src={getFramedAvatar(selectedInstructor.avatar)}
                   alt={`${selectedInstructor.name}, DVSA Grade A driving instructor`}
-                  className="w-full h-full object-cover object-top"
+                  className="w-full h-full object-cover object-[center_20%]"
                   loading="eager"
                   onError={(e) => {
                     const target = e.currentTarget;
@@ -622,9 +618,9 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
               {/* Desktop Profile Header (Horizontal) */}
               <div className="hidden sm:flex items-start gap-4 pr-10">
                 <img
-                  src={selectedInstructor.avatar}
+                  src={getFramedAvatar(selectedInstructor.avatar)}
                   alt={selectedInstructor.name}
-                  className="w-20 h-20 rounded-2xl object-cover ring-2 ring-primary/30 shrink-0"
+                  className="w-20 h-20 rounded-2xl object-cover object-[center_20%] ring-2 ring-primary/30 shrink-0 shadow-xs"
                   onError={(e) => {
                     const target = e.currentTarget;
                     target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
