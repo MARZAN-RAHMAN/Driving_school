@@ -22,6 +22,11 @@ import {
   PopupFieldConfig,
   PopupAnalyticsEvent,
   PopupAnalyticsSummary,
+  FooterSettings,
+  FooterColumnItem,
+  FooterLinkItem,
+  FooterSocialItem,
+  FooterLegalLinkItem,
 } from "@/types";
 
 // Seeded In-Memory Database Repository with Real Relational Consistency
@@ -896,6 +901,12 @@ const initialBusinessSettings: BusinessSettings = {
     microsoft: false,
     x: false,
   },
+
+  developerCreditEnabled: true,
+  developerCreditText: "Designed & Developed by",
+  developerName: "Crftdev Technology",
+  developerUrl: "",
+  developerNewTab: true,
 };
 
 const initialAccounts: Account[] = [
@@ -1362,6 +1373,309 @@ export const initialPopupAnalyticsEvents: PopupAnalyticsEvent[] = [
   },
 ];
 
+export const initialFooterSettings: FooterSettings = {
+  id: "footer_main",
+  isEnabled: true,
+  status: "PUBLISHED",
+  publishedAt: "2026-10-06T12:00:00Z",
+  createdAt: "2026-10-01T00:00:00Z",
+  updatedAt: "2026-10-06T12:00:00Z",
+
+  showLogo: true,
+  logoUrl: "",
+  brandName: "NextDrive Academy",
+  tagline: "DVSA Certified • Manchester",
+  description:
+    "DVSA-approved professional driving tuition across Greater Manchester. Dual-control manual and automatic instruction with structured practical test preparation.",
+  useBusinessBrand: true,
+
+  columns: [
+    {
+      id: "col_courses",
+      title: "Tuition Courses",
+      isEnabled: true,
+      displayOrder: 1,
+      links: [
+        {
+          id: "link_intro",
+          label: "Introductory Assessment",
+          url: "/#courses",
+          linkType: "internal",
+          newTab: false,
+          isEnabled: true,
+          displayOrder: 1,
+        },
+        {
+          id: "link_beg",
+          label: "Complete Beginner 20hr",
+          url: "/#courses",
+          linkType: "internal",
+          newTab: false,
+          isEnabled: true,
+          displayOrder: 2,
+        },
+        {
+          id: "link_int",
+          label: "Test Ready Intensive 30hr",
+          url: "/#courses",
+          linkType: "internal",
+          newTab: false,
+          isEnabled: true,
+          displayOrder: 3,
+        },
+        {
+          id: "link_pass_plus",
+          label: "Pass Plus Certification",
+          url: "/#courses",
+          linkType: "internal",
+          newTab: false,
+          isEnabled: true,
+          displayOrder: 4,
+        },
+        {
+          id: "link_auto_ref",
+          label: "Automatic Refresher",
+          url: "/#courses",
+          linkType: "internal",
+          newTab: false,
+          isEnabled: true,
+          displayOrder: 5,
+        },
+      ],
+    },
+    {
+      id: "col_locations",
+      title: "Coverage & Centers",
+      isEnabled: true,
+      displayOrder: 2,
+      isLocationColumn: true,
+      links: [
+        {
+          id: "link_loc_1",
+          label: "Cheetham Hill Test Centre",
+          url: "/#locations",
+          linkType: "internal",
+          newTab: false,
+          isEnabled: true,
+          displayOrder: 1,
+        },
+        {
+          id: "link_loc_2",
+          label: "West Didsbury DTC",
+          url: "/#locations",
+          linkType: "internal",
+          newTab: false,
+          isEnabled: true,
+          displayOrder: 2,
+        },
+        {
+          id: "link_loc_3",
+          label: "Sale & Altrincham",
+          url: "/#locations",
+          linkType: "internal",
+          newTab: false,
+          isEnabled: true,
+          displayOrder: 3,
+        },
+        {
+          id: "link_loc_fleet",
+          label: "Our Certified ADI Fleet",
+          url: "/#instructors",
+          linkType: "internal",
+          newTab: false,
+          isEnabled: true,
+          displayOrder: 4,
+        },
+      ],
+    },
+    {
+      id: "col_support",
+      title: "Academy & Support",
+      isEnabled: true,
+      displayOrder: 3,
+      links: [
+        {
+          id: "link_reviews",
+          label: "Pass Stories & Reviews",
+          url: "/#reviews",
+          linkType: "internal",
+          newTab: false,
+          isEnabled: true,
+          displayOrder: 1,
+        },
+        {
+          id: "link_syllabus",
+          label: "DVSA Training Syllabus",
+          url: "/#curriculum",
+          linkType: "internal",
+          newTab: false,
+          isEnabled: true,
+          displayOrder: 2,
+        },
+        {
+          id: "link_faqs",
+          label: "Frequently Asked Questions",
+          url: "/#faqs",
+          linkType: "internal",
+          newTab: false,
+          isEnabled: true,
+          displayOrder: 3,
+        },
+        {
+          id: "link_contact",
+          label: "Contact & Inquiries",
+          url: "/contact",
+          linkType: "internal",
+          newTab: false,
+          isEnabled: true,
+          displayOrder: 4,
+        },
+        {
+          id: "link_login",
+          label: "Student & Instructor Login",
+          url: "/login",
+          linkType: "internal",
+          newTab: false,
+          isEnabled: true,
+          displayOrder: 5,
+        },
+      ],
+    },
+  ],
+
+  showContact: true,
+  useBusinessContact: true,
+  phone: "+44 20 7946 0921",
+  email: "support@nextdrive.uk",
+  address: "Peter House, Oxford Street, Manchester, M1 5AN",
+  openingHours: "Mon-Fri: 07:00 - 20:00, Sat-Sun: 08:00 - 18:00",
+  whatsappNumber: "+44 7700 900100",
+  dvsaSchoolId: "DVSA-SCH-90412",
+
+  showServiceAreas: true,
+  serviceAreaSource: "automatic",
+  serviceAreaColumnTitle: "Coverage & Centers",
+
+  showSocial: true,
+  socialLinks: [
+    {
+      id: "soc_facebook",
+      platform: "facebook",
+      url: "https://facebook.com/nextdrive",
+      isEnabled: true,
+      displayOrder: 1,
+    },
+    {
+      id: "soc_instagram",
+      platform: "instagram",
+      url: "https://instagram.com/nextdrive",
+      isEnabled: true,
+      displayOrder: 2,
+    },
+    {
+      id: "soc_youtube",
+      platform: "youtube",
+      url: "https://youtube.com/@nextdrive",
+      isEnabled: true,
+      displayOrder: 3,
+    },
+    {
+      id: "soc_x",
+      platform: "x",
+      url: "https://twitter.com/nextdrive",
+      isEnabled: true,
+      displayOrder: 4,
+    },
+    {
+      id: "soc_tiktok",
+      platform: "tiktok",
+      url: "https://tiktok.com/@nextdrive",
+      isEnabled: false,
+      displayOrder: 5,
+    },
+    {
+      id: "soc_linkedin",
+      platform: "linkedin",
+      url: "https://linkedin.com/company/nextdrive",
+      isEnabled: false,
+      displayOrder: 6,
+    },
+    {
+      id: "soc_whatsapp",
+      platform: "whatsapp",
+      url: "https://wa.me/447700900100",
+      isEnabled: false,
+      displayOrder: 7,
+    },
+  ],
+
+  showCTA: false,
+  ctaEyebrow: "READY TO START?",
+  ctaHeading: "Ready to Get Behind the Wheel?",
+  ctaDescription: "Book your introductory 2-hour assessment lesson with a DVSA Grade A instructor.",
+  ctaPrimaryText: "Book Your First Lesson",
+  ctaPrimaryAction: "booking_modal",
+  ctaPrimaryUrl: "",
+  ctaSecondaryText: "Call Us: +44 20 7946 0921",
+  ctaSecondaryAction: "call_phone",
+  ctaSecondaryUrl: "tel:+442079460921",
+
+  legalLinks: [
+    {
+      id: "leg_privacy",
+      label: "Privacy Policy",
+      url: "/privacy",
+      isEnabled: true,
+      displayOrder: 1,
+    },
+    {
+      id: "leg_terms",
+      label: "Terms & Conditions",
+      url: "/terms",
+      isEnabled: true,
+      displayOrder: 2,
+    },
+    {
+      id: "leg_cookies",
+      label: "Cookie Policy",
+      url: "/cookies",
+      isEnabled: true,
+      displayOrder: 3,
+    },
+    {
+      id: "leg_a11y",
+      label: "Accessibility",
+      url: "/accessibility",
+      isEnabled: true,
+      displayOrder: 4,
+    },
+  ],
+  showCopyright: true,
+  copyrightText: "© {year} NextDrive UK Ltd. Registered in England & Wales #12948210. All rights reserved.",
+
+  showDeveloperCredit: true,
+  developerPrefix: "Designed & Developed by",
+  developerName: "Crftdev Technology",
+  developerUrl: "",
+  developerNewTab: true,
+  developerShowIcon: true,
+  developerStyle: "minimal",
+
+  theme: "auto",
+  style: "modern",
+  containerWidth: "standard",
+  spacing: "comfortable",
+  columnLayout: "auto",
+  backgroundStyle: "premium_glow",
+  topDivider: true,
+  topDividerStyle: "gradient",
+  bottomDivider: true,
+  bottomDividerStyle: "subtle",
+  showContactIcons: true,
+  showSocialIcons: true,
+  showLinkArrows: false,
+};
+
 class DatabaseService {
   private users: User[] = [...initialUsers];
   private students: Student[] = [...initialStudents];
@@ -1380,6 +1694,8 @@ class DatabaseService {
   private popupCampaign: PopupCampaign = { ...initialPopupCampaign };
   private publishedPopupCampaign: PopupCampaign = { ...initialPopupCampaign };
   private popupAnalyticsEvents: PopupAnalyticsEvent[] = [...initialPopupAnalyticsEvents];
+  private footerSettings: FooterSettings = { ...initialFooterSettings };
+  private publishedFooterSettings: FooterSettings = { ...initialFooterSettings };
 
   // User queries & mutations
   async getUsers(query?: string, roleFilter?: string): Promise<User[]> {
@@ -2369,6 +2685,68 @@ class DatabaseService {
       eventsByDevice,
       recentEvents: events.slice(0, 30),
     };
+  }
+
+  // Footer CMS Operations
+  async getFooterSettings(publishedOnly: boolean = false): Promise<FooterSettings> {
+    const source = publishedOnly ? this.publishedFooterSettings : this.footerSettings;
+    return JSON.parse(JSON.stringify(source));
+  }
+
+  async updateFooterSettings(updates: Partial<FooterSettings>): Promise<FooterSettings> {
+    this.footerSettings = {
+      ...this.footerSettings,
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+    if (updates.columns) {
+      this.footerSettings.columns = updates.columns.map((col, cIdx) => ({
+        ...col,
+        displayOrder: col.displayOrder ?? cIdx + 1,
+        links: (col.links || []).map((l, lIdx) => ({
+          ...l,
+          displayOrder: l.displayOrder ?? lIdx + 1,
+        })),
+      }));
+    }
+    if (updates.socialLinks) {
+      this.footerSettings.socialLinks = updates.socialLinks.map((s, idx) => ({
+        ...s,
+        displayOrder: s.displayOrder ?? idx + 1,
+      }));
+    }
+    if (updates.legalLinks) {
+      this.footerSettings.legalLinks = updates.legalLinks.map((l, idx) => ({
+        ...l,
+        displayOrder: l.displayOrder ?? idx + 1,
+      }));
+    }
+    return JSON.parse(JSON.stringify(this.footerSettings));
+  }
+
+  async publishFooterSettings(): Promise<FooterSettings> {
+    const now = new Date().toISOString();
+    this.footerSettings.status = "PUBLISHED";
+    this.footerSettings.publishedAt = now;
+    this.footerSettings.updatedAt = now;
+    this.publishedFooterSettings = JSON.parse(JSON.stringify(this.footerSettings));
+
+    await this.addAuditLog({
+      action: "FOOTER_CONFIG_PUBLISHED",
+      actorEmail: "admin@nextdrive.uk",
+      target: "Public Website Footer Configuration",
+      ip: "127.0.0.1",
+      severity: "SUCCESS",
+    });
+
+    return JSON.parse(JSON.stringify(this.publishedFooterSettings));
+  }
+
+  async resetFooterSettings(): Promise<FooterSettings> {
+    this.footerSettings = JSON.parse(JSON.stringify(initialFooterSettings));
+    this.footerSettings.status = "DRAFT";
+    this.footerSettings.updatedAt = new Date().toISOString();
+    return JSON.parse(JSON.stringify(this.footerSettings));
   }
 }
 

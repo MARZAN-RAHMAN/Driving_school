@@ -380,6 +380,13 @@ export interface BusinessSettings {
     microsoft: boolean;
     x: boolean;
   };
+
+  // Footer Developer Credit CMS
+  developerCreditEnabled?: boolean;
+  developerCreditText?: string;
+  developerName?: string;
+  developerUrl?: string;
+  developerNewTab?: boolean;
 }
 
 export type PopupTriggerType =
@@ -506,4 +513,137 @@ export interface PopupAnalyticsSummary {
     mobile: number;
   };
   recentEvents: PopupAnalyticsEvent[];
+}
+
+// =========================================================================
+// Footer CMS Types & Interfaces
+// =========================================================================
+
+export type FooterLinkType = "internal" | "external";
+
+export interface FooterLinkItem {
+  id: string;
+  label: string;
+  url: string;
+  linkType?: FooterLinkType;
+  newTab?: boolean;
+  openInNewTab?: boolean;
+  badge?: string;
+  isEnabled: boolean;
+  displayOrder: number;
+}
+
+export interface FooterColumnItem {
+  id: string;
+  title: string;
+  isEnabled: boolean;
+  displayOrder: number;
+  isLocationColumn?: boolean;
+  source?: "custom" | "locations_sync";
+  links: FooterLinkItem[];
+}
+
+export type FooterSocialPlatform =
+  | "facebook"
+  | "instagram"
+  | "tiktok"
+  | "youtube"
+  | "linkedin"
+  | "x"
+  | "whatsapp";
+
+export interface FooterSocialItem {
+  id: string;
+  platform: FooterSocialPlatform;
+  url: string;
+  isEnabled: boolean;
+  displayOrder: number;
+}
+
+export interface FooterLegalLinkItem {
+  id: string;
+  label: string;
+  url: string;
+  isEnabled: boolean;
+  displayOrder: number;
+}
+
+export interface FooterSettings {
+  id: string;
+  isEnabled: boolean;
+  status: "DRAFT" | "PUBLISHED";
+  publishedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+
+  // Brand Section
+  showLogo: boolean;
+  logoUrl?: string;
+  brandName: string;
+  tagline: string;
+  description: string;
+  useBusinessBrand: boolean;
+
+  // Columns & Links
+  columns: FooterColumnItem[];
+
+  // Contact Information
+  showContact: boolean;
+  useBusinessContact: boolean;
+  phone?: string;
+  email?: string;
+  address?: string;
+  openingHours?: string;
+  whatsappNumber?: string;
+  dvsaSchoolId?: string;
+
+  // Service Locations Integration
+  showServiceAreas: boolean;
+  serviceAreaSource: "automatic" | "custom";
+  serviceAreaColumnTitle?: string;
+
+  // Social Media
+  showSocial: boolean;
+  socialLinks: FooterSocialItem[];
+
+  // Footer CTA
+  showCTA: boolean;
+  ctaEyebrow?: string;
+  ctaHeading?: string;
+  ctaDescription?: string;
+  ctaPrimaryText?: string;
+  ctaPrimaryAction?: "booking_modal" | "courses_link" | "custom_url";
+  ctaPrimaryUrl?: string;
+  ctaSecondaryText?: string;
+  ctaSecondaryAction?: "call_phone" | "contact_page" | "custom_url";
+  ctaSecondaryUrl?: string;
+
+  // Legal & Bottom Bar
+  legalLinks: FooterLegalLinkItem[];
+  showCopyright: boolean;
+  copyrightText: string;
+
+  // Developer Credit
+  showDeveloperCredit: boolean;
+  developerPrefix: string;
+  developerName: string;
+  developerUrl?: string;
+  developerNewTab: boolean;
+  developerShowIcon: boolean;
+  developerStyle: "minimal" | "badge" | "text";
+
+  // Design & Appearance
+  theme: "auto" | "light" | "dark";
+  style: "modern" | "minimal" | "premium";
+  containerWidth: "compact" | "standard" | "wide";
+  spacing: "compact" | "comfortable" | "spacious";
+  columnLayout: "auto" | "3" | "4" | "5";
+  backgroundStyle: "plain" | "subtle_gradient" | "premium_glow";
+  topDivider: boolean;
+  topDividerStyle: "solid" | "gradient" | "subtle";
+  bottomDivider: boolean;
+  bottomDividerStyle: "solid" | "gradient" | "subtle";
+  showContactIcons: boolean;
+  showSocialIcons: boolean;
+  showLinkArrows: boolean;
 }

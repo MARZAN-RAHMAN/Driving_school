@@ -14,6 +14,8 @@ import {
   KeyRound,
   ShieldAlert,
   Info,
+  Code2,
+  ExternalLink,
 } from "lucide-react";
 import {
   GoogleIcon,
@@ -33,7 +35,7 @@ export function BusinessSettingsForm({
 }: BusinessSettingsFormProps) {
   const [settings, setSettings] = useState<BusinessSettings>(initialSettings);
   const [activeTab, setActiveTab] = useState<
-    "profile" | "scheduling" | "rates" | "compliance" | "notifications" | "auth"
+    "profile" | "scheduling" | "rates" | "compliance" | "notifications" | "auth" | "footer"
   >("profile");
   const [isSaving, setIsSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{
@@ -199,6 +201,19 @@ export function BusinessSettingsForm({
         >
           <KeyRound className="h-4 w-4" />
           Authentication Providers
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("footer")}
+          className={`flex items-center gap-2 border-b-2 px-3.5 pb-3 text-xs font-semibold whitespace-nowrap transition ${
+            activeTab === "footer"
+              ? "border-indigo-600 text-indigo-600 dark:border-indigo-500 dark:text-indigo-400"
+              : "border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          }`}
+        >
+          <Code2 className="h-4 w-4" />
+          Footer &amp; Developer Credit
         </button>
       </div>
 
@@ -940,6 +955,159 @@ export function BusinessSettingsForm({
               <Info className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
               <div className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 <strong>Local Development Simulator:</strong> When running in development without external OAuth API credentials configured in <code>.env</code>, NextDrive redirects to an interactive local consent screen (<code>/auth/mock-oauth</code>) for fast verification without external cloud dependencies.
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 7: Footer Branding & Developer Credit */}
+        {activeTab === "footer" && (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                Footer Branding &amp; Developer Credit
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Manage the developer credit tag and external link displayed at the bottom of the public website footer.
+              </p>
+            </div>
+
+            {/* Master Toggle */}
+            <div className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850 p-4 transition">
+              <div>
+                <span className="text-xs font-bold text-slate-900 dark:text-white">
+                  Display Developer Credit
+                </span>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Toggle the developer attribution brand tag on or off in the public footer.
+                </p>
+              </div>
+
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.developerCreditEnabled !== false}
+                  onChange={(e) => handleChange("developerCreditEnabled", e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-indigo-600"></div>
+              </label>
+            </div>
+
+            {/* Credit Fields Grid */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Credit Prefix Text
+                </label>
+                <input
+                  type="text"
+                  value={settings.developerCreditText || ""}
+                  onChange={(e) => handleChange("developerCreditText", e.target.value)}
+                  placeholder="Designed &amp; Developed by"
+                  className="input-theme text-xs"
+                />
+                <span className="block mt-1 text-[11px] text-slate-400">
+                  Secondary prefix before the company name (e.g. &ldquo;Designed &amp; Developed by&rdquo;).
+                </span>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Company / Developer Name
+                </label>
+                <input
+                  type="text"
+                  value={settings.developerName || ""}
+                  onChange={(e) => handleChange("developerName", e.target.value)}
+                  placeholder="Crftdev Technology"
+                  className="input-theme text-xs"
+                />
+                <span className="block mt-1 text-[11px] text-slate-400">
+                  Exact company name displayed in the credit link.
+                </span>
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Company Website URL
+                </label>
+                <input
+                  type="url"
+                  value={settings.developerUrl || ""}
+                  onChange={(e) => handleChange("developerUrl", e.target.value)}
+                  placeholder="https://crftdev.com"
+                  className="input-theme text-xs"
+                />
+                <span className="block mt-1 text-[11px] text-slate-400">
+                  Full verified website link. Leave empty or set # if no external link is configured.
+                </span>
+              </div>
+
+              <div className="sm:col-span-2 flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850 p-4">
+                <div>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">
+                    Open in New Tab
+                  </span>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    Opens external developer link with target=&quot;_blank&quot; and rel=&quot;noopener noreferrer&quot;.
+                  </p>
+                </div>
+
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.developerNewTab !== false}
+                    onChange={(e) => handleChange("developerNewTab", e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-indigo-600"></div>
+                </label>
+              </div>
+            </div>
+
+            {/* Live Footer Preview Box */}
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 p-4">
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
+                Live Public Footer Preview
+              </span>
+
+              <div className="rounded-lg border border-border bg-card p-4 text-xs text-card-foreground shadow-xs">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-muted-foreground border-t border-border/50 pt-3">
+                  <div className="flex items-center gap-2">
+                    <span>Privacy Policy</span>
+                    <span>•</span>
+                    <span>Terms &amp; Conditions</span>
+                    <span>•</span>
+                    <span>Cookie Policy</span>
+                  </div>
+
+                  {settings.developerCreditEnabled !== false ? (
+                    <div className="flex items-center gap-1.5 font-sans">
+                      <span className="text-muted-foreground">
+                        {settings.developerCreditText || "Designed & Developed by"}
+                      </span>
+                      <a
+                        href={settings.developerUrl || "#"}
+                        target={settings.developerNewTab !== false ? "_blank" : undefined}
+                        rel={settings.developerNewTab !== false ? "noopener noreferrer" : undefined}
+                        className="group inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary transition-colors duration-200"
+                        onClick={(e) => {
+                          if (!settings.developerUrl) e.preventDefault();
+                        }}
+                      >
+                        <span className="underline-offset-4 group-hover:underline">
+                          {settings.developerName || "Crftdev Technology"}
+                        </span>
+                        <ExternalLink className="h-3 w-3 text-muted-foreground transition-all duration-200 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                      </a>
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground/60 italic text-[10px]">
+                      (Developer credit disabled)
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>

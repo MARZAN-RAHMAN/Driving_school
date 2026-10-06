@@ -3,13 +3,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
   MapPin,
-  Car,
   Phone,
   ArrowRight,
-  ShieldCheck,
   CheckCircle2,
-  Sliders,
-  Route,
   Sparkles,
 } from "lucide-react";
 import { BusinessSettings } from "@/types";
@@ -17,6 +13,7 @@ import { BookLessonButton } from "@/components/booking/BookLessonButton";
 import { AmbientHalo } from "@/components/ui/AmbientHalo";
 import { HeroBackgroundGrid } from "@/components/home/HeroBackgroundGrid";
 import { Hero3DStage } from "@/components/home/Hero3DStage";
+import { TrustBenefitsJourney } from "@/components/home/TrustBenefitsJourney";
 
 interface HeroSectionProps {
   settings: BusinessSettings;
@@ -80,7 +77,7 @@ export function HeroSection({ settings, assessmentPrice = 75 }: HeroSectionProps
       ref={sectionRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative overflow-hidden pt-10 pb-16 sm:pt-14 sm:pb-20 lg:pt-20 lg:pb-26 xl:pt-24 xl:pb-30 border-b border-border bg-background transition-colors duration-200"
+      className="relative overflow-hidden pt-8 pb-12 sm:pt-12 sm:pb-16 lg:pt-16 lg:pb-20 xl:pt-20 xl:pb-22 border-b border-border bg-background transition-colors duration-200"
     >
       {/* ========================================================================= */}
       {/* LAYER 1 & 2: BASE BACKGROUND & MULTI-POINT AMBIENT GLOWS */}
@@ -235,70 +232,10 @@ export function HeroSection({ settings, assessmentPrice = 75 }: HeroSectionProps
         </div>
 
         {/* ========================================================================= */}
-        {/* REFINED TRUST STRIP (Factual Service Features) */}
+        {/* ANIMATED NEXTDRIVE TRUST & BENEFITS JOURNEY */}
         {/* ========================================================================= */}
-        <div className="mt-14 sm:mt-16 lg:mt-20 pt-8 border-t border-border/70">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-            {/* Feature 1 */}
-            <div className="flex items-center gap-3 p-3.5 sm:p-4 rounded-xl bg-surface-secondary/50 border border-border/60 shadow-2xs transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xs">
-              <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
-                <ShieldCheck className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="text-xs sm:text-sm font-bold text-foreground">
-                  DVSA Approved
-                </div>
-                <div className="text-[11px] text-muted-foreground">
-                  Certified Grade A Instructors
-                </div>
-              </div>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="flex items-center gap-3 p-3.5 sm:p-4 rounded-xl bg-surface-secondary/50 border border-border/60 shadow-2xs transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xs">
-              <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
-                <Car className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="text-xs sm:text-sm font-bold text-foreground">
-                  Manual &amp; Automatic
-                </div>
-                <div className="text-[11px] text-muted-foreground">
-                  Modern Dual-Control Cars
-                </div>
-              </div>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="flex items-center gap-3 p-3.5 sm:p-4 rounded-xl bg-surface-secondary/50 border border-border/60 shadow-2xs transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xs">
-              <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
-                <Sliders className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="text-xs sm:text-sm font-bold text-foreground">
-                  Dual-Control Fleet
-                </div>
-                <div className="text-[11px] text-muted-foreground">
-                  Full Safety Dual-Pedal System
-                </div>
-              </div>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="flex items-center gap-3 p-3.5 sm:p-4 rounded-xl bg-surface-secondary/50 border border-border/60 shadow-2xs transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xs">
-              <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
-                <Route className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="text-xs sm:text-sm font-bold text-foreground">
-                  Structured Lessons
-                </div>
-                <div className="text-[11px] text-muted-foreground">
-                  Practical DVSA Test Prep
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="mt-8 sm:mt-10 lg:mt-12 pt-6 sm:pt-8 border-t border-border/70">
+          <TrustBenefitsJourney />
         </div>
       </div>
 

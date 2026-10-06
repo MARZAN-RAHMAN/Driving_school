@@ -26,6 +26,7 @@ import {
   ExternalLink,
   X,
   Megaphone,
+  PanelBottom,
 } from "lucide-react";
 import { User, UserRole } from "@/types";
 import { useAdminSidebar } from "@/context/AdminSidebarContext";
@@ -150,6 +151,13 @@ const navSections: NavSection[] = [
         href: "/admin/popup",
         icon: Megaphone,
         badge: "Active",
+      },
+      {
+        name: "Footer Manager",
+        href: "/admin/footer",
+        aliases: ["/admin/footer-manager"],
+        icon: PanelBottom,
+        badge: "Live",
       },
     ],
   },
