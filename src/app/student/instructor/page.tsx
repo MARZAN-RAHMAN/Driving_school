@@ -107,7 +107,7 @@ export default async function StudentInstructorPage() {
               Covered Test Centers
             </span>
             <p className="font-semibold text-slate-900 dark:text-white text-sm">
-              {(assignedInstructor.areas || ["Wood Green DTC", "Sidcup DTC"]).join(", ")}
+              {(assignedInstructor.areas || ["Cheetham Hill DTC", "West Didsbury DTC"]).join(", ")}
             </p>
             <p className="text-[11px] text-slate-500">Includes door-to-door pickup & dropoff</p>
           </div>

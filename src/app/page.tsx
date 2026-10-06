@@ -28,7 +28,7 @@ export default async function HomePage() {
     db.getLocations(),
     db.getBusinessSettings(),
     db.getReviews(),
-    db.getFaqs(),
+    db.getFaqs(undefined, true),
   ]);
 
   const syllabusSteps = [

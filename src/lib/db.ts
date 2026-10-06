@@ -574,12 +574,12 @@ const initialBookings: Booking[] = [
     instructorName: "Liam O'Connor",
     lessonTitle: "2-Hour Practical Test Simulation",
     transmission: "MANUAL",
-    pickupLocation: "Bromley High Street, BR1",
+    pickupLocation: "Deansgate, Manchester M3",
     dateTime: "Today, 09:00 - 11:00 AM",
     durationHours: 2,
     price: 75,
     status: "IN_PROGRESS",
-    testCenter: "Sidcup DTC",
+    testCenter: "West Didsbury DTC",
     notes: "Focus on multi-lane roundabouts and emergency stop.",
   },
   {
@@ -591,7 +591,7 @@ const initialBookings: Booking[] = [
     instructorName: "Aisha Patel",
     lessonTitle: "Parallel Parking & Bay Maneuvers",
     transmission: "MANUAL",
-    pickupLocation: "Greenwich Station, SE10",
+    pickupLocation: "Didsbury Village, M20",
     dateTime: "Today, 11:30 - 13:30 PM",
     durationHours: 2,
     price: 75,
@@ -607,14 +607,14 @@ const initialBookings: Booking[] = [
     instructorName: "Dave Miller",
     lessonTitle: "Official DVSA Test Route Simulation",
     transmission: "AUTOMATIC",
-    pickupLocation: "Chislehurst Station, BR7",
+    pickupLocation: "Sale Metrolink, M33",
     dateTime: "Today, 14:00 - 16:00 PM",
     durationHours: 2,
     price: 80,
     status: "CONFIRMED",
-    testCenter: "Sidcup DTC",
+    testCenter: "Cheetham Hill DTC",
     notes: "Practical driving test booked for next Thursday!",
-    instructorNotes: "Focus on multi-lane roundabout approach and speed limit changes on A20.",
+    instructorNotes: "Focus on multi-lane roundabout approach and speed limit changes on A56 Chester Road.",
     progressNotes: "Strong road positioning, confident mirror checks. Polish reverse bay park.",
   },
   {
@@ -626,7 +626,7 @@ const initialBookings: Booking[] = [
     instructorName: "Sophie Clark",
     lessonTitle: "First Time Clutch & Gear Transitions",
     transmission: "MANUAL",
-    pickupLocation: "Richmond Park Gate, TW10",
+    pickupLocation: "Chorlton Cross, M21",
     dateTime: "Tomorrow, 09:00 - 11:00 AM",
     durationHours: 2,
     price: 75,
@@ -642,12 +642,12 @@ const initialBookings: Booking[] = [
     instructorName: "Mark Davies",
     lessonTitle: "Motorway Speed Control & Joining",
     transmission: "AUTOMATIC",
-    pickupLocation: "Highbury & Islington, N1",
+    pickupLocation: "Salford Central, M3",
     dateTime: "Tomorrow, 13:00 - 15:00 PM",
     durationHours: 2,
     price: 80,
     status: "CONFIRMED",
-    notes: "M11 Motorway introduction and safe overtaking.",
+    notes: "M60 Ring Road introduction and safe overtaking.",
   },
   {
     id: "bk_06",
@@ -658,12 +658,12 @@ const initialBookings: Booking[] = [
     instructorName: "Aisha Patel",
     lessonTitle: "Final Mock Test (0 Minors)",
     transmission: "MANUAL",
-    pickupLocation: "Sidcup Test Center, DA14",
+    pickupLocation: "West Didsbury DTC, M20",
     dateTime: "Yesterday, 10:00 - 12:00 PM",
     durationHours: 2,
     price: 75,
     status: "COMPLETED",
-    testCenter: "Sidcup DTC",
+    testCenter: "West Didsbury DTC",
     notes: "PASSED! Full UK Driving License awarded!",
   },
   {
@@ -675,7 +675,7 @@ const initialBookings: Booking[] = [
     instructorName: "Liam O'Connor",
     lessonTitle: "Beginner Assessment & Cockpit Drill",
     transmission: "MANUAL",
-    pickupLocation: "Highbury Fields, N5",
+    pickupLocation: "Salford Quays, M50",
     dateTime: "Friday, 15:30 - 17:30 PM",
     durationHours: 2,
     price: 75,
@@ -691,12 +691,12 @@ const initialBookings: Booking[] = [
     instructorName: "Dave Miller",
     lessonTitle: "Roundabouts & Spiral Lanes",
     transmission: "AUTOMATIC",
-    pickupLocation: "Chislehurst Station, BR7",
+    pickupLocation: "Sale Metrolink, M33",
     dateTime: "Yesterday, 14:00 - 16:00 PM",
     durationHours: 2,
     price: 80,
     status: "COMPLETED",
-    testCenter: "Sidcup DTC",
+    testCenter: "Cheetham Hill DTC",
     instructorNotes: "Excellent lane discipline on 3-lane roundabouts. Handled heavy traffic smoothly.",
     progressNotes: "Proficient at spiral roundabouts. Ready for mock test simulations.",
   },
@@ -709,12 +709,12 @@ const initialBookings: Booking[] = [
     instructorName: "Dave Miller",
     lessonTitle: "Mock Test Simulation & Sat Nav Driving",
     transmission: "AUTOMATIC",
-    pickupLocation: "Highbury Fields, N5",
+    pickupLocation: "Cheetham Hill Road, M8",
     dateTime: "Saturday, 10:00 - 12:00 PM",
     durationHours: 2,
     price: 80,
     status: "CONFIRMED",
-    testCenter: "Wood Green DTC",
+    testCenter: "Cheetham Hill DTC",
     instructorNotes: "Full mock test including independent driving and emergency stop.",
     progressNotes: "First mock test booked.",
   },
@@ -787,6 +787,7 @@ const initialFaqs: FAQItem[] = [
       "The DVSA reports the UK average is 45 hours of professional tuition plus 20 hours private practice. Our students average 32 hours thanks to structured mock test simulations and personalized progress roadmaps.",
     category: "Lessons",
     order: 1,
+    status: "ACTIVE",
   },
   {
     id: "faq_02",
@@ -795,6 +796,7 @@ const initialFaqs: FAQItem[] = [
       "Yes! We maintain dedicated fleets for both manual and automatic tuition across all our covered postcodes.",
     category: "Vehicles",
     order: 2,
+    status: "ACTIVE",
   },
   {
     id: "faq_03",
@@ -803,6 +805,7 @@ const initialFaqs: FAQItem[] = [
       "Yes, our practical test day package includes 1 hour warm-up driving lesson immediately before your test, full dual-control car hire, insurance, and return journey home.",
     category: "Test Day",
     order: 3,
+    status: "ACTIVE",
   },
   {
     id: "faq_04",
@@ -811,6 +814,7 @@ const initialFaqs: FAQItem[] = [
       "We require 48 hours notice to reschedule or cancel a booked lesson with zero fees.",
     category: "Bookings",
     order: 4,
+    status: "ACTIVE",
   },
   {
     id: "faq_05",
@@ -819,6 +823,7 @@ const initialFaqs: FAQItem[] = [
       "Every NextDrive instructor is a fully qualified DVSA Approved Driving Instructor (ADI Grade A/B) with enhanced DBS clearance and regular standards check validations.",
     category: "Safety",
     order: 5,
+    status: "ACTIVE",
   },
 ];
 
@@ -1110,16 +1115,16 @@ const initialInquiries: ContactInquiry[] = [
     name: "Lucas Davies",
     email: "lucas.d@example.com",
     phone: "+44 7800 123987",
-    postcode: "NW3 4RL",
+    postcode: "M8 5UF",
     transmission: "MANUAL",
     targetPackage: "Introductory 2-Hour Assessment",
     course: "Introductory 2-Hour Assessment",
-    area: "Central & North London",
+    area: "Cheetham Hill & North Manchester",
     provisionalLicence: "Yes",
-    notes: "Need mock test simulation on Wood Green DTC routes.",
+    notes: "Need mock test simulation on Cheetham Hill DTC routes.",
     howFound: "Google Maps",
     sourcePage: "/",
-    internalNotes: "New enquiry from Camden/Hampstead area.",
+    internalNotes: "New enquiry from Cheetham Hill/Bury area.",
     status: "NEW",
     createdAt: "2026-10-01 07:15",
   },
@@ -2057,8 +2062,11 @@ class DatabaseService {
   }
 
   // Driving School: FAQs
-  async getFaqs(category?: string): Promise<FAQItem[]> {
+  async getFaqs(category?: string, activeOnly: boolean = false): Promise<FAQItem[]> {
     let result = [...this.faqs];
+    if (activeOnly) {
+      result = result.filter((f) => f.status !== "INACTIVE");
+    }
     if (category && category !== "ALL") {
       result = result.filter((f) => f.category.toLowerCase() === category.toLowerCase());
     }
@@ -2070,9 +2078,13 @@ class DatabaseService {
   }
 
   async createFaq(faq: Omit<FAQItem, "id">): Promise<FAQItem> {
+    const now = new Date().toISOString();
     const newFaq: FAQItem = {
       ...faq,
       id: `faq_${Date.now()}`,
+      status: faq.status || "ACTIVE",
+      createdAt: now,
+      updatedAt: now,
     };
     this.faqs.push(newFaq);
     return newFaq;
@@ -2084,7 +2096,14 @@ class DatabaseService {
   ): Promise<FAQItem | null> {
     const index = this.faqs.findIndex((f) => f.id === id);
     if (index === -1) return null;
-    this.faqs[index] = { ...this.faqs[index], ...updates };
+    const existing = this.faqs[index];
+    this.faqs[index] = {
+      ...existing,
+      ...updates,
+      id, // ALWAYS preserve same ID!
+      createdAt: existing.createdAt || new Date().toISOString(), // Preserve original createdAt
+      updatedAt: new Date().toISOString(),
+    };
     return this.faqs[index];
   }
 

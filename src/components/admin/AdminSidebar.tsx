@@ -27,6 +27,7 @@ import {
   X,
   Megaphone,
   PanelBottom,
+  Search,
 } from "lucide-react";
 import { User, UserRole } from "@/types";
 import { useAdminSidebar } from "@/context/AdminSidebarContext";
@@ -158,6 +159,11 @@ const navSections: NavSection[] = [
         aliases: ["/admin/footer-manager"],
         icon: PanelBottom,
         badge: "Live",
+      },
+      {
+        name: "SEO Manager",
+        href: "/admin/seo",
+        icon: Search,
       },
     ],
   },

@@ -605,80 +605,82 @@ export function LoginForm({ initialError, initialCallbackUrl }: LoginFormProps) 
                 </div>
               </div>
 
-              {/* Demo Credentials Accordion */}
-              <div className="mb-6">
-                <button
-                  type="button"
-                  onClick={() => setShowDemoAccess(!showDemoAccess)}
-                  aria-expanded={showDemoAccess}
-                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-surface-secondary/70 hover:bg-surface-secondary border border-border/80 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                >
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <Sparkles className="h-3.5 w-3.5 text-primary" />
-                    <span>Demo Access</span>
-                  </span>
-                  <span className="flex items-center gap-1 text-[11px]">
-                    <span className="text-muted-foreground">Quick Fill</span>
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 transition-transform duration-200 ${
-                        showDemoAccess ? "rotate-180" : ""
-                      }`}
-                    />
-                  </span>
-                </button>
+              {/* Demo Credentials Accordion (Environment-gated: only shown in development or when explicitly enabled) */}
+              {(process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_ALLOW_DEMO === "true") && (
+                <div className="mb-6">
+                  <button
+                    type="button"
+                    onClick={() => setShowDemoAccess(!showDemoAccess)}
+                    aria-expanded={showDemoAccess}
+                    className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-surface-secondary/70 hover:bg-surface-secondary border border-border/80 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  >
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <Sparkles className="h-3.5 w-3.5 text-primary" />
+                      <span>Demo Access</span>
+                    </span>
+                    <span className="flex items-center gap-1 text-[11px]">
+                      <span className="text-muted-foreground">Quick Fill</span>
+                      <ChevronDown
+                        className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                          showDemoAccess ? "rotate-180" : ""
+                        }`}
+                      />
+                    </span>
+                  </button>
 
-                {showDemoAccess && (
-                  <div className="mt-2.5 p-3.5 rounded-xl border border-primary/20 bg-primary/5 text-xs space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-primary">Pre-fill Demo Credentials</span>
-                      <span className="font-mono text-[10px] text-muted-foreground">
-                        {currentRoleConfig.defaultPass}
-                      </span>
+                  {showDemoAccess && (
+                    <div className="mt-2.5 p-3.5 rounded-xl border border-primary/20 bg-primary/5 text-xs space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-primary">Pre-fill Demo Credentials</span>
+                        <span className="font-mono text-[10px] text-muted-foreground">
+                          {currentRoleConfig.defaultPass}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">
+                        Click any role below to pre-fill verified demo credentials for testing and evaluation:
+                      </p>
+                      <div className="grid grid-cols-3 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => selectRole("ADMIN")}
+                          className={`flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-semibold shadow-2xs transition cursor-pointer ${
+                            activeRole === "ADMIN"
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border bg-card text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          <ShieldCheck className="h-3.5 w-3.5" />
+                          Admin
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => selectRole("INSTRUCTOR")}
+                          className={`flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-semibold shadow-2xs transition cursor-pointer ${
+                            activeRole === "INSTRUCTOR"
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border bg-card text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          <CarFront className="h-3.5 w-3.5" />
+                          Instructor
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => selectRole("STUDENT")}
+                          className={`flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-semibold shadow-2xs transition cursor-pointer ${
+                            activeRole === "STUDENT"
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border bg-card text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          <GraduationCap className="h-3.5 w-3.5" />
+                          Student
+                        </button>
+                      </div>
                     </div>
-                    <p className="text-[11px] text-muted-foreground">
-                      Click any role below to pre-fill verified demo credentials for testing and evaluation:
-                    </p>
-                    <div className="grid grid-cols-3 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => selectRole("ADMIN")}
-                        className={`flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-semibold shadow-2xs transition cursor-pointer ${
-                          activeRole === "ADMIN"
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border bg-card text-foreground hover:bg-muted"
-                        }`}
-                      >
-                        <ShieldCheck className="h-3.5 w-3.5" />
-                        Admin
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => selectRole("INSTRUCTOR")}
-                        className={`flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-semibold shadow-2xs transition cursor-pointer ${
-                          activeRole === "INSTRUCTOR"
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border bg-card text-foreground hover:bg-muted"
-                        }`}
-                      >
-                        <CarFront className="h-3.5 w-3.5" />
-                        Instructor
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => selectRole("STUDENT")}
-                        className={`flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-semibold shadow-2xs transition cursor-pointer ${
-                          activeRole === "STUDENT"
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border bg-card text-foreground hover:bg-muted"
-                        }`}
-                      >
-                        <GraduationCap className="h-3.5 w-3.5" />
-                        Student
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
 
               {/* Error Message */}
               {error && (

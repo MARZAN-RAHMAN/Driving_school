@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getSession } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  const session = await getSession();
+  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized: Admin or Editor session required" },
+      { status: 403 }
+    );
+  }
+
   const url = new URL(req.url);
   const featured = url.searchParams.get("featured") === "true";
   const reviews = await db.getReviews(featured);
@@ -14,6 +23,14 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const session = await getSession();
+  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized: Admin or Editor session required" },
+      { status: 403 }
+    );
+  }
+
   try {
     const body = await req.json();
     if (!body.student || !body.instructor || !body.quote) {
@@ -26,7 +43,7 @@ export async function POST(req: NextRequest) {
     const review = await db.createReview({
       student: body.student,
       instructor: body.instructor,
-      testCenter: body.testCenter || "London DTC",
+      testCenter: body.testCenter || "Manchester (Cheetham Hill) DTC",
       rating: Number(body.rating) || 5,
       result: body.result || "PASSED FIRST TIME",
       minors: body.minors || "0 Minor Faults",
@@ -38,7 +55,7 @@ export async function POST(req: NextRequest) {
 
     await db.addAuditLog({
       action: "REVIEW_CREATED",
-      actorEmail: "admin@nexuscore.dev",
+      actorEmail: session.user.email,
       target: `Review for ${body.student}`,
       ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
       severity: "SUCCESS",
@@ -57,6 +74,14 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
+  const session = await getSession();
+  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized: Admin or Editor session required" },
+      { status: 403 }
+    );
+  }
+
   try {
     const body = await req.json();
     if (!body.id) {
@@ -76,7 +101,7 @@ export async function PUT(req: NextRequest) {
 
     await db.addAuditLog({
       action: "REVIEW_UPDATED",
-      actorEmail: "admin@nexuscore.dev",
+      actorEmail: session.user.email,
       target: `Review ID: ${body.id}`,
       ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
       severity: "SUCCESS",
@@ -95,6 +120,14 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const session = await getSession();
+  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized: Admin or Editor session required" },
+      { status: 403 }
+    );
+  }
+
   try {
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
@@ -115,7 +148,7 @@ export async function DELETE(req: NextRequest) {
 
     await db.addAuditLog({
       action: "REVIEW_DELETED",
-      actorEmail: "admin@nexuscore.dev",
+      actorEmail: session.user.email,
       target: `Review ID: ${id}`,
       ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
       severity: "WARNING",

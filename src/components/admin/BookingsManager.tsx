@@ -53,7 +53,7 @@ export function BookingsManager({
     durationHours: 2,
     price: 75,
     notes: "",
-    testCenter: "Wood Green DTC",
+    testCenter: "Cheetham Hill DTC",
   });
 
   const showNotification = (type: "success" | "error", text: string) => {
@@ -75,7 +75,7 @@ export function BookingsManager({
       durationHours: 2,
       price: 75,
       notes: "",
-      testCenter: "Wood Green DTC",
+      testCenter: "Cheetham Hill DTC",
     });
     setModalOpen(true);
   };
@@ -553,7 +553,7 @@ export function BookingsManager({
                     type="text"
                     value={form.testCenter}
                     onChange={(e) => setForm({ ...form, testCenter: e.target.value })}
-                    placeholder="e.g. Wood Green DTC"
+                    placeholder="e.g. Cheetham Hill DTC"
                     className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-850 px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-indigo-600 focus:outline-none"
                   />
                 </div>

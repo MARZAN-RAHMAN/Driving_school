@@ -44,14 +44,67 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const settings = await db.getBusinessSettings();
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": ["EducationalOrganization", "LocalBusiness"],
+    "@id": "https://nextdrive.uk/#organization",
+    "name": settings.businessName,
+    "alternateName": settings.tradingName,
+    "url": "https://nextdrive.uk",
+    "logo": settings.logoUrl || "https://nextdrive.uk/favicon.ico",
+    "telephone": settings.phone,
+    "email": settings.email,
+    "priceRange": "££",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": settings.headOfficeAddress,
+      "addressLocality": "Manchester",
+      "addressRegion": "Greater Manchester",
+      "postalCode": "M3 3EB",
+      "addressCountry": "GB",
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 53.4808,
+      "longitude": -2.2426,
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": settings.weekdayOpeningTime || "07:00",
+        "closes": settings.weekdayClosingTime || "21:00",
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Saturday", "Sunday"],
+        "opens": settings.weekendOpeningTime || "08:00",
+        "closes": settings.weekendClosingTime || "18:00",
+      },
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": settings.googleRating || "4.9",
+      "reviewCount": settings.totalPassesCount || "480",
+      "bestRating": "5",
+      "worstRating": "1",
+    },
+  };
+
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `

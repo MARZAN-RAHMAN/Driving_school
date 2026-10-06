@@ -16,8 +16,19 @@ export async function GET() {
 
   let instructor = await db.getInstructorByEmail(user.email);
   if (!instructor) {
-    const all = await db.getInstructors();
-    instructor = all.find((i) => i.id === "inst_01") || all[0];
+    if (user.role === "ADMIN") {
+      const all = await db.getInstructors();
+      instructor = all[0];
+    } else {
+      return NextResponse.json(
+        { error: "Instructor record not found for this account" },
+        { status: 404 }
+      );
+    }
+  }
+
+  if (!instructor) {
+    return NextResponse.json({ lessons: [], bookings: [] });
   }
 
   const lessons = await db.getBookingsByInstructor(instructor.id);
@@ -50,21 +61,23 @@ export async function PATCH(request: Request) {
 
     // Role-based Resource Ownership Check:
     // If not Admin, ensure this lesson belongs to the logged-in instructor
-    let currentInstructor = await db.getInstructorByEmail(user.email);
-    if (!currentInstructor) {
-      const all = await db.getInstructors();
-      currentInstructor = all.find((i) => i.id === "inst_01") || all[0];
-    }
-
-    if (
-      user.role !== "ADMIN" &&
-      booking.instructorId !== currentInstructor.id &&
-      booking.instructorName !== currentInstructor.name
-    ) {
-      return NextResponse.json(
-        { error: "Forbidden: You cannot modify lessons belonging to other instructors." },
-        { status: 403 }
-      );
+    const currentInstructor = await db.getInstructorByEmail(user.email);
+    if (user.role !== "ADMIN") {
+      if (!currentInstructor) {
+        return NextResponse.json(
+          { error: "Instructor record not found for this account" },
+          { status: 404 }
+        );
+      }
+      if (
+        booking.instructorId !== currentInstructor.id &&
+        booking.instructorName !== currentInstructor.name
+      ) {
+        return NextResponse.json(
+          { error: "Forbidden: You cannot modify lessons belonging to other instructors." },
+          { status: 403 }
+        );
+      }
     }
 
     const updated = await db.updateLessonNotes(

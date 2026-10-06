@@ -388,7 +388,7 @@ export function InstructorDashboardView({
                   Test Centers & Coverage
                 </p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
-                  {(instructor.areas || ["Central & North London", "Wood Green DTC", "Islington"]).map(
+                  {(instructor.areas || ["Manchester City Centre", "Cheetham Hill DTC", "West Didsbury DTC"]).map(
                     (area) => (
                       <span
                         key={area}

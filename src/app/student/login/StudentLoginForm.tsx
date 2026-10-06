@@ -208,20 +208,22 @@ export function StudentLoginForm() {
                 </div>
               </div>
 
-              {/* Demo Credentials Quick-fill */}
-              <div className="flex items-center justify-between text-xs">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail("student@nextdrive.uk");
-                    setPassword("student123");
-                  }}
-                  className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline cursor-pointer"
-                >
-                  <Sparkles className="h-3 w-3" />
-                  <span>Fill Demo Student (Marcus Thorne)</span>
-                </button>
-              </div>
+              {/* Demo Credentials Quick-fill (Environment-gated) */}
+              {(process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_ALLOW_DEMO === "true") && (
+                <div className="flex items-center justify-between text-xs">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail("student@nextdrive.uk");
+                      setPassword("student123");
+                    }}
+                    className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline cursor-pointer"
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    <span>Fill Demo Student (Marcus Thorne)</span>
+                  </button>
+                </div>
+              )}
 
               <button
                 type="submit"

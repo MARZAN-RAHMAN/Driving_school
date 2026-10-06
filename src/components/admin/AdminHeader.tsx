@@ -181,7 +181,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
                   </div>
                   <div>
                     <p className="font-semibold text-foreground">Student Passed Practical Test!</p>
-                    <p className="text-[11px] text-muted-foreground">Hannah Adams passed at Sidcup DTC (0 minors)</p>
+                    <p className="text-[11px] text-muted-foreground">Hannah Adams passed at West Didsbury DTC (0 minors)</p>
                     <span className="text-[10px] text-muted-foreground font-mono">Yesterday 11:30</span>
                   </div>
                 </div>

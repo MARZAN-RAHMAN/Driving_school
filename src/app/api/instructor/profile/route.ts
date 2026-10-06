@@ -15,8 +15,19 @@ export async function GET() {
 
   let instructor = await db.getInstructorByEmail(user.email);
   if (!instructor) {
-    const all = await db.getInstructors();
-    instructor = all.find((i) => i.id === "inst_01") || all[0];
+    if (user.role === "ADMIN") {
+      const all = await db.getInstructors();
+      instructor = all[0];
+    } else {
+      return NextResponse.json(
+        { error: "Instructor record not found for this account" },
+        { status: 404 }
+      );
+    }
+  }
+
+  if (!instructor) {
+    return NextResponse.json({ error: "No instructor profile available" }, { status: 404 });
   }
 
   return NextResponse.json({ instructor });
@@ -39,8 +50,18 @@ export async function PUT(request: Request) {
 
     let instructor = await db.getInstructorByEmail(user.email);
     if (!instructor) {
-      const all = await db.getInstructors();
-      instructor = all.find((i) => i.id === "inst_01") || all[0];
+      if (user.role === "ADMIN" && body.instructorId) {
+        instructor = await db.getInstructorById(body.instructorId);
+      } else {
+        return NextResponse.json(
+          { error: "Instructor record not found for this account" },
+          { status: 404 }
+        );
+      }
+    }
+
+    if (!instructor) {
+      return NextResponse.json({ error: "Instructor record not found" }, { status: 404 });
     }
 
     const updates: Record<string, unknown> = {};

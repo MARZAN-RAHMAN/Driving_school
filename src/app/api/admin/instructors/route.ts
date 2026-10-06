@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getSession } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  const session = await getSession();
+  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized: Admin or Editor session required" },
+      { status: 403 }
+    );
+  }
+
   const url = new URL(req.url);
   const status = url.searchParams.get("status") || undefined;
   const instructors = await db.getInstructors(status);
@@ -14,6 +23,14 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const session = await getSession();
+  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized: Admin or Editor session required" },
+      { status: 403 }
+    );
+  }
+
   try {
     const body = await req.json();
     if (!body.name || !body.badgeNumber || !body.phone || !body.email) {
@@ -42,7 +59,7 @@ export async function POST(req: NextRequest) {
 
     await db.addAuditLog({
       action: "INSTRUCTOR_REGISTERED",
-      actorEmail: "admin@nexuscore.dev",
+      actorEmail: session.user.email,
       target: `Instructor: ${body.name} (${body.badgeNumber})`,
       ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
       severity: "SUCCESS",
@@ -61,6 +78,14 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
+  const session = await getSession();
+  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized: Admin or Editor session required" },
+      { status: 403 }
+    );
+  }
+
   try {
     const body = await req.json();
     if (!body.id) {
@@ -71,7 +96,7 @@ export async function PUT(req: NextRequest) {
     }
 
     if (body.action === "approve") {
-      const approved = await db.approveInstructorApplication(body.id, "admin@nexuscore.dev");
+      const approved = await db.approveInstructorApplication(body.id, session.user.email);
       if (!approved) {
         return NextResponse.json(
           { success: false, error: "Instructor not found" },
@@ -86,7 +111,7 @@ export async function PUT(req: NextRequest) {
     }
 
     if (body.action === "reject") {
-      const rejected = await db.rejectInstructorApplication(body.id, "admin@nexuscore.dev");
+      const rejected = await db.rejectInstructorApplication(body.id, session.user.email);
       if (!rejected) {
         return NextResponse.json(
           { success: false, error: "Instructor not found" },
@@ -110,7 +135,7 @@ export async function PUT(req: NextRequest) {
 
     await db.addAuditLog({
       action: "INSTRUCTOR_UPDATED",
-      actorEmail: "admin@nexuscore.dev",
+      actorEmail: session.user.email,
       target: `Instructor ID: ${body.id}`,
       ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
       severity: "SUCCESS",
@@ -129,6 +154,14 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const session = await getSession();
+  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized: Admin or Editor session required" },
+      { status: 403 }
+    );
+  }
+
   try {
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
@@ -149,7 +182,7 @@ export async function DELETE(req: NextRequest) {
 
     await db.addAuditLog({
       action: "INSTRUCTOR_REMOVED",
-      actorEmail: "admin@nexuscore.dev",
+      actorEmail: session.user.email,
       target: `Instructor ID: ${id}`,
       ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
       severity: "WARNING",

@@ -301,6 +301,9 @@ export interface FAQItem {
   answer: string;
   category: string;
   order: number;
+  status?: "ACTIVE" | "INACTIVE";
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface BusinessSettings {

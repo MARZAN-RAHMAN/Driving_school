@@ -75,33 +75,7 @@ export async function getSession(): Promise<AuthSession | null> {
       }
     }
 
-    // 2. Resilient fallback for legacy token formats
-    if (token.startsWith("nexus_")) {
-      const parts = token.split("_");
-      const role = parts[1]?.toUpperCase();
-      const email = parts[2]
-        ? decodeURIComponent(parts[2])
-        : role === "ADMIN"
-        ? "admin@nexuscore.dev"
-        : "user@nexuscore.dev";
-
-      const user =
-        (await db.getUserByEmail(email)) ||
-        (role === "ADMIN"
-          ? defaultAdminUser
-          : role === "INSTRUCTOR"
-          ? defaultInstructorUser
-          : undefined);
-
-      if (user && user.status === "ACTIVE") {
-        return {
-          user,
-          token,
-          expiresAt: new Date(Date.now() + 7 * 86400000).toISOString(),
-        };
-      }
-    }
-
+    // If token is invalid or expired, return null
     return null;
   } catch {
     return null;
@@ -221,22 +195,27 @@ export async function authenticateCredentials(
   }
 
   if (!isValidPassword) {
-    // Resilient fallback for demo credentials across roles
-    const isAdminUser = identifier === "admin@nextdrive.uk" || identifier === "admin@nexuscore.dev";
-    const isInstructorUser =
-      identifier === "instructor@nextdrive.uk" ||
-      identifier === "dave.miller@nextdrive.uk";
-    const isStudentUser =
-      identifier === "student@nextdrive.uk" ||
-      identifier === "user@nexuscore.dev" ||
-      identifier === "jordan.r@student.nextdrive.uk" ||
-      identifier === "hannah.a@student.nextdrive.uk";
+    // Development & evaluation fallback for demo credentials across roles
+    const allowDemo =
+      process.env.NODE_ENV !== "production" ||
+      process.env.ALLOW_DEMO_LOGIN === "true";
 
-    isValidPassword =
-      (isAdminUser && (pass === "admin123" || pass === "password123")) ||
-      (isInstructorUser && (pass === "instructor123" || pass === "password123")) ||
-      (isStudentUser && (pass === "student123" || pass === "user123" || pass === "password123")) ||
-      pass === "password123";
+    if (allowDemo) {
+      const isAdminUser = identifier === "admin@nextdrive.uk" || identifier === "admin@nexuscore.dev";
+      const isInstructorUser =
+        identifier === "instructor@nextdrive.uk" ||
+        identifier === "dave.miller@nextdrive.uk";
+      const isStudentUser =
+        identifier === "student@nextdrive.uk" ||
+        identifier === "user@nexuscore.dev" ||
+        identifier === "jordan.r@student.nextdrive.uk" ||
+        identifier === "hannah.a@student.nextdrive.uk";
+
+      isValidPassword =
+        (isAdminUser && (pass === "admin123" || pass === "password123")) ||
+        (isInstructorUser && (pass === "instructor123" || pass === "password123")) ||
+        (isStudentUser && (pass === "student123" || pass === "user123" || pass === "password123"));
+    }
   }
 
   if (!isValidPassword) {

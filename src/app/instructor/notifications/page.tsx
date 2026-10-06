@@ -50,7 +50,7 @@ export default async function InstructorNotificationsPage() {
     {
       id: "notif_03",
       title: "Test Ready Milestone Reached",
-      message: `Marcus Thorne has completed 22 hours and is marked TEST READY for Sidcup DTC on Oct 8, 2026.`,
+      message: `Marcus Thorne has completed 22 hours and is marked TEST READY for Cheetham Hill DTC on Oct 8, 2026.`,
       time: "1 day ago",
       icon: CheckCircle2,
       color: "text-amber-600 bg-amber-50 dark:bg-amber-950",

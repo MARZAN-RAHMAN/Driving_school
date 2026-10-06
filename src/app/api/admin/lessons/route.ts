@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getSession } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const session = await getSession();
+  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized: Admin or Editor session required" },
+      { status: 403 }
+    );
+  }
+
   const packages = await db.getLessonPackages();
   return NextResponse.json({
     success: true,
@@ -12,6 +21,14 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const session = await getSession();
+  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized: Admin or Editor session required" },
+      { status: 403 }
+    );
+  }
+
   try {
     const body = await req.json();
     if (!body.title || !body.price) {
@@ -33,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     await db.addAuditLog({
       action: "LESSON_PACKAGE_CREATED",
-      actorEmail: "admin@nexuscore.dev",
+      actorEmail: session.user.email,
       target: `Package: ${body.title}`,
       ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
       severity: "SUCCESS",
@@ -52,6 +69,14 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
+  const session = await getSession();
+  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized: Admin or Editor session required" },
+      { status: 403 }
+    );
+  }
+
   try {
     const body = await req.json();
     if (!body.id) {
@@ -71,7 +96,7 @@ export async function PUT(req: NextRequest) {
 
     await db.addAuditLog({
       action: "LESSON_PACKAGE_UPDATED",
-      actorEmail: "admin@nexuscore.dev",
+      actorEmail: session.user.email,
       target: `Package ID: ${body.id}`,
       ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
       severity: "SUCCESS",
@@ -90,6 +115,14 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const session = await getSession();
+  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized: Admin or Editor session required" },
+      { status: 403 }
+    );
+  }
+
   try {
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
@@ -110,7 +143,7 @@ export async function DELETE(req: NextRequest) {
 
     await db.addAuditLog({
       action: "LESSON_PACKAGE_DELETED",
-      actorEmail: "admin@nexuscore.dev",
+      actorEmail: session.user.email,
       target: `Package ID: ${id}`,
       ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
       severity: "WARNING",

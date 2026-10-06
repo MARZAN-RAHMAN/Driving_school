@@ -118,7 +118,7 @@ export default async function StudentProgressPage() {
               </div>
             </div>
             <span className="hidden sm:inline-block rounded-full bg-amber-200 dark:bg-amber-900/80 px-3 py-1 text-xs font-bold text-amber-900 dark:text-amber-100">
-              Sidcup DTC
+              West Didsbury DTC
             </span>
           </div>
         )}

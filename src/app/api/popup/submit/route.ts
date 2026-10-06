@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { sendLeadNotificationEmail } from "@/lib/email";
 import { ProvisionalLicenceStatus, TransmissionType } from "@/types";
+import { checkRateLimit } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,18 @@ function isValidUKPostcode(postcode: string): boolean {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "127.0.0.1";
+    const rateLimit = checkRateLimit(`popup_${ip}`);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Too many submissions. Please wait ${rateLimit.retryAfter || 60} seconds before trying again.`,
+        },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const {
       formData = {},

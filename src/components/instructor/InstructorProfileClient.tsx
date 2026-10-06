@@ -22,7 +22,7 @@ export function InstructorProfileClient({
   const [phone, setPhone] = useState(instructor.phone || "");
   const [bio, setBio] = useState(instructor.bio || "");
   const [areasInput, setAreasInput] = useState(
-    (instructor.areas || ["Central & North London", "Wood Green DTC", "Islington"]).join(", ")
+    (instructor.areas || ["Manchester City Centre", "Cheetham Hill DTC", "West Didsbury DTC"]).join(", ")
   );
   const [avatar, setAvatar] = useState(instructor.avatar || "");
   const [avatarPositionX, setAvatarPositionX] = useState(instructor.avatarPositionX ?? 50);
@@ -216,7 +216,7 @@ export function InstructorProfileClient({
               className="mt-1.5 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-850 p-3 text-xs text-slate-900 dark:text-white focus:border-emerald-600 focus:outline-none"
             />
             <p className="mt-1 text-[11px] text-slate-400">
-              Example: Central & North London, Wood Green DTC, Islington, Camden, Barnet
+              Example: Manchester City Centre, Cheetham Hill DTC, West Didsbury DTC, Sale, Salford, Bury
             </p>
           </div>
 

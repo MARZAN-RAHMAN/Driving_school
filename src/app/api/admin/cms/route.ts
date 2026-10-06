@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getSession } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const session = await getSession();
+  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized: Admin or Editor session required" },
+      { status: 403 }
+    );
+  }
+
   const settings = await db.getBusinessSettings();
   const cmsData = {
     // Brand & Identity
@@ -56,13 +65,21 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
+  const session = await getSession();
+  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized: Admin or Editor session required" },
+      { status: 403 }
+    );
+  }
+
   try {
     const body = await req.json();
     const updated = await db.updateBusinessSettings(body);
 
     await db.addAuditLog({
       action: "CMS_CONTENT_UPDATED",
-      actorEmail: "admin@nexuscore.dev",
+      actorEmail: session.user.email,
       target: "Homepage CMS & SEO Configuration",
       ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
       severity: "SUCCESS",

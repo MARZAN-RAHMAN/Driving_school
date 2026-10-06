@@ -123,12 +123,12 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(studentUrl);
     }
 
-    // 3. Fallback for legacy tokens
-    if (!sessionToken.includes("_admin_")) {
-      const studentUrl = new URL("/student", request.url);
-      studentUrl.searchParams.set("error", "unauthorized_admin_access");
-      return NextResponse.redirect(studentUrl);
-    }
+    // If token is missing signature dot, invalidate and redirect
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("error", "invalid_session");
+    const response = NextResponse.redirect(loginUrl);
+    response.cookies.delete("nexus_session_token");
+    return response;
   }
 
   // Protect all /instructor routes
@@ -141,52 +141,58 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    if (sessionToken.includes(".")) {
-      const [encodedPayload, signature] = sessionToken.split(".");
-      const isValidSignature = await verifyHmacEdge(encodedPayload, signature);
-
-      if (!isValidSignature) {
-        const loginUrl = new URL("/login", request.url);
-        loginUrl.searchParams.set("error", "invalid_session");
-        const response = NextResponse.redirect(loginUrl);
-        response.cookies.delete("nexus_session_token");
-        return response;
-      }
-
-      const payload = parsePayload(encodedPayload);
-      if (!payload) {
-        const loginUrl = new URL("/login", request.url);
-        loginUrl.searchParams.set("error", "malformed_session");
-        return NextResponse.redirect(loginUrl);
-      }
-
-      const now = Math.floor(Date.now() / 1000);
-      if (payload.exp && payload.exp < now) {
-        const loginUrl = new URL("/login", request.url);
-        loginUrl.searchParams.set("error", "session_expired");
-        const response = NextResponse.redirect(loginUrl);
-        response.cookies.delete("nexus_session_token");
-        return response;
-      }
-
-      const role = payload.role;
-
-      // INSTRUCTOR and ADMIN can access instructor dashboard
-      if (role === "INSTRUCTOR" || role === "ADMIN") {
-        return NextResponse.next();
-      }
-
-      // Students attempting to access instructor routes get redirected to their student dashboard
-      if (role === "STUDENT") {
-        const studentUrl = new URL("/student", request.url);
-        studentUrl.searchParams.set("error", "unauthorized_instructor_access");
-        return NextResponse.redirect(studentUrl);
-      }
-
+    if (!sessionToken.includes(".")) {
       const loginUrl = new URL("/login", request.url);
-      loginUrl.searchParams.set("error", "insufficient_permissions");
+      loginUrl.searchParams.set("error", "invalid_session");
+      const response = NextResponse.redirect(loginUrl);
+      response.cookies.delete("nexus_session_token");
+      return response;
+    }
+
+    const [encodedPayload, signature] = sessionToken.split(".");
+    const isValidSignature = await verifyHmacEdge(encodedPayload, signature);
+
+    if (!isValidSignature) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("error", "invalid_session");
+      const response = NextResponse.redirect(loginUrl);
+      response.cookies.delete("nexus_session_token");
+      return response;
+    }
+
+    const payload = parsePayload(encodedPayload);
+    if (!payload) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("error", "malformed_session");
       return NextResponse.redirect(loginUrl);
     }
+
+    const now = Math.floor(Date.now() / 1000);
+    if (payload.exp && payload.exp < now) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("error", "session_expired");
+      const response = NextResponse.redirect(loginUrl);
+      response.cookies.delete("nexus_session_token");
+      return response;
+    }
+
+    const role = payload.role;
+
+    // INSTRUCTOR and ADMIN can access instructor dashboard
+    if (role === "INSTRUCTOR" || role === "ADMIN") {
+      return NextResponse.next();
+    }
+
+    // Students attempting to access instructor routes get redirected to their student dashboard
+    if (role === "STUDENT") {
+      const studentUrl = new URL("/student", request.url);
+      studentUrl.searchParams.set("error", "unauthorized_instructor_access");
+      return NextResponse.redirect(studentUrl);
+    }
+
+    const loginUrl2 = new URL("/login", request.url);
+    loginUrl2.searchParams.set("error", "insufficient_permissions");
+    return NextResponse.redirect(loginUrl2);
   }
 
   // Protect all /student routes
@@ -199,47 +205,53 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    if (sessionToken.includes(".")) {
-      const [encodedPayload, signature] = sessionToken.split(".");
-      const isValidSignature = await verifyHmacEdge(encodedPayload, signature);
+    if (!sessionToken.includes(".")) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("error", "invalid_session");
+      const response = NextResponse.redirect(loginUrl);
+      response.cookies.delete("nexus_session_token");
+      return response;
+    }
 
-      if (!isValidSignature) {
-        const loginUrl = new URL("/login", request.url);
-        loginUrl.searchParams.set("error", "invalid_session");
-        const response = NextResponse.redirect(loginUrl);
-        response.cookies.delete("nexus_session_token");
-        return response;
-      }
+    const [encodedPayload, signature] = sessionToken.split(".");
+    const isValidSignature = await verifyHmacEdge(encodedPayload, signature);
 
-      const payload = parsePayload(encodedPayload);
-      if (!payload) {
-        const loginUrl = new URL("/login", request.url);
-        loginUrl.searchParams.set("error", "malformed_session");
-        return NextResponse.redirect(loginUrl);
-      }
+    if (!isValidSignature) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("error", "invalid_session");
+      const response = NextResponse.redirect(loginUrl);
+      response.cookies.delete("nexus_session_token");
+      return response;
+    }
 
-      const now = Math.floor(Date.now() / 1000);
-      if (payload.exp && payload.exp < now) {
-        const loginUrl = new URL("/login", request.url);
-        loginUrl.searchParams.set("error", "session_expired");
-        const response = NextResponse.redirect(loginUrl);
-        response.cookies.delete("nexus_session_token");
-        return response;
-      }
+    const payload = parsePayload(encodedPayload);
+    if (!payload) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("error", "malformed_session");
+      return NextResponse.redirect(loginUrl);
+    }
 
-      const role = payload.role;
+    const now = Math.floor(Date.now() / 1000);
+    if (payload.exp && payload.exp < now) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("error", "session_expired");
+      const response = NextResponse.redirect(loginUrl);
+      response.cookies.delete("nexus_session_token");
+      return response;
+    }
 
-      // STUDENT and ADMIN can access student portal
-      if (role === "STUDENT" || role === "ADMIN") {
-        return NextResponse.next();
-      }
+    const role = payload.role;
 
-      // Instructors attempting to access student routes get redirected to instructor dashboard
-      if (role === "INSTRUCTOR") {
-        const instructorUrl = new URL("/instructor", request.url);
-        instructorUrl.searchParams.set("error", "unauthorized_student_access");
-        return NextResponse.redirect(instructorUrl);
-      }
+    // STUDENT and ADMIN can access student portal
+    if (role === "STUDENT" || role === "ADMIN") {
+      return NextResponse.next();
+    }
+
+    // Instructors attempting to access student routes get redirected to instructor dashboard
+    if (role === "INSTRUCTOR") {
+      const instructorUrl = new URL("/instructor", request.url);
+      instructorUrl.searchParams.set("error", "unauthorized_student_access");
+      return NextResponse.redirect(instructorUrl);
     }
   }
 

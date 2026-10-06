@@ -665,7 +665,7 @@ export function CustomersManager({
                     type="text"
                     value={form.testDate}
                     onChange={(e) => setForm({ ...form, testDate: e.target.value })}
-                    placeholder="e.g. 2026-11-15 at Wood Green"
+                    placeholder="e.g. 2026-11-15 at West Didsbury"
                     className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-850 px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-indigo-600 focus:outline-none"
                   />
                 </div>

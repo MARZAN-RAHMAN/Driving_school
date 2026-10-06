@@ -148,7 +148,7 @@ export function ReviewsManager({ initialReviews }: ReviewsManagerProps) {
                 required
                 value={form.testCenter}
                 onChange={(e) => setForm({ ...form, testCenter: e.target.value })}
-                placeholder="e.g. Sidcup DTC"
+                placeholder="e.g. West Didsbury DTC"
                 className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-900 dark:text-white"
               />
             </div>
