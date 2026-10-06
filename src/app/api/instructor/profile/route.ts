@@ -35,7 +35,7 @@ export async function PUT(request: Request) {
 
   try {
     const body = await request.json();
-    const { phone, bio, areas } = body;
+    const { phone, bio, areas, avatar, avatarPositionX, avatarPositionY, avatarZoom } = body;
 
     let instructor = await db.getInstructorByEmail(user.email);
     if (!instructor) {
@@ -47,6 +47,10 @@ export async function PUT(request: Request) {
     if (phone !== undefined) updates.phone = phone;
     if (bio !== undefined) updates.bio = bio;
     if (areas !== undefined && Array.isArray(areas)) updates.areas = areas;
+    if (avatar !== undefined) updates.avatar = avatar;
+    if (avatarPositionX !== undefined) updates.avatarPositionX = Number(avatarPositionX);
+    if (avatarPositionY !== undefined) updates.avatarPositionY = Number(avatarPositionY);
+    if (avatarZoom !== undefined) updates.avatarZoom = Number(avatarZoom);
 
     const updated = await db.updateInstructor(instructor.id, updates);
 

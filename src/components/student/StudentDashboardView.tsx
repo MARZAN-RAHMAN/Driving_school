@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { User, Student, Booking, Instructor, LessonPackage } from "@/types";
 import { StudentLessonRequestModal } from "@/components/student/StudentLessonRequestModal";
+import { InstructorImage } from "@/components/instructor/InstructorImage";
 
 interface StudentDashboardViewProps {
   user: User;
@@ -354,14 +355,20 @@ export function StudentDashboardView({
             </h3>
 
             <div className="mt-4 flex items-center gap-3">
-              <div className="relative">
-                <img
-                  src={
-                    instructor?.avatar ||
-                    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=128&h=128&fit=crop&crop=faces"
+              <div className="relative shrink-0">
+                <InstructorImage
+                  instructor={
+                    instructor || {
+                      name: "Dave Miller",
+                      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=128&h=128&fit=crop&crop=faces",
+                      avatarPositionX: 50,
+                      avatarPositionY: 20,
+                      avatarZoom: 1,
+                    }
                   }
-                  alt={instructor?.name || "Dave Miller"}
-                  className="h-14 w-14 rounded-full object-cover ring-2 ring-indigo-100 dark:ring-indigo-950"
+                  aspectRatio="1/1"
+                  fallbackSize="md"
+                  className="h-14 w-14 rounded-full ring-2 ring-indigo-100 dark:ring-indigo-950 shadow-xs"
                 />
                 <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
               </div>

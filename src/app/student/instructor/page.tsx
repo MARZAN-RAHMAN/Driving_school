@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { UserCheck, ShieldCheck, Star, Award, Car, Phone, Mail, MapPin, CheckCircle2 } from "lucide-react";
+import { InstructorImage } from "@/components/instructor/InstructorImage";
 
 export const dynamic = "force-dynamic";
 
@@ -46,12 +47,12 @@ export default async function StudentInstructorPage() {
         {/* Profile Header */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-5">
           <div className="relative">
-            <div className="h-20 w-20 overflow-hidden rounded-2xl border-2 border-indigo-600/30 bg-slate-100 shadow-md">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={assignedInstructor.avatar}
-                alt={assignedInstructor.name}
-                className="h-full w-full object-cover"
+            <div className="h-20 w-20 overflow-hidden rounded-2xl border-2 border-indigo-600/30 bg-slate-100 dark:bg-slate-800 shadow-md">
+              <InstructorImage
+                instructor={assignedInstructor}
+                aspectRatio="1/1"
+                fallbackSize="lg"
+                className="h-full w-full"
               />
             </div>
             <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white shadow-xs">

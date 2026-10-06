@@ -364,7 +364,14 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                       alt={imageAlt}
                       loading="lazy"
                       decoding="async"
-                      className="w-full h-full object-cover object-[center_20%] transition-transform duration-500 sm:group-hover:scale-[1.02]"
+                      className="w-full h-full object-cover transition-transform duration-500 sm:group-hover:scale-[1.02]"
+                      style={{
+                        objectPosition: `${inst.avatarPositionX ?? 50}% ${inst.avatarPositionY ?? 20}%`,
+                        transform:
+                          inst.avatarZoom && inst.avatarZoom > 1
+                            ? `scale(${inst.avatarZoom})`
+                            : undefined,
+                      }}
                       onError={(e) => {
                         const target = e.currentTarget;
                         target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
@@ -594,7 +601,14 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                 <img
                   src={getFramedAvatar(selectedInstructor.avatar)}
                   alt={`${selectedInstructor.name}, DVSA Grade A driving instructor`}
-                  className="w-full h-full object-cover object-[center_20%]"
+                  className="w-full h-full object-cover"
+                  style={{
+                    objectPosition: `${selectedInstructor.avatarPositionX ?? 50}% ${selectedInstructor.avatarPositionY ?? 20}%`,
+                    transform:
+                      selectedInstructor.avatarZoom && selectedInstructor.avatarZoom > 1
+                        ? `scale(${selectedInstructor.avatarZoom})`
+                        : undefined,
+                  }}
                   loading="eager"
                   onError={(e) => {
                     const target = e.currentTarget;
@@ -620,7 +634,14 @@ export function InstructorsCarousel({ instructors }: InstructorsCarouselProps) {
                 <img
                   src={getFramedAvatar(selectedInstructor.avatar)}
                   alt={selectedInstructor.name}
-                  className="w-20 h-20 rounded-2xl object-cover object-[center_20%] ring-2 ring-primary/30 shrink-0 shadow-xs"
+                  className="w-20 h-20 rounded-2xl object-cover ring-2 ring-primary/30 shrink-0 shadow-xs"
+                  style={{
+                    objectPosition: `${selectedInstructor.avatarPositionX ?? 50}% ${selectedInstructor.avatarPositionY ?? 20}%`,
+                    transform:
+                      selectedInstructor.avatarZoom && selectedInstructor.avatarZoom > 1
+                        ? `scale(${selectedInstructor.avatarZoom})`
+                        : undefined,
+                  }}
                   onError={(e) => {
                     const target = e.currentTarget;
                     target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(

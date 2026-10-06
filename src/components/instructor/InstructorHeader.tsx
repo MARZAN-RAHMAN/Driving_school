@@ -13,6 +13,7 @@ import {
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { InstructorLogoutButton } from "./InstructorLogoutButton";
 import { User, Instructor } from "@/types";
+import { InstructorImage } from "@/components/instructor/InstructorImage";
 
 interface InstructorHeaderProps {
   user: User;
@@ -71,22 +72,12 @@ export function InstructorHeader({
           {/* Instructor Profile Pill */}
           <div className="flex items-center gap-2.5 border-l border-border pl-2.5 sm:pl-3">
             <div className="relative">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-secondary-foreground text-xs font-bold shadow-xs overflow-hidden">
-                {instructor.avatar ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={instructor.avatar}
-                    alt={instructor.name}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  instructor.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .slice(0, 2)
-                )}
-              </div>
+              <InstructorImage
+                instructor={instructor}
+                aspectRatio="1/1"
+                fallbackSize="sm"
+                className="h-8 w-8 rounded-full shadow-xs"
+              />
               <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-success ring-2 ring-card" />
             </div>
 

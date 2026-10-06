@@ -19,6 +19,7 @@ import {
   Settings,
 } from "lucide-react";
 import { Instructor } from "@/types";
+import { InstructorImage } from "@/components/instructor/InstructorImage";
 
 interface InstructorSidebarProps {
   instructor: Instructor;
@@ -110,15 +111,13 @@ export function InstructorSidebar({
         {/* Instructor Summary Card in Sidebar */}
         <div className="rounded-xl border border-secondary/20 bg-secondary/5 p-3.5 shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="h-10 w-10 overflow-hidden rounded-full border border-secondary/40 bg-surface-secondary">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={instructor.avatar}
-                  alt={instructor.name}
-                  className="h-full w-full object-cover"
-                />
-              </div>
+            <div className="relative shrink-0">
+              <InstructorImage
+                instructor={instructor}
+                aspectRatio="1/1"
+                fallbackSize="sm"
+                className="h-10 w-10 rounded-full border border-secondary/40 shadow-xs"
+              />
               <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-success ring-2 ring-card" />
             </div>
             <div className="min-w-0 flex-1">

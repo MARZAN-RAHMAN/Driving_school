@@ -4,17 +4,13 @@ import React, { useState } from "react";
 import {
   UserCheck,
   ShieldCheck,
-  Award,
-  Car,
-  Phone,
-  Mail,
-  MapPin,
   Save,
   CheckCircle2,
   Lock,
 } from "lucide-react";
 import { Instructor } from "@/types";
 import { ConnectedAccountsCard } from "@/components/shared/ConnectedAccountsCard";
+import { InstructorPhotoUpload } from "@/components/admin/InstructorPhotoUpload";
 
 interface InstructorProfileClientProps {
   instructor: Instructor;
@@ -28,6 +24,10 @@ export function InstructorProfileClient({
   const [areasInput, setAreasInput] = useState(
     (instructor.areas || ["Central & North London", "Wood Green DTC", "Islington"]).join(", ")
   );
+  const [avatar, setAvatar] = useState(instructor.avatar || "");
+  const [avatarPositionX, setAvatarPositionX] = useState(instructor.avatarPositionX ?? 50);
+  const [avatarPositionY, setAvatarPositionY] = useState(instructor.avatarPositionY ?? 20);
+  const [avatarZoom, setAvatarZoom] = useState(instructor.avatarZoom ?? 1);
 
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
@@ -46,7 +46,15 @@ export function InstructorProfileClient({
       const res = await fetch("/api/instructor/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, bio, areas }),
+        body: JSON.stringify({
+          phone,
+          bio,
+          areas,
+          avatar,
+          avatarPositionX,
+          avatarPositionY,
+          avatarZoom,
+        }),
       });
 
       if (res.ok) {
@@ -121,6 +129,39 @@ export function InstructorProfileClient({
 
       {/* Editable Information Form */}
       <form onSubmit={handleSave} className="space-y-6">
+        {/* Profile Photo & Framing */}
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px]">
+              Official Profile Photo &amp; Framing
+            </h2>
+            <span className="text-[11px] text-slate-400">
+              Visible on Fleet Directory &amp; Student Portal
+            </span>
+          </div>
+
+          <InstructorPhotoUpload
+            instructorName={instructor.name}
+            badgeNumber={instructor.badgeNumber}
+            currentAvatar={avatar}
+            avatarPositionX={avatarPositionX}
+            avatarPositionY={avatarPositionY}
+            avatarZoom={avatarZoom}
+            onChange={({ avatar, avatarPositionX, avatarPositionY, avatarZoom }) => {
+              setAvatar(avatar);
+              setAvatarPositionX(avatarPositionX);
+              setAvatarPositionY(avatarPositionY);
+              setAvatarZoom(avatarZoom);
+            }}
+            onRemove={() => {
+              setAvatar("");
+              setAvatarPositionX(50);
+              setAvatarPositionY(20);
+              setAvatarZoom(1);
+            }}
+          />
+        </div>
+
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xs space-y-4">
           <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px]">
             Public Tuition Bio & Contact

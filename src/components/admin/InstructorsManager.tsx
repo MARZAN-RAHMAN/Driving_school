@@ -19,6 +19,8 @@ import {
   Filter,
 } from "lucide-react";
 import { Instructor, TransmissionType } from "@/types";
+import { InstructorPhotoUpload } from "@/components/admin/InstructorPhotoUpload";
+import { InstructorImage } from "@/components/instructor/InstructorImage";
 
 interface InstructorsManagerProps {
   initialInstructors: Instructor[];
@@ -36,7 +38,10 @@ export function InstructorsManager({ initialInstructors }: InstructorsManagerPro
   const [form, setForm] = useState({
     name: "",
     badgeNumber: "ADI-",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=128&h=128&fit=crop&crop=faces",
+    avatar: "",
+    avatarPositionX: 50,
+    avatarPositionY: 20,
+    avatarZoom: 1,
     phone: "+44 7700 900",
     email: "@nextdrive.uk",
     transmission: "BOTH" as TransmissionType | "BOTH",
@@ -52,7 +57,10 @@ export function InstructorsManager({ initialInstructors }: InstructorsManagerPro
     setForm({
       name: "",
       badgeNumber: "ADI-",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=128&h=128&fit=crop&crop=faces",
+      avatar: "",
+      avatarPositionX: 50,
+      avatarPositionY: 20,
+      avatarZoom: 1,
       phone: "+44 7700 900123",
       email: "new.instructor@nextdrive.uk",
       transmission: "BOTH",
@@ -70,7 +78,10 @@ export function InstructorsManager({ initialInstructors }: InstructorsManagerPro
     setForm({
       name: inst.name,
       badgeNumber: inst.badgeNumber,
-      avatar: inst.avatar,
+      avatar: inst.avatar || "",
+      avatarPositionX: inst.avatarPositionX ?? 50,
+      avatarPositionY: inst.avatarPositionY ?? 20,
+      avatarZoom: inst.avatarZoom ?? 1,
       phone: inst.phone,
       email: inst.email,
       transmission: inst.transmission,
@@ -338,11 +349,12 @@ export function InstructorsManager({ initialInstructors }: InstructorsManagerPro
               <div>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <img
-                        src={inst.avatar}
-                        alt={inst.name}
-                        className="h-12 w-12 rounded-full object-cover ring-2 ring-indigo-50 dark:ring-indigo-950/60"
+                    <div className="relative shrink-0">
+                      <InstructorImage
+                        instructor={inst}
+                        aspectRatio="1/1"
+                        fallbackSize="sm"
+                        className="h-12 w-12 rounded-full ring-2 ring-indigo-50 dark:ring-indigo-950/60 shadow-xs"
                       />
                       <span
                         className={`absolute bottom-0 right-0 h-3 w-3 rounded-full ring-2 ring-white dark:ring-slate-900 ${
@@ -509,9 +521,9 @@ export function InstructorsManager({ initialInstructors }: InstructorsManagerPro
 
       {/* Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="relative w-full max-w-lg rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl">
+            <div className="sticky top-0 z-10 -mx-6 -mt-6 mb-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 px-6 py-4 backdrop-blur-xs">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">
@@ -519,6 +531,7 @@ export function InstructorsManager({ initialInstructors }: InstructorsManagerPro
                 </h3>
               </div>
               <button
+                type="button"
                 onClick={() => setModalOpen(false)}
                 className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
               >
@@ -526,7 +539,39 @@ export function InstructorsManager({ initialInstructors }: InstructorsManagerPro
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Profile Photo Upload & Framing Section */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                  Instructor Profile Photo &amp; Framing
+                </label>
+                <InstructorPhotoUpload
+                  instructorName={form.name || "Instructor Name"}
+                  badgeNumber={form.badgeNumber || "ADI-XXXXX"}
+                  currentAvatar={form.avatar}
+                  avatarPositionX={form.avatarPositionX}
+                  avatarPositionY={form.avatarPositionY}
+                  avatarZoom={form.avatarZoom}
+                  onChange={({ avatar, avatarPositionX, avatarPositionY, avatarZoom }) => {
+                    setForm((prev) => ({
+                      ...prev,
+                      avatar,
+                      avatarPositionX,
+                      avatarPositionY,
+                      avatarZoom,
+                    }));
+                  }}
+                  onRemove={() => {
+                    setForm((prev) => ({
+                      ...prev,
+                      avatar: "",
+                      avatarPositionX: 50,
+                      avatarPositionY: 20,
+                      avatarZoom: 1,
+                    }));
+                  }}
+                />
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">

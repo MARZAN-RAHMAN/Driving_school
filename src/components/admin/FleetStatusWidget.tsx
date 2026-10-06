@@ -5,6 +5,7 @@ import React from "react";
 import Link from "next/link";
 import { Car, Star, ArrowRight, ShieldCheck } from "lucide-react";
 import { Instructor } from "@/types";
+import { InstructorImage } from "@/components/instructor/InstructorImage";
 
 interface FleetStatusWidgetProps {
   instructors: Instructor[];
@@ -38,11 +39,12 @@ export function FleetStatusWidget({ instructors }: FleetStatusWidgetProps) {
             className="flex items-center justify-between py-3 transition hover:bg-slate-50/70 dark:hover:bg-slate-800/50 -mx-2 px-2 rounded-xl"
           >
             <div className="flex items-center gap-3">
-              <div className="relative">
-                <img
-                  src={inst.avatar}
-                  alt={inst.name}
-                  className="h-10 w-10 rounded-full object-cover ring-2 ring-indigo-50 dark:ring-indigo-950/60 shadow-xs"
+              <div className="relative shrink-0">
+                <InstructorImage
+                  instructor={inst}
+                  aspectRatio="1/1"
+                  fallbackSize="sm"
+                  className="h-10 w-10 rounded-full ring-2 ring-indigo-50 dark:ring-indigo-950/60 shadow-xs"
                 />
                 <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
               </div>

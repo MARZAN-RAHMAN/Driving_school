@@ -147,6 +147,9 @@ export interface Instructor {
   availability?: InstructorAvailability;
   applicationDate?: string;
   yearsExperience?: number;
+  avatarPositionX?: number;
+  avatarPositionY?: number;
+  avatarZoom?: number;
 }
 
 export interface LessonPackage {
