@@ -11,6 +11,7 @@ interface BookLessonButtonProps {
   className?: string;
   onClick?: () => void;
   ariaLabel?: string;
+  title?: string;
 }
 
 export function BookLessonButton({
@@ -21,6 +22,7 @@ export function BookLessonButton({
   className,
   onClick,
   ariaLabel = "Book your driving lesson",
+  title,
 }: BookLessonButtonProps) {
   const { openBookingModal } = useBookingModal();
 
@@ -39,6 +41,7 @@ export function BookLessonButton({
       type="button"
       onClick={handleClick}
       aria-label={ariaLabel}
+      title={title}
       className={className}
     >
       {children}

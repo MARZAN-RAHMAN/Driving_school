@@ -215,18 +215,18 @@ body {
   color: var(--muted-foreground);
 }
 
-/* Subtle Hero Vehicle Float Animation */
+/* Subtle Hero Vehicle Float Animation (Restrained 2-3px over 7.5s) */
 @keyframes hero-float {
   0%, 100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-6px);
+    transform: translateY(-2.5px);
   }
 }
 
 .animate-hero-float {
-  animation: hero-float 5.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  animation: hero-float 7.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
 }
 
 /* Subtle Featured Pricing Card Glow */
@@ -297,10 +297,96 @@ body {
   box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.35), 0 4px 10px -4px rgba(0, 0, 0, 0.2);
 }
 
+/* Automotive 3D & Light Trail Keyframes */
+@keyframes light-trail-flow {
+  0% {
+    transform: translateX(-120%) scaleX(0.5);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateX(40%) scaleX(1);
+    opacity: 0.95;
+  }
+  80% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateX(220%) scaleX(0.5);
+    opacity: 0;
+  }
+}
+
+.animate-light-trail-slow {
+  animation: light-trail-flow 11s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-light-trail-medium {
+  animation: light-trail-flow 8s cubic-bezier(0.4, 0, 0.2, 1) infinite 2.5s;
+}
+
+.animate-light-trail-fast {
+  animation: light-trail-flow 6.5s cubic-bezier(0.4, 0, 0.2, 1) infinite 4s;
+}
+
+@keyframes particle-drift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(4px, -6px, 0);
+  }
+}
+
+.animate-particle-drift {
+  animation: particle-drift 12s ease-in-out infinite;
+}
+
+@keyframes road-dash-pulse {
+  0%, 100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+.animate-road-pulse {
+  animation: road-dash-pulse 3.5s ease-in-out infinite;
+}
+
+/* 3D Transform & Perspective Utilities */
+.perspective-1000 {
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
+}
+
+.perspective-1200 {
+  perspective: 1200px;
+  -webkit-perspective: 1200px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-hero-float,
   .animate-featured-glow,
   .animate-halo-pulse,
+  .animate-light-trail-slow,
+  .animate-light-trail-medium,
+  .animate-light-trail-fast,
+  .animate-particle-drift,
+  .animate-road-pulse,
   .card-interactive:hover {
     animation: none !important;
     transform: none !important;

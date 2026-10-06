@@ -57,6 +57,7 @@ export function CoursePackagesSection({ packages }: CoursePackagesSectionProps) 
     >
       {/* Ambient Halo Illumination System */}
       <AmbientHalo position="center" variant="dual" size="xl" />
+      <AmbientHalo position="top-right" variant="secondary" size="lg" />
       <AmbientHalo position="bottom-center" variant="accent" size="lg" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
