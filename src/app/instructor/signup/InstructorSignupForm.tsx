@@ -266,7 +266,7 @@ export function InstructorSignupForm() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full h-9.5 rounded-xl border border-input-border bg-input py-1.5 pl-8.5 pr-3 text-xs text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
-                    placeholder="instructor@example.com"
+                    placeholder="john.doe@gmail.com"
                   />
                 </div>
               </div>

@@ -337,7 +337,7 @@ export function InstructorLessonsClient({
                     rows={3}
                     value={formInstructorNotes}
                     onChange={(e) => setFormInstructorNotes(e.target.value)}
-                    placeholder="E.g. Practiced bay parking in Chislehurst station car park, improved mirror checks..."
+                    placeholder="E.g. Practiced bay parking at Cheetham Hill test centre car park, improved mirror checks..."
                     className="mt-1.5 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-850 p-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:border-emerald-600 focus:bg-white dark:focus:bg-slate-900 focus:outline-none"
                   />
                 </div>

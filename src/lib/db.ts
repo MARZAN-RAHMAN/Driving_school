@@ -1086,7 +1086,7 @@ const initialInquiries: ContactInquiry[] = [
   {
     id: "inq_03",
     name: "Ryan Taylor",
-    email: "ryan.t@example.com",
+    email: "ryan.taylor@student.nextdrive.uk",
     phone: "+44 7700 900888",
     postcode: "M5 4WT",
     transmission: "AUTOMATIC",
@@ -1104,7 +1104,7 @@ const initialInquiries: ContactInquiry[] = [
   {
     id: "inq_04",
     name: "Aisha Begum",
-    email: "aisha.b@example.com",
+    email: "aisha.begum@student.nextdrive.uk",
     phone: "+44 7700 900999",
     postcode: "M8 5UF",
     transmission: "MANUAL",
@@ -1122,7 +1122,7 @@ const initialInquiries: ContactInquiry[] = [
   {
     id: "inq_05",
     name: "Lucas Davies",
-    email: "lucas.d@example.com",
+    email: "lucas.davies@student.nextdrive.uk",
     phone: "+44 7800 123987",
     postcode: "M8 5UF",
     transmission: "MANUAL",
@@ -1154,7 +1154,7 @@ export const defaultPopupFields: PopupFieldConfig[] = [
     id: "f_email",
     fieldKey: "email",
     label: "Email Address",
-    placeholder: "e.g. liam@example.com",
+    placeholder: "e.g. liam.smith@gmail.com",
     fieldType: "email",
     isEnabled: true,
     isRequired: true,

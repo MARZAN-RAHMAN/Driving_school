@@ -195,7 +195,7 @@ export function StudentLessonRequestModal({
                     required
                     value={form.pickupLocation}
                     onChange={(e) => setForm({ ...form, pickupLocation: e.target.value })}
-                    placeholder="e.g. 14 High Street, Bromley, BR1"
+                    placeholder="e.g. 14 Wilmslow Road, Didsbury, M20 2RN"
                     className="w-full rounded-lg border border-input-border bg-input pl-9 pr-3 py-2 text-xs text-foreground focus:border-primary focus:outline-none transition-colors"
                   />
                 </div>

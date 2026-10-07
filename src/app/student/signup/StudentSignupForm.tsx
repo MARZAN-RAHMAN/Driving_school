@@ -210,7 +210,7 @@ export function StudentSignupForm() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full h-10 rounded-xl border border-input-border bg-input py-2 pl-10 pr-3.5 text-xs text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-2xs"
-                    placeholder="learner@example.com"
+                    placeholder="learner@gmail.com"
                   />
                 </div>
               </div>

@@ -1387,7 +1387,7 @@ export function PopupManager({
                       onChange={(e) =>
                         setCampaign({ ...campaign, customRedirectUrl: e.target.value })
                       }
-                      placeholder="e.g. /thank-you or https://example.com/welcome"
+                      placeholder="e.g. /thank-you or https://nextdrive.uk/welcome"
                       className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs text-slate-900 dark:text-white"
                     />
                   </div>

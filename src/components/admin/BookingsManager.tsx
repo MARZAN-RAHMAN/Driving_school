@@ -587,7 +587,7 @@ export function BookingsManager({
                     type="email"
                     value={form.studentEmail}
                     onChange={(e) => setForm({ ...form, studentEmail: e.target.value })}
-                    placeholder="student@example.com"
+                    placeholder="student@gmail.com"
                     className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-850 px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-indigo-600 focus:outline-none"
                   />
                 </div>

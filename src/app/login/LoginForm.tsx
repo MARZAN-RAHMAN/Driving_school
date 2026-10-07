@@ -332,13 +332,19 @@ export function LoginForm({ initialError, initialCallbackUrl }: LoginFormProps) 
     return code;
   };
 
+  const isDemoAllowed =
+    process.env.NODE_ENV !== "production" ||
+    process.env.NEXT_PUBLIC_ALLOW_DEMO === "true";
+
   const getInitialEmail = () => {
+    if (!isDemoAllowed) return "";
     if (isInstructorCallback) return ROLES.INSTRUCTOR.defaultEmail;
     if (isStudentCallback) return ROLES.STUDENT.defaultEmail;
     return ROLES.ADMIN.defaultEmail;
   };
 
   const getInitialPassword = () => {
+    if (!isDemoAllowed) return "";
     if (isInstructorCallback) return ROLES.INSTRUCTOR.defaultPass;
     if (isStudentCallback) return ROLES.STUDENT.defaultPass;
     return ROLES.ADMIN.defaultPass;
@@ -354,8 +360,10 @@ export function LoginForm({ initialError, initialCallbackUrl }: LoginFormProps) 
   const selectRole = (role: RoleType) => {
     setActiveRole(role);
     setError(null);
-    setEmail(ROLES[role].defaultEmail);
-    setPassword(ROLES[role].defaultPass);
+    if (isDemoAllowed) {
+      setEmail(ROLES[role].defaultEmail);
+      setPassword(ROLES[role].defaultPass);
+    }
   };
 
   const formatErrorMessage = (msg?: string): string => {
@@ -605,7 +613,7 @@ export function LoginForm({ initialError, initialCallbackUrl }: LoginFormProps) 
               </div>
 
               {/* Demo Credentials Accordion (Environment-gated: only shown in development or when explicitly enabled) */}
-              {(process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_ALLOW_DEMO === "true") && (
+              {isDemoAllowed && (
                 <div className="mb-6">
                   <button
                     type="button"

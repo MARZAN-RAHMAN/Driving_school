@@ -100,7 +100,7 @@ export function ContactInquiryForm({ settings }: ContactInquiryFormProps) {
                 required
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="e.g. jordan@example.co.uk"
+                placeholder="e.g. jordan.rivera@gmail.com"
                 className="mt-1.5 w-full rounded-xl border border-input-border bg-input px-4 py-3 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-colors"
               />
             </div>
@@ -130,7 +130,7 @@ export function ContactInquiryForm({ settings }: ContactInquiryFormProps) {
                 required
                 value={form.postcode}
                 onChange={(e) => setForm({ ...form, postcode: e.target.value })}
-                placeholder="e.g. NW1, SE10, TW9, E14"
+                placeholder="e.g. M1, M14, M20, SK4, WA14"
                 className="mt-1.5 w-full rounded-xl border border-input-border bg-input px-4 py-3 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none uppercase transition-colors"
               />
             </div>

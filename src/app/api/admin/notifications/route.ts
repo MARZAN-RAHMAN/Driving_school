@@ -196,7 +196,7 @@ export async function POST(req: NextRequest) {
 
       const newInquiry = await db.createInquiry({
         name: chosenName,
-        email: `${chosenName.toLowerCase().replace(" ", ".")}@example.co.uk`,
+        email: `${chosenName.toLowerCase().replace(" ", ".")}@student.nextdrive.uk`,
         phone: "+44 7700 900" + Math.floor(100 + Math.random() * 900),
         postcode: chosenPostcode,
         targetPackage: chosenCourse,

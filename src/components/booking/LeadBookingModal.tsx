@@ -522,7 +522,7 @@ export default function LeadBookingModal({
                           setEmail(e.target.value);
                           if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
                         }}
-                        placeholder="Your Email (e.g. student@example.co.uk)"
+                        placeholder="Your Email (e.g. student@gmail.com)"
                         className={`w-full pl-9 pr-3 py-2.5 rounded-xl border text-sm bg-input text-foreground transition-colors focus:outline-hidden focus:ring-2 focus:ring-primary ${
                           errors.email
                             ? "border-destructive focus:ring-destructive"
@@ -621,7 +621,7 @@ export default function LeadBookingModal({
                         setPostcode(e.target.value.toUpperCase());
                         if (errors.postcode) setErrors((prev) => ({ ...prev, postcode: "" }));
                       }}
-                      placeholder="Your Postcode (e.g. SW1A 1AA, N1 2XY)"
+                      placeholder="Your Postcode (e.g. M1 1AD, M20 2RN)"
                       className={`w-full px-3 py-2.5 rounded-xl border text-sm bg-input text-foreground transition-colors uppercase focus:outline-hidden focus:ring-2 focus:ring-primary ${
                         errors.postcode
                           ? "border-destructive focus:ring-destructive"
