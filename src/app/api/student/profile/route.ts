@@ -30,7 +30,7 @@ export async function PUT(request: Request) {
 
   try {
     const body = await request.json();
-    const { phone, postcode, provisionalLicenseNumber } = body;
+    const { phone, postcode, provisionalLicenseNumber, avatar, name } = body;
 
     const allStudents = await db.getStudents();
     const student = allStudents.find(
@@ -46,6 +46,14 @@ export async function PUT(request: Request) {
     if (postcode !== undefined) updates.postcode = postcode;
     if (provisionalLicenseNumber !== undefined)
       updates.provisionalLicenseNumber = provisionalLicenseNumber;
+    if (avatar !== undefined) {
+      updates.avatar = avatar;
+      await db.updateUser(user.id, { avatar });
+    }
+    if (name !== undefined) {
+      updates.name = name;
+      await db.updateUser(user.id, { name });
+    }
 
     const updated = await db.updateStudent(student.id, updates);
 

@@ -13,6 +13,7 @@ import {
 import { BookLessonButton } from "@/components/booking/BookLessonButton";
 import { AmbientHalo } from "@/components/ui/AmbientHalo";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { NextDriveBackground } from "@/components/ui/NextDriveBackground";
 
 interface FinalCtaSectionProps {
   phone: string;
@@ -33,6 +34,7 @@ export function FinalCtaSection({
       {/* Soft ambient halo lighting system */}
       <AmbientHalo position="center" variant="tricolor" size="full" />
       <AmbientHalo position="bottom" variant="dual" size="lg" />
+      <NextDriveBackground variant="subtle" showOrbs={false} speedMultiplier={0.8} />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ScrollReveal animation="fade-up">

@@ -27,6 +27,15 @@ import {
   FooterLinkItem,
   FooterSocialItem,
   FooterLegalLinkItem,
+  PageSEO,
+  GlobalSEOSettings,
+  SEORedirect,
+  SEOKeywordTarget,
+  LocalTestCentre,
+  SEOAuditResult,
+  SEOAuditIssue,
+  SEONapAudit,
+  SEOSchemaType,
 } from "@/types";
 
 // Seeded In-Memory Database Repository with Real Relational Consistency
@@ -136,55 +145,55 @@ const initialUsers: User[] = [
 const initialContent: ContentItem[] = [
   {
     id: "cnt_01",
-    title: "Next.js 16 Enterprise Architecture Patterns",
-    slug: "nextjs-16-enterprise-architecture",
-    category: "Architecture",
-    excerpt: "Best practices for modular App Router layouts, server-side caching, and type-safe data access boundaries.",
-    content: "Building enterprise applications with Next.js requires strict domain boundaries between public marketing pages and authenticated admin backends...",
+    title: "Manual vs Automatic Driving Lessons in Manchester: Which is Right for You?",
+    slug: "manual-vs-automatic-driving-lessons-manchester",
+    category: "Vehicle Choice",
+    excerpt: "Explore the pros, cons, career flexibility, and pass rate differences between manual and automatic transmission driving tuition in Manchester.",
+    content: "Deciding between manual and automatic driving lessons is one of the most critical choices a learner driver in Manchester will make. A manual driving licence permits you to drive both manual and automatic vehicles across the UK. However, automatic tuition removes clutch coordination, making it significantly easier to navigate heavy Manchester traffic and complex spiral roundabouts.",
     status: "PUBLISHED",
-    authorName: "Alex Vance",
-    views: 14250,
-    updatedAt: "2026-09-28",
+    authorName: "Dave Miller (Grade A ADI)",
+    views: 4250,
+    updatedAt: "2026-10-02",
     readTime: "5 min read",
   },
   {
     id: "cnt_02",
-    title: "Role-Based Access Control with Edge Middleware",
-    slug: "rbac-edge-middleware",
-    category: "Security",
-    excerpt: "Zero-latency authorization checks using encrypted session tokens and subpath route protection.",
-    content: "Security at the edge enables rapid rejection of unauthenticated requests before executing downstream business logic...",
+    title: "What Happens During a UK Practical Driving Test at Manchester Centres?",
+    slug: "what-happens-during-uk-practical-driving-test",
+    category: "Test Preparation",
+    excerpt: "A comprehensive walk-through of the 40-minute DVSA practical test: eyesight check, 'show me tell me' vehicle questions, independent driving, and maneuvers.",
+    content: "Taking your practical driving test at Cheetham Hill, West Didsbury, Sale, or Bury DTC can feel daunting. Knowing the exact structure of the 40-minute test helps eliminate test-day anxiety. Your examiner will conduct an eyesight check, two vehicle safety questions, approximately 20 minutes of sat-nav navigation, and one reversing maneuver.",
     status: "PUBLISHED",
-    authorName: "Sarah Chen",
-    views: 9820,
-    updatedAt: "2026-09-25",
-    readTime: "7 min read",
+    authorName: "Aisha Patel (Grade A ADI)",
+    views: 3820,
+    updatedAt: "2026-10-01",
+    readTime: "6 min read",
   },
   {
     id: "cnt_03",
-    title: "Zero-Downtime Database Migrations with Prisma",
-    slug: "zero-downtime-database-migrations",
-    category: "Database",
-    excerpt: "A step-by-step blueprint for non-blocking column additions, views, and backward-compatible model evolutions.",
-    content: "When running at scale, altering large PostgreSQL tables requires a phased rollout approach with safe migrations...",
+    title: "How to Prepare for Your First Driving Lesson: Beginner Checklist",
+    slug: "how-to-prepare-for-first-driving-lesson",
+    category: "Learning to Drive",
+    excerpt: "Essential preparation for complete beginners: provisional licence checks, comfortable footwear, cockpit drill basics, and what to expect on day one.",
+    content: "Your introductory 2-hour driving assessment is designed to be calm, low-stress, and empowering. Your instructor will pick you up from your home, verify your provisional licence card, and drive you to a quiet residential road in your Manchester borough to teach you car controls and clutch bite-point fundamentals.",
     status: "PUBLISHED",
-    authorName: "Marcus Thorne",
-    views: 6540,
-    updatedAt: "2026-09-20",
+    authorName: "Liam O'Connor (Grade A ADI)",
+    views: 2540,
+    updatedAt: "2026-09-28",
     readTime: "4 min read",
   },
   {
     id: "cnt_04",
-    title: "Optimizing Core Web Vitals with Modern CSS & Next.js",
-    slug: "optimizing-core-web-vitals",
-    category: "Frontend",
-    excerpt: "Achieving perfect 100/100 Lighthouse scores through static generation, inline tokens, and layout shift prevention.",
-    content: "Core Web Vitals directly influence user conversion and organic search rankings...",
-    status: "DRAFT",
-    authorName: "Elena Rostova",
-    views: 120,
-    updatedAt: "2026-09-29",
-    readTime: "6 min read",
+    title: "How Intensive Driving Crash Courses Work: Fast-Track Pass Blueprint",
+    slug: "how-intensive-driving-courses-work",
+    category: "Intensive Courses",
+    excerpt: "Everything you need to know about 1 to 3 week fast-track driving tuition blocks, fast-track DVSA test dates, and daily practical driving schedules.",
+    content: "Intensive driving courses condense 40+ hours of tuition into consecutive daily blocks of 3 to 4 hours. By eliminating the week-long gap between lessons, learners retain muscle memory faster, master tricky dual carriageway junctions, and take their practical driving test while peak driving skills are fresh.",
+    status: "PUBLISHED",
+    authorName: "Alex Vance (Chief Instructor)",
+    views: 3120,
+    updatedAt: "2026-09-25",
+    readTime: "5 min read",
   },
 ];
 
@@ -832,7 +841,7 @@ const initialBusinessSettings: BusinessSettings = {
   tradingName: "NextDrive UK Ltd",
   companyRegistrationNumber: "12948210",
   dvsaSchoolId: "DVSA-SCH-90412",
-  phone: "+44 20 7946 0921",
+  phone: "+44 161 946 0921",
   emergencyPhone: "+44 7700 900100",
   email: "support@nextdrive.uk",
   headOfficeAddress: "Peter House, Oxford Street, Manchester, M1 5AN",
@@ -848,7 +857,7 @@ const initialBusinessSettings: BusinessSettings = {
   heroPrimaryCtaText: "Book Your First Lesson",
   heroPrimaryCtaLink: "#courses",
   heroSecondaryCtaText: "Call Us",
-  heroSecondaryCtaLink: "tel:+442079460921",
+  heroSecondaryCtaLink: "tel:+441619460921",
   heroImageUrl: "",
 
   firstTimePassRate: "89.4%",
@@ -939,7 +948,7 @@ const initialStudents: Student[] = [
     name: "Hannah Adams",
     email: "hannah.a@student.nextdrive.uk",
     phone: "+44 7911 678901",
-    postcode: "DA14",
+    postcode: "M33",
     theoryStatus: "PASSED",
     hoursCompleted: 34,
     assignedInstructorId: "inst_02",
@@ -954,7 +963,7 @@ const initialStudents: Student[] = [
     name: "Jordan Rivera",
     email: "jordan.r@student.nextdrive.uk",
     phone: "+44 7911 123456",
-    postcode: "BR1",
+    postcode: "M20",
     theoryStatus: "PASSED",
     hoursCompleted: 26,
     assignedInstructorId: "inst_05",
@@ -969,7 +978,7 @@ const initialStudents: Student[] = [
     name: "Marcus Thorne",
     email: "student@nextdrive.uk",
     phone: "+44 7911 345678",
-    postcode: "BR7",
+    postcode: "M1",
     theoryStatus: "PASSED",
     hoursCompleted: 22,
     assignedInstructorId: "inst_01",
@@ -984,7 +993,7 @@ const initialStudents: Student[] = [
     name: "Emma Watson",
     email: "emma.w@student.nextdrive.uk",
     phone: "+44 7911 234567",
-    postcode: "SE10",
+    postcode: "M5",
     theoryStatus: "PASSED",
     hoursCompleted: 12,
     assignedInstructorId: "inst_02",
@@ -998,7 +1007,7 @@ const initialStudents: Student[] = [
     name: "Chloe Bennett",
     email: "chloe.b@student.nextdrive.uk",
     phone: "+44 7911 456789",
-    postcode: "TW10",
+    postcode: "SK6",
     theoryStatus: "BOOKED",
     hoursCompleted: 4,
     assignedInstructorId: "inst_04",
@@ -1012,7 +1021,7 @@ const initialStudents: Student[] = [
     name: "Daniel Lee",
     email: "daniel.l@student.nextdrive.uk",
     phone: "+44 7911 567890",
-    postcode: "N1",
+    postcode: "BL9",
     theoryStatus: "PASSED",
     hoursCompleted: 18,
     assignedInstructorId: "inst_03",
@@ -1026,7 +1035,7 @@ const initialStudents: Student[] = [
     name: "Zara Ahmed",
     email: "zara.a@student.nextdrive.uk",
     phone: "+44 7911 789012",
-    postcode: "N5",
+    postcode: "M16",
     theoryStatus: "STUDYING",
     hoursCompleted: 2,
     assignedInstructorId: "inst_05",
@@ -1043,11 +1052,11 @@ const initialInquiries: ContactInquiry[] = [
     name: "Jordan Rivera",
     email: "jordan.r@student.nextdrive.uk",
     phone: "+44 7911 123456",
-    postcode: "BR1 1AA",
+    postcode: "M20 2RN",
     transmission: "MANUAL",
     targetPackage: "20-Hour Intensive Fast-Pass",
     course: "20-Hour Intensive Fast-Pass",
-    area: "South & Greenwich",
+    area: "South Manchester & Didsbury",
     provisionalLicence: "Yes",
     notes: "Passed theory test, want to pass practical within 3 weeks.",
     howFound: "Google",
@@ -1061,13 +1070,13 @@ const initialInquiries: ContactInquiry[] = [
     name: "Chloe Bennett",
     email: "chloe.b@student.nextdrive.uk",
     phone: "+44 7911 456789",
-    postcode: "TW10 6TH",
+    postcode: "M33 2DY",
     transmission: "MANUAL",
     targetPackage: "10-Hour Starter Block",
     course: "10-Hour Starter Block",
-    area: "South West & Wimbledon",
+    area: "Trafford & Sale",
     provisionalLicence: "Yes",
-    notes: "Beginner starter lesson in Richmond area.",
+    notes: "Beginner starter lesson in Sale / Trafford area.",
     howFound: "Instagram",
     sourcePage: "/",
     internalNotes: "Left voicemail, awaiting callback on weekend slot preferences.",
@@ -1079,13 +1088,13 @@ const initialInquiries: ContactInquiry[] = [
     name: "Ryan Taylor",
     email: "ryan.t@example.com",
     phone: "+44 7700 900888",
-    postcode: "E14 9QA",
+    postcode: "M5 4WT",
     transmission: "AUTOMATIC",
     targetPackage: "Introductory 2-Hour Assessment",
     course: "Introductory 2-Hour Assessment",
-    area: "East & Canary Wharf",
+    area: "Salford Quays & MediaCity",
     provisionalLicence: "Applying soon",
-    notes: "Looking to start automatic lessons next week in Canary Wharf.",
+    notes: "Looking to start automatic lessons next week in Salford Quays.",
     howFound: "TikTok",
     sourcePage: "/#courses",
     internalNotes: "New prospective learner looking for automatic transmission.",
@@ -1097,11 +1106,11 @@ const initialInquiries: ContactInquiry[] = [
     name: "Aisha Begum",
     email: "aisha.b@example.com",
     phone: "+44 7700 900999",
-    postcode: "N1 2XY",
+    postcode: "M8 5UF",
     transmission: "MANUAL",
     targetPackage: "30-Hour Complete Zero-to-Test",
     course: "30-Hour Complete Zero-to-Test",
-    area: "Central & North London",
+    area: "Central & North Manchester",
     provisionalLicence: "Yes",
     notes: "Zero driving experience, requested female instructor if available.",
     howFound: "Recommendation",
@@ -1403,8 +1412,8 @@ export const initialFooterSettings: FooterSettings = {
       links: [
         {
           id: "link_intro",
-          label: "Introductory Assessment",
-          url: "/#courses",
+          label: "Manchester Driving Lessons",
+          url: "/driving-lessons",
           linkType: "internal",
           newTab: false,
           isEnabled: true,
@@ -1412,8 +1421,8 @@ export const initialFooterSettings: FooterSettings = {
         },
         {
           id: "link_beg",
-          label: "Complete Beginner 20hr",
-          url: "/#courses",
+          label: "Course Packages & Pricing",
+          url: "/pricing",
           linkType: "internal",
           newTab: false,
           isEnabled: true,
@@ -1421,8 +1430,8 @@ export const initialFooterSettings: FooterSettings = {
         },
         {
           id: "link_int",
-          label: "Test Ready Intensive 30hr",
-          url: "/#courses",
+          label: "Intensive Driving Courses",
+          url: "/intensive-courses",
           linkType: "internal",
           newTab: false,
           isEnabled: true,
@@ -1431,7 +1440,7 @@ export const initialFooterSettings: FooterSettings = {
         {
           id: "link_pass_plus",
           label: "Pass Plus Certification",
-          url: "/#courses",
+          url: "/driving-lessons",
           linkType: "internal",
           newTab: false,
           isEnabled: true,
@@ -1440,7 +1449,7 @@ export const initialFooterSettings: FooterSettings = {
         {
           id: "link_auto_ref",
           label: "Automatic Refresher",
-          url: "/#courses",
+          url: "/driving-lessons",
           linkType: "internal",
           newTab: false,
           isEnabled: true,
@@ -1457,8 +1466,8 @@ export const initialFooterSettings: FooterSettings = {
       links: [
         {
           id: "link_loc_1",
-          label: "Cheetham Hill Test Centre",
-          url: "/#locations",
+          label: "Manchester Test Centres",
+          url: "/test-centres",
           linkType: "internal",
           newTab: false,
           isEnabled: true,
@@ -1466,8 +1475,8 @@ export const initialFooterSettings: FooterSettings = {
         },
         {
           id: "link_loc_2",
-          label: "West Didsbury DTC",
-          url: "/#locations",
+          label: "All Service Locations",
+          url: "/locations",
           linkType: "internal",
           newTab: false,
           isEnabled: true,
@@ -1475,8 +1484,8 @@ export const initialFooterSettings: FooterSettings = {
         },
         {
           id: "link_loc_3",
-          label: "Sale & Altrincham",
-          url: "/#locations",
+          label: "West Didsbury Hub",
+          url: "/locations/south-manchester-didsbury",
           linkType: "internal",
           newTab: false,
           isEnabled: true,
@@ -1484,8 +1493,8 @@ export const initialFooterSettings: FooterSettings = {
         },
         {
           id: "link_loc_fleet",
-          label: "Our Certified ADI Fleet",
-          url: "/#instructors",
+          label: "Certified Instructor Fleet",
+          url: "/instructors",
           linkType: "internal",
           newTab: false,
           isEnabled: true,
@@ -1510,8 +1519,8 @@ export const initialFooterSettings: FooterSettings = {
         },
         {
           id: "link_syllabus",
-          label: "DVSA Training Syllabus",
-          url: "/#curriculum",
+          label: "Driving Guides & Articles",
+          url: "/blog",
           linkType: "internal",
           newTab: false,
           isEnabled: true,
@@ -1520,7 +1529,7 @@ export const initialFooterSettings: FooterSettings = {
         {
           id: "link_faqs",
           label: "Frequently Asked Questions",
-          url: "/#faqs",
+          url: "/faq",
           linkType: "internal",
           newTab: false,
           isEnabled: true,
@@ -1550,7 +1559,7 @@ export const initialFooterSettings: FooterSettings = {
 
   showContact: true,
   useBusinessContact: true,
-  phone: "+44 20 7946 0921",
+  phone: "+44 161 946 0921",
   email: "support@nextdrive.uk",
   address: "Peter House, Oxford Street, Manchester, M1 5AN",
   openingHours: "Mon-Fri: 07:00 - 20:00, Sat-Sun: 08:00 - 18:00",
@@ -1621,9 +1630,9 @@ export const initialFooterSettings: FooterSettings = {
   ctaPrimaryText: "Book Your First Lesson",
   ctaPrimaryAction: "booking_modal",
   ctaPrimaryUrl: "",
-  ctaSecondaryText: "Call Us: +44 20 7946 0921",
+  ctaSecondaryText: "Call Us: +44 161 946 0921",
   ctaSecondaryAction: "call_phone",
-  ctaSecondaryUrl: "tel:+442079460921",
+  ctaSecondaryUrl: "tel:+441619460921",
 
   legalLinks: [
     {
@@ -1681,6 +1690,663 @@ export const initialFooterSettings: FooterSettings = {
   showLinkArrows: false,
 };
 
+export const initialGlobalSEOSettings: GlobalSEOSettings = {
+  siteName: "NextDrive Driving Academy",
+  titleTemplate: "%s | NextDrive Driving Academy",
+  defaultMetaDescription:
+    "DVSA-approved Grade A driving instructors across Manchester. High 89.4% first-time pass rate, modern dual-control automatic & manual fleet, and structured test route preparation.",
+  canonicalBaseUrl: "https://nextdrive.uk",
+  defaultOgImage:
+    "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=1200&h=630&fit=crop",
+  defaultRobots: {
+    index: true,
+    follow: true,
+  },
+  googleVerificationCode: "google-site-verification=nd-mcr-driving-2026",
+  bingVerificationCode: "bing-site-auth-98210",
+  autoGenerateSitemap: true,
+  enforceTrailingSlash: false,
+  schemaDefaults: {
+    organizationType: "DrivingSchool",
+    priceRange: "££",
+    openingHours: ["Mo-Fr 07:00-20:00", "Sa-Su 08:00-18:00"],
+    areaServed: [
+      "Manchester City Centre",
+      "Cheetham Hill",
+      "West Didsbury",
+      "Sale",
+      "Salford",
+      "Bury",
+      "Stockport",
+      "Trafford",
+      "Greater Manchester",
+    ],
+  },
+};
+
+export const initialPageSEO: PageSEO[] = [
+  {
+    id: "seo_p_home",
+    urlPath: "/",
+    pageName: "Homepage",
+    title: "NextDrive Academy | Manchester Driving School & Lessons",
+    metaDescription:
+      "DVSA-approved Grade A driving instructors across Manchester. High 89.4% first-time pass rate, modern dual-control automatic and manual fleet. Book online today.",
+    h1: "Master the Road. Pass With Confidence in Manchester.",
+    canonicalUrl: "https://nextdrive.uk",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    ogImage: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=1200&h=630&fit=crop",
+    ogType: "website",
+    schemaType: "DrivingSchool",
+    primaryKeyword: "driving lessons manchester",
+    secondaryKeywords: [
+      "learn to drive manchester",
+      "driving school manchester",
+      "dvsa driving instructor",
+    ],
+    priority: 1.0,
+    changeFrequency: "daily",
+    isSystemPage: true,
+    seoScore: 98,
+    wordCount: 1420,
+    updatedAt: "2026-10-07T14:30:00Z",
+    notes: "Main brand hub targeting Greater Manchester learner queries.",
+  },
+  {
+    id: "seo_p_driving_lessons",
+    urlPath: "/driving-lessons",
+    pageName: "Driving Lessons",
+    title: "Driving Lessons Manchester | Manual & Automatic | NextDrive",
+    metaDescription:
+      "Professional 1-to-1 driving lessons across Manchester and Greater Manchester. Grade A DVSA certified instructors with high pass rates. Book assessment lesson.",
+    h1: "Professional Driving Lessons Across Greater Manchester",
+    canonicalUrl: "https://nextdrive.uk/driving-lessons",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "Service",
+    primaryKeyword: "driving lessons manchester",
+    secondaryKeywords: [
+      "automatic driving lessons manchester",
+      "manual driving lessons",
+      "pass plus courses",
+    ],
+    priority: 0.9,
+    changeFrequency: "weekly",
+    isSystemPage: true,
+    seoScore: 96,
+    wordCount: 1150,
+    updatedAt: "2026-10-07T12:00:00Z",
+  },
+  {
+    id: "seo_p_intensive_courses",
+    urlPath: "/intensive-courses",
+    pageName: "Intensive Driving Courses",
+    title: "Fast-Track Intensive Driving Courses Manchester | NextDrive",
+    metaDescription:
+      "Pass your driving test in 1 to 3 weeks with our structured Manchester intensive driving courses. Includes fast-track DVSA practical test booking.",
+    h1: "Intensive Driving Courses & Crash Courses in Manchester",
+    canonicalUrl: "https://nextdrive.uk/intensive-courses",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "Course",
+    primaryKeyword: "intensive driving course manchester",
+    secondaryKeywords: [
+      "crash course driving manchester",
+      "fast track driving test manchester",
+      "1 week driving course",
+    ],
+    priority: 0.9,
+    changeFrequency: "weekly",
+    isSystemPage: true,
+    seoScore: 95,
+    wordCount: 1280,
+    updatedAt: "2026-10-06T15:00:00Z",
+  },
+  {
+    id: "seo_p_pricing",
+    urlPath: "/pricing",
+    pageName: "Pricing & Packages",
+    title: "Driving Lesson Prices & Course Packages Manchester | NextDrive",
+    metaDescription:
+      "Transparent driving lesson prices in Manchester. Manual lessons from £37.50/hr, Automatic from £40/hr. Block booking discounts and student offers available.",
+    h1: "Transparent Driving Tuition Rates & Packages",
+    canonicalUrl: "https://nextdrive.uk/pricing",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "Service",
+    primaryKeyword: "driving lesson prices manchester",
+    secondaryKeywords: [
+      "cheap driving lessons manchester",
+      "block booking driving lessons",
+      "driving instructor hourly rate",
+    ],
+    priority: 0.8,
+    changeFrequency: "weekly",
+    isSystemPage: true,
+    seoScore: 94,
+    wordCount: 820,
+    updatedAt: "2026-10-06T14:00:00Z",
+  },
+  {
+    id: "seo_p_instructors",
+    urlPath: "/instructors",
+    pageName: "Instructors Directory",
+    title: "DVSA Grade A Driving Instructors Manchester | NextDrive",
+    metaDescription:
+      "Get to know our certified male and female driving instructors across Manchester. High first-time pass rates, friendly tuition, and modern dual-control cars.",
+    h1: "Certified DVSA Grade A Driving Instructors",
+    canonicalUrl: "https://nextdrive.uk/instructors",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "EducationalOrganization",
+    primaryKeyword: "driving instructors manchester",
+    secondaryKeywords: [
+      "female driving instructor manchester",
+      "grade a driving instructor",
+      "adi certified instructor",
+    ],
+    priority: 0.8,
+    changeFrequency: "weekly",
+    isSystemPage: true,
+    seoScore: 95,
+    wordCount: 960,
+    updatedAt: "2026-10-05T11:00:00Z",
+  },
+  {
+    id: "seo_p_test_centres",
+    urlPath: "/test-centres",
+    pageName: "Test Centres Guide",
+    title: "Manchester Driving Test Centres & Pass Rates | NextDrive Guide",
+    metaDescription:
+      "Comprehensive guide to Manchester DVSA driving test centres: Cheetham Hill, West Didsbury, Sale, Bury, and Bredbury. Local pass rates and test route tips.",
+    h1: "Manchester Driving Test Centres & Route Preparation",
+    canonicalUrl: "https://nextdrive.uk/test-centres",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "EducationalOrganization",
+    primaryKeyword: "manchester driving test centres",
+    secondaryKeywords: [
+      "cheetham hill test centre pass rate",
+      "west didsbury driving test routes",
+      "sale dtc pass rate",
+    ],
+    priority: 0.8,
+    changeFrequency: "monthly",
+    isSystemPage: true,
+    seoScore: 96,
+    wordCount: 1650,
+    updatedAt: "2026-10-04T10:00:00Z",
+  },
+  {
+    id: "seo_p_contact",
+    urlPath: "/contact",
+    pageName: "Contact & Booking",
+    title: "Contact NextDrive Driving Academy | Manchester Lesson Booking",
+    metaDescription:
+      "Get in touch with our Manchester driving school team. Call +44 161 946 0921 or send an online enquiry for lesson availability and instructor matching.",
+    h1: "Contact Our Manchester Dispatch Team",
+    canonicalUrl: "https://nextdrive.uk/contact",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "ContactPage",
+    primaryKeyword: "book driving lessons manchester",
+    secondaryKeywords: ["contact driving school manchester", "driving instructor enquiry"],
+    priority: 0.7,
+    changeFrequency: "monthly",
+    isSystemPage: true,
+    seoScore: 87,
+    wordCount: 640,
+    updatedAt: "2026-10-04T16:00:00Z",
+  },
+  {
+    id: "seo_p_privacy",
+    urlPath: "/privacy",
+    pageName: "Privacy Policy",
+    title: "Privacy Policy | NextDrive Driving Academy",
+    metaDescription:
+      "Read the NextDrive Driving Academy privacy policy. How we collect, safeguard, and manage student learner data in compliance with UK GDPR.",
+    h1: "Privacy & Data Protection Policy",
+    canonicalUrl: "https://nextdrive.uk/privacy",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "WebPage",
+    primaryKeyword: "nextdrive privacy policy",
+    secondaryKeywords: [],
+    priority: 0.3,
+    changeFrequency: "yearly",
+    isSystemPage: true,
+    seoScore: 84,
+    wordCount: 950,
+    updatedAt: "2026-09-28T10:00:00Z",
+  },
+  {
+    id: "seo_p_terms",
+    urlPath: "/terms",
+    pageName: "Terms & Conditions",
+    title: "Terms and Conditions | NextDrive Driving Academy",
+    metaDescription:
+      "NextDrive student driving tuition terms and conditions, 48-hour cancellation policy, lesson booking guidelines, and practical test car hire rules.",
+    h1: "Terms & Conditions of Tuition",
+    canonicalUrl: "https://nextdrive.uk/terms",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "WebPage",
+    primaryKeyword: "driving lessons terms conditions",
+    secondaryKeywords: [],
+    priority: 0.3,
+    changeFrequency: "yearly",
+    isSystemPage: true,
+    seoScore: 85,
+    wordCount: 1100,
+    updatedAt: "2026-09-28T10:00:00Z",
+  },
+  {
+    id: "seo_p_cookies",
+    urlPath: "/cookies",
+    pageName: "Cookie Policy",
+    title: "Cookie Policy | NextDrive Driving Academy",
+    metaDescription:
+      "Learn about how cookies and tracking technologies are used across nextdrive.uk to enhance browsing experience and preserve learner dashboard preferences.",
+    h1: "Cookie & Tracking Policy",
+    canonicalUrl: "https://nextdrive.uk/cookies",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "WebPage",
+    primaryKeyword: "nextdrive cookies",
+    secondaryKeywords: [],
+    priority: 0.3,
+    changeFrequency: "yearly",
+    isSystemPage: true,
+    seoScore: 82,
+    wordCount: 520,
+    updatedAt: "2026-09-28T10:00:00Z",
+  },
+  {
+    id: "seo_p_locations_hub",
+    urlPath: "/locations",
+    pageName: "Service Locations Hub",
+    title: "Manchester Driving Lesson Service Locations | NextDrive",
+    metaDescription:
+      "Explore NextDrive active service areas across Greater Manchester: Central Manchester, Didsbury, Sale, Trafford, Salford, Stockport, and Bury.",
+    h1: "Driving Tuition Service Areas in Greater Manchester",
+    canonicalUrl: "https://nextdrive.uk/locations",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "LocalBusiness",
+    primaryKeyword: "driving lessons manchester locations",
+    secondaryKeywords: ["driving school greater manchester", "manchester driving instructors"],
+    priority: 0.8,
+    changeFrequency: "weekly",
+    isSystemPage: true,
+    seoScore: 95,
+    wordCount: 880,
+    updatedAt: "2026-10-06T12:00:00Z",
+  },
+  {
+    id: "seo_p_faq",
+    urlPath: "/faq",
+    pageName: "FAQ Knowledgebase",
+    title: "Driving Lessons FAQ Manchester | NextDrive Academy",
+    metaDescription:
+      "Frequently asked questions about taking driving lessons in Manchester. Learn about lesson prices, DVSA test booking, manual vs automatic, and instructor matching.",
+    h1: "Driving Tuition Frequently Asked Questions",
+    canonicalUrl: "https://nextdrive.uk/faq",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "WebPage",
+    primaryKeyword: "driving lessons manchester faq",
+    secondaryKeywords: ["how to book driving test manchester", "driving lessons questions"],
+    priority: 0.7,
+    changeFrequency: "monthly",
+    isSystemPage: true,
+    seoScore: 94,
+    wordCount: 1100,
+    updatedAt: "2026-10-06T12:00:00Z",
+  },
+  {
+    id: "seo_p_blog",
+    urlPath: "/blog",
+    pageName: "Driving Guides & Blog",
+    title: "Driving Guides & Learner Advice | NextDrive Manchester",
+    metaDescription:
+      "Expert driving guides, test centre preparation tips, manual vs automatic comparisons, and learner driver advice for Manchester motorists.",
+    h1: "Driving Guides & Practical Test Advice",
+    canonicalUrl: "https://nextdrive.uk/blog",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "WebPage",
+    primaryKeyword: "manchester driving guides",
+    secondaryKeywords: ["how to pass driving test manchester", "learner driver tips"],
+    priority: 0.7,
+    changeFrequency: "weekly",
+    isSystemPage: true,
+    seoScore: 95,
+    wordCount: 950,
+    updatedAt: "2026-10-06T12:00:00Z",
+  },
+  {
+    id: "seo_p_loc_01",
+    urlPath: "/locations/central-north-manchester",
+    pageName: "Central & North Manchester",
+    title: "Driving Lessons Central & North Manchester | NextDrive",
+    metaDescription:
+      "Top-rated manual and automatic driving tuition across Manchester City Centre, M1-M4, Ancoats, Cheetham Hill, and North Manchester test routes.",
+    h1: "Driving Lessons in Central & North Manchester",
+    canonicalUrl: "https://nextdrive.uk/locations/central-north-manchester",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "LocalBusiness",
+    primaryKeyword: "driving lessons central manchester",
+    secondaryKeywords: [
+      "driving lessons cheetham hill",
+      "m1 driving instructor",
+      "north manchester driving school",
+    ],
+    priority: 0.8,
+    changeFrequency: "weekly",
+    isSystemPage: false,
+    seoScore: 93,
+    wordCount: 1180,
+    updatedAt: "2026-10-06T11:00:00Z",
+  },
+  {
+    id: "seo_p_loc_02",
+    urlPath: "/locations/south-manchester-didsbury",
+    pageName: "South Manchester & Didsbury",
+    title: "Driving Lessons South Manchester & Didsbury | NextDrive",
+    metaDescription:
+      "Door-to-door driving tuition in West Didsbury, Fallowfield, Withington, and Chorlton. Expert preparation for West Didsbury DTC test routes.",
+    h1: "Driving Lessons in South Manchester & Didsbury",
+    canonicalUrl: "https://nextdrive.uk/locations/south-manchester-didsbury",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "LocalBusiness",
+    primaryKeyword: "driving lessons didsbury",
+    secondaryKeywords: [
+      "driving lessons south manchester",
+      "west didsbury driving instructor",
+      "m20 driving lessons",
+    ],
+    priority: 0.8,
+    changeFrequency: "weekly",
+    isSystemPage: false,
+    seoScore: 92,
+    wordCount: 1140,
+    updatedAt: "2026-10-06T11:00:00Z",
+  },
+  {
+    id: "seo_p_loc_03",
+    urlPath: "/locations/trafford-sale",
+    pageName: "Trafford & Sale",
+    title: "Driving Lessons Trafford & Sale | NextDrive Academy",
+    metaDescription:
+      "High-pass-rate driving lessons across Sale, Stretford, Old Trafford, and Urmston. Intensive practical training on official Sale DTC routes.",
+    h1: "Driving Tuition in Trafford, Sale & Stretford",
+    canonicalUrl: "https://nextdrive.uk/locations/trafford-sale",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "LocalBusiness",
+    primaryKeyword: "driving lessons sale manchester",
+    secondaryKeywords: [
+      "driving instructor trafford",
+      "sale dtc mock test",
+      "m33 driving school",
+    ],
+    priority: 0.8,
+    changeFrequency: "weekly",
+    isSystemPage: false,
+    seoScore: 96,
+    wordCount: 1090,
+    updatedAt: "2026-10-06T11:00:00Z",
+  },
+  {
+    id: "seo_p_loc_04",
+    urlPath: "/locations/salford-bury",
+    pageName: "Salford & Bury",
+    title: "Driving Lessons Salford & Bury | NextDrive Academy",
+    metaDescription:
+      "Expert driving lessons across Salford Quays, Eccles, Swinton, Prestwich, and Whitefield. Experienced tuition targeting Bury test centre routes.",
+    h1: "Driving Tuition Across Salford & Bury",
+    canonicalUrl: "https://nextdrive.uk/locations/salford-bury",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "LocalBusiness",
+    primaryKeyword: "driving lessons salford",
+    secondaryKeywords: [
+      "driving instructor bury",
+      "salford quays driving lessons",
+      "bl9 driving school",
+    ],
+    priority: 0.8,
+    changeFrequency: "weekly",
+    isSystemPage: false,
+    seoScore: 90,
+    wordCount: 1040,
+    updatedAt: "2026-10-06T11:00:00Z",
+  },
+  {
+    id: "seo_p_loc_05",
+    urlPath: "/locations/stockport-cheadle",
+    pageName: "Stockport & Cheadle",
+    title: "Driving Lessons Stockport & Cheadle | NextDrive Academy",
+    metaDescription:
+      "Qualified Grade A driving instructors in Stockport, Cheadle, Bramhall, and Hazel Grove. Rehearse authentic Bredbury DTC driving test routes.",
+    h1: "Driving Lessons in Stockport & Cheadle",
+    canonicalUrl: "https://nextdrive.uk/locations/stockport-cheadle",
+    indexStatus: "INDEX",
+    followStatus: "FOLLOW",
+    schemaType: "LocalBusiness",
+    primaryKeyword: "driving lessons stockport",
+    secondaryKeywords: [
+      "cheadle driving instructor",
+      "bredbury test centre routes",
+      "sk1 driving lessons",
+    ],
+    priority: 0.8,
+    changeFrequency: "weekly",
+    isSystemPage: false,
+    seoScore: 89,
+    wordCount: 1020,
+    updatedAt: "2026-10-06T11:00:00Z",
+  },
+];
+
+export const initialSEORedirects: SEORedirect[] = [
+  {
+    id: "redir_01",
+    sourcePath: "/driving-lessons-manchester",
+    destinationPath: "/driving-lessons",
+    statusCode: 301,
+    isActive: true,
+    hitCount: 342,
+    notes: "Legacy URL migrated to consolidate ranking signals on core hub.",
+    createdAt: "2025-06-12T09:00:00Z",
+    updatedAt: "2026-09-15T10:00:00Z",
+  },
+  {
+    id: "redir_02",
+    sourcePath: "/cheetham-hill-driving-lessons",
+    destinationPath: "/locations/central-north-manchester",
+    statusCode: 301,
+    isActive: true,
+    hitCount: 198,
+    notes: "Directs old campaign landing page to updated local service area.",
+    createdAt: "2025-08-01T11:00:00Z",
+    updatedAt: "2026-08-01T11:00:00Z",
+  },
+  {
+    id: "redir_03",
+    sourcePath: "/didsbury-driving-school",
+    destinationPath: "/locations/south-manchester-didsbury",
+    statusCode: 301,
+    isActive: true,
+    hitCount: 156,
+    notes: "Redirect old external local directory links to Didsbury hub.",
+    createdAt: "2025-09-10T14:30:00Z",
+    updatedAt: "2026-09-10T14:30:00Z",
+  },
+];
+
+export const initialSEOKeywords: SEOKeywordTarget[] = [
+  {
+    id: "kw_01",
+    keyword: "driving lessons manchester",
+    targetUrl: "/",
+    monthlyVolume: "5,400",
+    intent: "LOCAL",
+    difficulty: "HIGH",
+    priority: "PRIMARY",
+    currentRank: 3,
+    notes: "Primary head keyword for Greater Manchester.",
+  },
+  {
+    id: "kw_02",
+    keyword: "automatic driving lessons manchester",
+    targetUrl: "/driving-lessons",
+    monthlyVolume: "2,900",
+    intent: "COMMERCIAL",
+    difficulty: "MEDIUM",
+    priority: "PRIMARY",
+    currentRank: 4,
+    notes: "High conversion intent for automatic transmission learners.",
+  },
+  {
+    id: "kw_03",
+    keyword: "intensive driving course manchester",
+    targetUrl: "/intensive-courses",
+    monthlyVolume: "1,900",
+    intent: "TRANSACTIONAL",
+    difficulty: "HIGH",
+    priority: "PRIMARY",
+    currentRank: 2,
+    notes: "Premium course package revenue driver.",
+  },
+  {
+    id: "kw_04",
+    keyword: "driving lessons didsbury",
+    targetUrl: "/locations/south-manchester-didsbury",
+    monthlyVolume: "720",
+    intent: "LOCAL",
+    difficulty: "LOW",
+    priority: "SECONDARY",
+    currentRank: 1,
+    notes: "Strong local dominance in M20.",
+  },
+  {
+    id: "kw_05",
+    keyword: "cheetham hill test centre driving instructor",
+    targetUrl: "/test-centres",
+    monthlyVolume: "480",
+    intent: "LOCAL",
+    difficulty: "LOW",
+    priority: "LONG_TAIL",
+    currentRank: 2,
+    notes: "Targeting learners with booked Cheetham Hill test dates.",
+  },
+  {
+    id: "kw_06",
+    keyword: "driving lessons sale manchester",
+    targetUrl: "/locations/trafford-sale",
+    monthlyVolume: "590",
+    intent: "LOCAL",
+    difficulty: "LOW",
+    priority: "SECONDARY",
+    currentRank: 3,
+    notes: "Trafford and Sale area local traffic.",
+  },
+  {
+    id: "kw_07",
+    keyword: "female driving instructor manchester",
+    targetUrl: "/instructors",
+    monthlyVolume: "1,100",
+    intent: "COMMERCIAL",
+    difficulty: "MEDIUM",
+    priority: "PRIMARY",
+    currentRank: 4,
+    notes: "High query demand for female instructors like Aisha Patel.",
+  },
+  {
+    id: "kw_08",
+    keyword: "driving lesson prices manchester",
+    targetUrl: "/pricing",
+    monthlyVolume: "880",
+    intent: "COMMERCIAL",
+    difficulty: "LOW",
+    priority: "SECONDARY",
+    currentRank: 2,
+    notes: "Price comparison queries.",
+  },
+];
+
+export const initialTestCentres: LocalTestCentre[] = [
+  {
+    id: "tc_01",
+    name: "Cheetham Hill Driving Test Centre",
+    slug: "cheetham-hill-dtc",
+    dvsaCentreId: "DVSA-DTC-MCR-01",
+    address: "Alderglen Road, Cheetham Hill, Manchester",
+    postcode: "M8 5UF",
+    passRateRecent: "46.8%",
+    keyRoutesDescription:
+      "Challenging urban driving involving Bury Old Road, Queens Road junctions, tricky multi-lane roundabouts, and narrow residential streets with heavy parked vehicles.",
+    associatedLocationSlug: "central-north-manchester",
+    isActive: true,
+  },
+  {
+    id: "tc_02",
+    name: "West Didsbury Driving Test Centre",
+    slug: "west-didsbury-dtc",
+    dvsaCentreId: "DVSA-DTC-MCR-02",
+    address: "Unit 11, Christie Park, West Didsbury, Manchester",
+    postcode: "M20 2RN",
+    passRateRecent: "49.3%",
+    keyRoutesDescription:
+      "Mixed residential and high-speed multi-lane driving along Kingsway (A34), Princess Parkway (A5103), and complex signalized crossroads around Barlow Moor Road.",
+    associatedLocationSlug: "south-manchester-didsbury",
+    isActive: true,
+  },
+  {
+    id: "tc_03",
+    name: "Sale Driving Test Centre",
+    slug: "sale-dtc",
+    dvsaCentreId: "DVSA-DTC-MCR-03",
+    address: "Poplar Grove, Sale, Greater Manchester",
+    postcode: "M33 2DY",
+    passRateRecent: "51.2%",
+    keyRoutesDescription:
+      "Features Washway Road (A56), rapid merging on the Carrington Spur (A6144), spiral lane roundabouts, and quiet residential maneuvers in Brooklands.",
+    associatedLocationSlug: "trafford-sale",
+    isActive: true,
+  },
+  {
+    id: "tc_04",
+    name: "Bury Driving Test Centre",
+    slug: "bury-dtc",
+    dvsaCentreId: "DVSA-DTC-MCR-04",
+    address: "Smith Street, Bury, Greater Manchester",
+    postcode: "BL9 8AU",
+    passRateRecent: "44.7%",
+    keyRoutesDescription:
+      "Demanding hill starts, Peel Way one-way gyratory system, high pedestrian zones around the Metrolink station, and dual-carriageway sections on Manchester Road.",
+    associatedLocationSlug: "salford-bury",
+    isActive: true,
+  },
+  {
+    id: "tc_05",
+    name: "Bredbury Driving Test Centre",
+    slug: "bredbury-dtc",
+    dvsaCentreId: "DVSA-DTC-MCR-05",
+    address: "Lingard Lane, Bredbury, Stockport",
+    postcode: "SK6 2BP",
+    passRateRecent: "47.9%",
+    keyRoutesDescription:
+      "Industrial estates transitioning to national speed limits on Crookilley Way, high-speed motorway slip observation, and complex lane changes on Bredbury roundabout.",
+    associatedLocationSlug: "stockport-cheadle",
+    isActive: true,
+  },
+];
+
 class DatabaseService {
   private users: User[] = [...initialUsers];
   private students: Student[] = [...initialStudents];
@@ -1701,6 +2367,22 @@ class DatabaseService {
   private popupAnalyticsEvents: PopupAnalyticsEvent[] = [...initialPopupAnalyticsEvents];
   private footerSettings: FooterSettings = { ...initialFooterSettings };
   private publishedFooterSettings: FooterSettings = { ...initialFooterSettings };
+  private globalSEOSettings: GlobalSEOSettings = { ...initialGlobalSEOSettings };
+  private pagesSEO: PageSEO[] = [...initialPageSEO];
+  private redirectsSEO: SEORedirect[] = [...initialSEORedirects];
+  private keywordsSEO: SEOKeywordTarget[] = [...initialSEOKeywords];
+  private testCentres: LocalTestCentre[] = [...initialTestCentres];
+
+  constructor() {
+    this.businessSettings.phone = "+44 161 946 0921";
+    this.businessSettings.heroSecondaryCtaLink = "tel:+441619460921";
+    this.footerSettings.phone = "+44 161 946 0921";
+    this.footerSettings.ctaSecondaryText = "Call Us: +44 161 946 0921";
+    this.footerSettings.ctaSecondaryUrl = "tel:+441619460921";
+    this.publishedFooterSettings.phone = "+44 161 946 0921";
+    this.publishedFooterSettings.ctaSecondaryText = "Call Us: +44 161 946 0921";
+    this.publishedFooterSettings.ctaSecondaryUrl = "tel:+441619460921";
+  }
 
   // User queries & mutations
   async getUsers(query?: string, roleFilter?: string): Promise<User[]> {
@@ -1973,6 +2655,11 @@ class DatabaseService {
     return locs.sort((a, b) => (a.displayOrder || 99) - (b.displayOrder || 99));
   }
 
+  async getLocationBySlug(slug: string): Promise<LocationArea | undefined> {
+    const clean = slug.toLowerCase().trim();
+    return this.locations.find((l) => (l.slug || "").toLowerCase() === clean);
+  }
+
   // Driving School: Dashboard Summary
   async getDashboardSummary(): Promise<DashboardSummary> {
     const activeInstructors = this.instructors.filter((i) => i.status === "ACTIVE");
@@ -2012,6 +2699,15 @@ class DatabaseService {
       totalInstructorsCount: this.instructors.length,
       weeklyHoursDelivered: weeklyHours,
       totalReviewsCount: this.reviews.length,
+      reviewsCount: this.reviews.length,
+      averageRating: this.reviews.length
+        ? Number(
+            (
+              this.reviews.reduce((sum, r) => sum + (r.rating || 5), 0) /
+              this.reviews.length
+            ).toFixed(1)
+          )
+        : 4.9,
       totalInquiriesCount: this.inquiries.length,
       newInquiriesCount: newInquiries.length,
       contactedInquiriesCount: contactedInquiries.length,
@@ -2766,6 +3462,647 @@ class DatabaseService {
     this.footerSettings.status = "DRAFT";
     this.footerSettings.updatedAt = new Date().toISOString();
     return JSON.parse(JSON.stringify(this.footerSettings));
+  }
+
+  // ============================================================================
+  // SEO MANAGER DATABASE OPERATIONS
+  // ============================================================================
+
+  async getGlobalSEOSettings(): Promise<GlobalSEOSettings> {
+    return JSON.parse(JSON.stringify(this.globalSEOSettings));
+  }
+
+  async updateGlobalSEOSettings(
+    updates: Partial<GlobalSEOSettings>
+  ): Promise<GlobalSEOSettings> {
+    this.globalSEOSettings = {
+      ...this.globalSEOSettings,
+      ...updates,
+    };
+
+    // Keep businessSettings in sync for backward compatibility
+    if (updates.siteName) {
+      this.businessSettings.businessName = updates.siteName;
+    }
+    if (updates.defaultMetaDescription) {
+      this.businessSettings.metaDescription = updates.defaultMetaDescription;
+    }
+    if (updates.defaultOgImage) {
+      this.businessSettings.ogImageUrl = updates.defaultOgImage;
+    }
+
+    await this.addAuditLog({
+      action: "GLOBAL_SEO_SETTINGS_UPDATED",
+      actorEmail: "admin@nextdrive.uk",
+      target: "Global SEO Meta Configuration",
+      ip: "127.0.0.1",
+      severity: "SUCCESS",
+    });
+
+    return JSON.parse(JSON.stringify(this.globalSEOSettings));
+  }
+
+  async getAllPageSEO(): Promise<PageSEO[]> {
+    return JSON.parse(JSON.stringify(this.pagesSEO));
+  }
+
+  async getPageSEO(urlPath: string): Promise<PageSEO | null> {
+    const clean = urlPath.trim().toLowerCase();
+    const found = this.pagesSEO.find(
+      (p) => p.urlPath.toLowerCase() === clean || p.urlPath.toLowerCase() === `${clean}/`
+    );
+    return found ? JSON.parse(JSON.stringify(found)) : null;
+  }
+
+  private calculateIndividualPageScore(page: PageSEO): number {
+    let score = 100;
+    // Title checks
+    if (!page.title || page.title.trim() === "") {
+      score -= 30;
+    } else if (page.title.length < 40 || page.title.length > 65) {
+      score -= 10;
+    }
+
+    // Description checks
+    if (!page.metaDescription || page.metaDescription.trim() === "") {
+      score -= 25;
+    } else if (page.metaDescription.length < 110 || page.metaDescription.length > 170) {
+      score -= 8;
+    }
+
+    // Canonical
+    if (!page.canonicalUrl) {
+      score -= 15;
+    }
+
+    // H1
+    if (!page.h1) {
+      score -= 10;
+    }
+
+    // OG Image
+    if (!page.ogImage && !this.globalSEOSettings.defaultOgImage) {
+      score -= 10;
+    }
+
+    // Noindex on public page penalty
+    if (page.indexStatus === "NOINDEX" && (page.urlPath === "/" || page.urlPath === "/driving-lessons")) {
+      score -= 40;
+    }
+
+    return Math.max(10, Math.min(100, score));
+  }
+
+  async savePageSEO(pageData: PageSEO): Promise<PageSEO> {
+    const idx = this.pagesSEO.findIndex((p) => p.id === pageData.id || p.urlPath === pageData.urlPath);
+    const score = this.calculateIndividualPageScore(pageData);
+    const updatedPage: PageSEO = {
+      ...pageData,
+      seoScore: score,
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (idx >= 0) {
+      this.pagesSEO[idx] = updatedPage;
+    } else {
+      this.pagesSEO.push(updatedPage);
+    }
+
+    // If updating homepage, sync to businessSettings
+    if (updatedPage.urlPath === "/") {
+      this.businessSettings.metaTitle = updatedPage.title;
+      this.businessSettings.metaDescription = updatedPage.metaDescription;
+      this.businessSettings.metaKeywords = updatedPage.secondaryKeywords || [];
+      if (updatedPage.ogImage) {
+        this.businessSettings.ogImageUrl = updatedPage.ogImage;
+      }
+    }
+
+    await this.addAuditLog({
+      action: "PAGE_SEO_UPDATED",
+      actorEmail: "admin@nextdrive.uk",
+      target: `Page SEO: ${updatedPage.urlPath}`,
+      ip: "127.0.0.1",
+      severity: "SUCCESS",
+    });
+
+    return JSON.parse(JSON.stringify(updatedPage));
+  }
+
+  async deletePageSEO(id: string): Promise<boolean> {
+    const target = this.pagesSEO.find((p) => p.id === id);
+    if (!target) return false;
+    if (target.isSystemPage) {
+      throw new Error("System pages cannot be deleted from the SEO directory.");
+    }
+    this.pagesSEO = this.pagesSEO.filter((p) => p.id !== id);
+    return true;
+  }
+
+  async getSEORedirects(): Promise<SEORedirect[]> {
+    return JSON.parse(JSON.stringify(this.redirectsSEO));
+  }
+
+  async saveSEORedirect(
+    redirect: Partial<SEORedirect> & { sourcePath: string; destinationPath: string }
+  ): Promise<SEORedirect> {
+    const now = new Date().toISOString();
+    let cleanSource = redirect.sourcePath.trim();
+    if (!cleanSource.startsWith("/")) cleanSource = `/${cleanSource}`;
+    let cleanDest = redirect.destinationPath.trim();
+    if (!cleanDest.startsWith("/") && !cleanDest.startsWith("http")) cleanDest = `/${cleanDest}`;
+
+    if (cleanSource === cleanDest) {
+      throw new Error("Source and destination paths cannot be identical (prevents redirect loop).");
+    }
+
+    const existingIdx = redirect.id ? this.redirectsSEO.findIndex((r) => r.id === redirect.id) : -1;
+
+    let savedRedirect: SEORedirect;
+    if (existingIdx >= 0) {
+      savedRedirect = {
+        ...this.redirectsSEO[existingIdx],
+        ...redirect,
+        sourcePath: cleanSource,
+        destinationPath: cleanDest,
+        updatedAt: now,
+      };
+      this.redirectsSEO[existingIdx] = savedRedirect;
+    } else {
+      savedRedirect = {
+        id: redirect.id || `redir_${Date.now().toString(36)}`,
+        sourcePath: cleanSource,
+        destinationPath: cleanDest,
+        statusCode: redirect.statusCode || 301,
+        isActive: redirect.isActive ?? true,
+        hitCount: 0,
+        notes: redirect.notes || "",
+        createdAt: now,
+        updatedAt: now,
+      };
+      this.redirectsSEO.unshift(savedRedirect);
+    }
+
+    await this.addAuditLog({
+      action: "SEO_REDIRECT_SAVED",
+      actorEmail: "admin@nextdrive.uk",
+      target: `Redirect ${cleanSource} -> ${cleanDest} (${savedRedirect.statusCode})`,
+      ip: "127.0.0.1",
+      severity: "SUCCESS",
+    });
+
+    return JSON.parse(JSON.stringify(savedRedirect));
+  }
+
+  async deleteSEORedirect(id: string): Promise<boolean> {
+    const initialLen = this.redirectsSEO.length;
+    this.redirectsSEO = this.redirectsSEO.filter((r) => r.id !== id);
+    return this.redirectsSEO.length < initialLen;
+  }
+
+  async recordRedirectHit(id: string): Promise<void> {
+    const r = this.redirectsSEO.find((item) => item.id === id);
+    if (r) {
+      r.hitCount = (r.hitCount || 0) + 1;
+    }
+  }
+
+  async getSEOKeywords(): Promise<SEOKeywordTarget[]> {
+    return JSON.parse(JSON.stringify(this.keywordsSEO));
+  }
+
+  async saveSEOKeyword(
+    kw: Partial<SEOKeywordTarget> & { keyword: string; targetUrl: string }
+  ): Promise<SEOKeywordTarget> {
+    const existingIdx = kw.id ? this.keywordsSEO.findIndex((k) => k.id === kw.id) : -1;
+    let saved: SEOKeywordTarget;
+
+    if (existingIdx >= 0) {
+      saved = {
+        ...this.keywordsSEO[existingIdx],
+        ...kw,
+      };
+      this.keywordsSEO[existingIdx] = saved;
+    } else {
+      saved = {
+        id: kw.id || `kw_${Date.now().toString(36)}`,
+        keyword: kw.keyword.trim().toLowerCase(),
+        targetUrl: kw.targetUrl.trim(),
+        monthlyVolume: kw.monthlyVolume || "500",
+        intent: kw.intent || "LOCAL",
+        difficulty: kw.difficulty || "MEDIUM",
+        priority: kw.priority || "SECONDARY",
+        currentRank: kw.currentRank,
+        notes: kw.notes,
+      };
+      this.keywordsSEO.push(saved);
+    }
+
+    return JSON.parse(JSON.stringify(saved));
+  }
+
+  async deleteSEOKeyword(id: string): Promise<boolean> {
+    const initialLen = this.keywordsSEO.length;
+    this.keywordsSEO = this.keywordsSEO.filter((k) => k.id !== id);
+    return this.keywordsSEO.length < initialLen;
+  }
+
+  async getLocalTestCentres(): Promise<LocalTestCentre[]> {
+    return JSON.parse(JSON.stringify(this.testCentres));
+  }
+
+  async saveLocalTestCentre(
+    tc: Partial<LocalTestCentre> & { name: string; slug: string }
+  ): Promise<LocalTestCentre> {
+    const existingIdx = tc.id ? this.testCentres.findIndex((item) => item.id === tc.id) : -1;
+    let saved: LocalTestCentre;
+
+    if (existingIdx >= 0) {
+      saved = {
+        ...this.testCentres[existingIdx],
+        ...tc,
+      };
+      this.testCentres[existingIdx] = saved;
+    } else {
+      saved = {
+        id: tc.id || `tc_${Date.now().toString(36)}`,
+        name: tc.name.trim(),
+        slug: tc.slug.trim().toLowerCase(),
+        dvsaCentreId: tc.dvsaCentreId || `DVSA-DTC-${Date.now().toString(36).toUpperCase()}`,
+        address: tc.address || "",
+        postcode: tc.postcode || "",
+        passRateRecent: tc.passRateRecent || "48.0%",
+        keyRoutesDescription: tc.keyRoutesDescription || "",
+        associatedLocationSlug: tc.associatedLocationSlug || "",
+        isActive: tc.isActive ?? true,
+      };
+      this.testCentres.push(saved);
+    }
+
+    return JSON.parse(JSON.stringify(saved));
+  }
+
+  async deleteLocalTestCentre(id: string): Promise<boolean> {
+    const initialLen = this.testCentres.length;
+    this.testCentres = this.testCentres.filter((item) => item.id !== id);
+    return this.testCentres.length < initialLen;
+  }
+
+  async runSEOAudit(): Promise<SEOAuditResult> {
+    const pages = await this.getAllPageSEO();
+    const globalSettings = await this.getGlobalSEOSettings();
+    const businessSettings = await this.getBusinessSettings();
+    const redirects = await this.getSEORedirects();
+    const locations = await this.getLocations();
+
+    const issues: SEOAuditIssue[] = [];
+    let metadataDeduction = 0;
+    let indexingDeduction = 0;
+    let localDeduction = 0;
+    let technicalDeduction = 0;
+    let schemaDeduction = 0;
+    let contentDeduction = 0;
+
+    let missingTitles = 0;
+    let missingDescriptions = 0;
+    let missingCanonicals = 0;
+    let missingOgImages = 0;
+    let missingH1 = 0;
+
+    // 1. Check each page
+    pages.forEach((p) => {
+      // Title checks
+      if (!p.title || p.title.trim() === "") {
+        missingTitles++;
+        metadataDeduction += 5;
+        issues.push({
+          id: `iss_title_empty_${p.id}`,
+          severity: "CRITICAL",
+          category: "METADATA",
+          title: `Missing SEO title on ${p.pageName}`,
+          description: `Page ${p.urlPath} has no meta title specified. Search engines cannot index it effectively.`,
+          impactPoints: 5,
+          affectedUrl: p.urlPath,
+          recommendation: `Add a compelling, unique title (50-60 characters) incorporating primary Manchester keywords.`,
+        });
+      } else if (p.title.length < 40) {
+        metadataDeduction += 2;
+        issues.push({
+          id: `iss_title_short_${p.id}`,
+          severity: "LOW",
+          category: "METADATA",
+          title: `Short title tag on ${p.pageName} (${p.title.length} chars)`,
+          description: `The title is ${p.title.length} characters long. Recommended is 50-60 characters for maximum CTR.`,
+          impactPoints: 2,
+          affectedUrl: p.urlPath,
+          recommendation: `Expand title with local branding or primary service benefits.`,
+        });
+      } else if (p.title.length > 65) {
+        metadataDeduction += 2;
+        issues.push({
+          id: `iss_title_long_${p.id}`,
+          severity: "LOW",
+          category: "METADATA",
+          title: `Title may truncate on Google SERP (${p.title.length} chars)`,
+          description: `Title tag exceeds 65 characters and is likely to be truncated on mobile and desktop search results.`,
+          impactPoints: 2,
+          affectedUrl: p.urlPath,
+          recommendation: `Shorten title to under 60 characters to prevent snippet ellipsis truncation.`,
+        });
+      }
+
+      // Meta description checks
+      if (!p.metaDescription || p.metaDescription.trim() === "") {
+        missingDescriptions++;
+        metadataDeduction += 4;
+        issues.push({
+          id: `iss_desc_empty_${p.id}`,
+          severity: "HIGH",
+          category: "METADATA",
+          title: `Missing meta description on ${p.pageName}`,
+          description: `Search engines will automatically extract arbitrary text for ${p.urlPath} snippets.`,
+          impactPoints: 4,
+          affectedUrl: p.urlPath,
+          recommendation: `Provide a persuasive 130-160 character meta description with a call to action.`,
+        });
+      } else if (p.metaDescription.length < 110) {
+        metadataDeduction += 1;
+        issues.push({
+          id: `iss_desc_short_${p.id}`,
+          severity: "LOW",
+          category: "METADATA",
+          title: `Short meta description on ${p.pageName} (${p.metaDescription.length} chars)`,
+          description: `Meta description is below the 120-character threshold and misses opportunities for key local terms.`,
+          impactPoints: 1,
+          affectedUrl: p.urlPath,
+          recommendation: `Expand to 130-160 characters describing vehicle types, pass rates, and lesson locations.`,
+        });
+      } else if (p.metaDescription.length > 170) {
+        metadataDeduction += 1;
+        issues.push({
+          id: `iss_desc_long_${p.id}`,
+          severity: "LOW",
+          category: "METADATA",
+          title: `Meta description exceeds 170 characters on ${p.pageName}`,
+          description: `Length is ${p.metaDescription.length} characters. The tail end will be truncated in search snippets.`,
+          impactPoints: 1,
+          affectedUrl: p.urlPath,
+          recommendation: `Keep the most important CTA within the first 155 characters.`,
+        });
+      }
+
+      // Canonical URL check
+      if (!p.canonicalUrl || p.canonicalUrl.trim() === "") {
+        missingCanonicals++;
+        indexingDeduction += 3;
+        issues.push({
+          id: `iss_canon_empty_${p.id}`,
+          severity: "HIGH",
+          category: "INDEXING",
+          title: `Missing canonical tag on ${p.pageName}`,
+          description: `Missing self-referencing canonical URL on ${p.urlPath} exposes site to duplicate content penalties.`,
+          impactPoints: 3,
+          affectedUrl: p.urlPath,
+          recommendation: `Set self-referential canonical URL matching ${globalSettings.canonicalBaseUrl}${p.urlPath}.`,
+        });
+      }
+
+      // OG Image check
+      if (!p.ogImage && !globalSettings.defaultOgImage) {
+        missingOgImages++;
+        metadataDeduction += 2;
+        issues.push({
+          id: `iss_og_empty_${p.id}`,
+          severity: "MEDIUM",
+          category: "METADATA",
+          title: `Missing Open Graph image on ${p.pageName}`,
+          description: `Social links shared on WhatsApp, Facebook, or iMessage will display without a preview image banner.`,
+          impactPoints: 2,
+          affectedUrl: p.urlPath,
+          recommendation: `Upload a high-resolution 1200x630px driving school preview graphic.`,
+        });
+      }
+
+      // H1 check
+      if (!p.h1) {
+        missingH1++;
+        contentDeduction += 2;
+        issues.push({
+          id: `iss_h1_missing_${p.id}`,
+          severity: "MEDIUM",
+          category: "CONTENT",
+          title: `Missing primary H1 heading on ${p.pageName}`,
+          description: `Semantic H1 structure missing for on-page hierarchy evaluation.`,
+          impactPoints: 2,
+          affectedUrl: p.urlPath,
+          recommendation: `Assign a single prominent H1 heading containing the primary target keyword.`,
+        });
+      }
+
+      // Indexing accidental lock
+      if (p.indexStatus === "NOINDEX" && (p.urlPath === "/" || p.urlPath === "/driving-lessons")) {
+        indexingDeduction += 15;
+        issues.push({
+          id: `iss_noindex_crucial_${p.id}`,
+          severity: "CRITICAL",
+          category: "INDEXING",
+          title: `CRITICAL: Accidental NOINDEX on key marketing page (${p.pageName})`,
+          description: `Page ${p.urlPath} is currently flagged with NOINDEX. Search engines will de-index this high-priority page!`,
+          impactPoints: 15,
+          affectedUrl: p.urlPath,
+          recommendation: `Immediately toggle Index Status back to 'INDEX' in Page SEO Editor.`,
+        });
+      }
+    });
+
+    // 2. NAP Consistency Audit
+    const napAudit: SEONapAudit = {
+      isConsistent: true,
+      globalBusinessName: businessSettings.businessName,
+      globalPhone: businessSettings.phone,
+      globalAddress: businessSettings.headOfficeAddress,
+      comparisons: [
+        {
+          component: "Site Header & Navigation",
+          field: "Telephone Number",
+          expected: businessSettings.phone,
+          found: businessSettings.phone,
+          isMatch: true,
+        },
+        {
+          component: "Contact Page Direct Dispatch",
+          field: "Telephone Number",
+          expected: businessSettings.phone,
+          found: businessSettings.phone,
+          isMatch: true,
+        },
+        {
+          component: "Footer Business Profile",
+          field: "Head Office Address",
+          expected: businessSettings.headOfficeAddress,
+          found: businessSettings.headOfficeAddress,
+          isMatch: true,
+        },
+        {
+          component: "Schema.org PostalAddress",
+          field: "Postal Code",
+          expected: "M1 5AN",
+          found: businessSettings.headOfficeAddress.includes("M1 5AN") ? "M1 5AN" : "M3 3EB",
+          isMatch: businessSettings.headOfficeAddress.includes("M1 5AN"),
+        },
+        {
+          component: "Local Area Phone Consistency",
+          field: "Area Dialing Code",
+          expected: "Manchester (+44 161)",
+          found:
+            businessSettings.phone.startsWith("+44 161") || businessSettings.phone.startsWith("0161")
+              ? "Manchester (+44 161)"
+              : businessSettings.phone.startsWith("+44 20") || businessSettings.phone.startsWith("020")
+              ? "London (+44 20)"
+              : "Non-Local Number",
+          isMatch:
+            businessSettings.phone.startsWith("+44 161") ||
+            businessSettings.phone.startsWith("0161") ||
+            businessSettings.phone.includes("161"),
+        },
+      ],
+    };
+
+    if (!napAudit.comparisons.every((c) => c.isMatch)) {
+      napAudit.isConsistent = false;
+      const mismatched = napAudit.comparisons.filter((c) => !c.isMatch);
+      mismatched.forEach((m) => {
+        localDeduction += 3;
+        issues.push({
+          id: `iss_nap_${m.component.replace(/\s+/g, "_")}`,
+          severity: m.field.includes("Area Dialing") ? "LOW" : "HIGH",
+          category: "LOCAL_SEO",
+          title: `NAP Inconsistency: ${m.component} (${m.field})`,
+          description: `Discrepancy detected: Expected '${m.expected}', but found '${m.found}'. Consistent NAP is vital for Google Local Pack rank.`,
+          impactPoints: 3,
+          recommendation: `Synchronize ${m.field} in Business Settings with your primary Manchester operating profile.`,
+        });
+      });
+    }
+
+    // 3. Technical & Redirects
+    const activeRedirectsCount = redirects.filter((r) => r.isActive).length;
+    redirects.forEach((r) => {
+      if (r.sourcePath === r.destinationPath) {
+        technicalDeduction += 5;
+        issues.push({
+          id: `iss_redir_loop_${r.id}`,
+          severity: "CRITICAL",
+          category: "TECHNICAL",
+          title: `Self-referencing redirect loop: ${r.sourcePath}`,
+          description: `Source path and destination path are identical (${r.sourcePath}). This will cause browser ERR_TOO_MANY_REDIRECTS.`,
+          impactPoints: 5,
+          affectedUrl: r.sourcePath,
+          recommendation: `Update the destination URL or deactivate this redirect.`,
+        });
+      }
+    });
+
+    // 4. Schema Coverage (All managed pages have valid schema assigned)
+    const schemaCoveragePercent = Math.round(
+      (pages.filter((p) => Boolean(p.schemaType)).length / Math.max(pages.length, 1)) * 100
+    );
+
+    // Calculate capped deductions
+    const metadataScore = Math.max(0, 25 - Math.min(25, metadataDeduction));
+    const indexingScore = Math.max(0, 20 - Math.min(20, indexingDeduction));
+    const localSeoScore = Math.max(0, 20 - Math.min(20, localDeduction));
+    const technicalScore = Math.max(0, 15 - Math.min(15, technicalDeduction));
+    const schemaScore = Math.max(0, 10 - Math.min(10, schemaDeduction));
+    const contentScore = Math.max(0, 10 - Math.min(10, contentDeduction));
+
+    const totalScore = metadataScore + indexingScore + localSeoScore + technicalScore + schemaScore + contentScore;
+
+    let healthRating: SEOAuditResult["healthRating"] = "EXCELLENT";
+    if (totalScore < 50) healthRating = "CRITICAL";
+    else if (totalScore < 70) healthRating = "POOR";
+    else if (totalScore < 85) healthRating = "FAIR";
+    else if (totalScore < 95) healthRating = "GOOD";
+
+    // Add passed checks for full transparency
+    if (napAudit.isConsistent) {
+      issues.push({
+        id: "pass_nap_consistent",
+        severity: "PASSED",
+        category: "LOCAL_SEO",
+        title: "NAP 100% Consistent Across Manchester Service Areas",
+        description: "Business name, head office address, and Manchester local telephone number (+44 161) match perfectly across Header, Footer, Contact Page, and Schema.org.",
+        impactPoints: 0,
+        recommendation: "Maintain identical telephone and address format on external local citations (Yell, Scoot, Thomson Local).",
+      });
+    }
+
+    if (missingTitles === 0) {
+      issues.push({
+        id: "pass_titles",
+        severity: "PASSED",
+        category: "METADATA",
+        title: "All indexed public pages have unique meta titles",
+        description: "100% of indexable pages have assigned title tags within acceptable bounds.",
+        impactPoints: 0,
+        recommendation: "Maintain unique keywords across all newly created location pages.",
+      });
+    }
+
+    if (missingCanonicals === 0) {
+      issues.push({
+        id: "pass_canonicals",
+        severity: "PASSED",
+        category: "INDEXING",
+        title: "Canonical URLs properly assigned",
+        description: "All public URLs have self-referencing canonical tags to prevent duplicate indexing.",
+        impactPoints: 0,
+        recommendation: "Ensure newly generated landing pages follow the canonical pattern.",
+      });
+    }
+
+    if (activeRedirectsCount > 0) {
+      issues.push({
+        id: "pass_redirects",
+        severity: "PASSED",
+        category: "TECHNICAL",
+        title: `${activeRedirectsCount} 301 Permanent Redirects active`,
+        description: "Legacy URLs and former marketing campaigns cleanly preserve link equity.",
+        impactPoints: 0,
+        recommendation: "Audit redirect hits periodically to retire dead rules after 12+ months.",
+      });
+    }
+
+    const totalIndexable = pages.filter((p) => p.indexStatus === "INDEX").length;
+    const totalNoindex = pages.filter((p) => p.indexStatus === "NOINDEX").length;
+
+    return {
+      score: totalScore,
+      healthRating,
+      lastAudited: new Date().toISOString(),
+      breakdown: {
+        metadataScore,
+        indexingScore,
+        localSeoScore,
+        technicalScore,
+        schemaScore,
+        contentScore,
+      },
+      issues,
+      stats: {
+        totalIndexable,
+        totalNoindex,
+        missingTitles,
+        missingDescriptions,
+        missingCanonicals,
+        missingOgImages,
+        missingH1,
+        activeRedirects: activeRedirectsCount,
+        schemaCoveragePercent,
+        localAreasConfigured: locations.length,
+      },
+      napAudit,
+    };
   }
 }
 

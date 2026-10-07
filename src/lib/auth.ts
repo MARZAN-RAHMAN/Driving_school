@@ -13,14 +13,14 @@ import {
 export const SESSION_COOKIE_NAME = "nexus_session_token";
 
 const defaultAdminUser: User = {
-  id: "usr_admin_01",
-  name: "Alex Vance",
+  id: "usr_admin_02",
+  name: "NextDrive Operations Admin",
   email: "admin@nextdrive.uk",
   role: "ADMIN",
   status: "ACTIVE",
-  avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=128&h=128&fit=crop&crop=faces",
-  createdAt: "2025-01-10T08:00:00Z",
-  lastLogin: "2026-09-30T00:45:00Z",
+  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=128&h=128&fit=crop&crop=faces",
+  createdAt: "2025-01-15T09:00:00Z",
+  lastLogin: "2026-09-30T08:00:00Z",
 };
 
 const defaultInstructorUser: User = {

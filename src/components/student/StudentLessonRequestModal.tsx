@@ -14,7 +14,7 @@ interface StudentLessonRequestModalProps {
 export function StudentLessonRequestModal({
   instructors,
   packages,
-  defaultPickup = "London, UK",
+  defaultPickup = "Manchester, UK",
   onBookingCreated,
 }: StudentLessonRequestModalProps) {
   const [isOpen, setIsOpen] = useState(false);

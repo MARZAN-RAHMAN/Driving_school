@@ -44,6 +44,7 @@ function EnquiriesManagerContent({
 }: EnquiriesManagerProps) {
   const searchParams = useSearchParams();
   const initialStatusParam = searchParams.get("status") || "ALL";
+  const inquiryIdParam = searchParams.get("id");
 
   const [inquiries, setInquiries] = useState<ContactInquiry[]>(initialInquiries);
   const [statusFilter, setStatusFilter] = useState<string>(initialStatusParam);
@@ -52,6 +53,25 @@ function EnquiriesManagerContent({
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [selectedInquiry, setSelectedInquiry] = useState<ContactInquiry | null>(null);
+
+  // Auto-open direct enquiry when ?id= query parameter is present in URL
+  useEffect(() => {
+    if (inquiryIdParam && inquiries.length > 0) {
+      const match = inquiries.find((i) => i.id === inquiryIdParam);
+      if (match) {
+        setSelectedInquiry(match);
+      }
+    }
+  }, [inquiryIdParam, inquiries]);
+
+  const handleCloseModal = () => {
+    setSelectedInquiry(null);
+    if (typeof window !== "undefined" && window.location.search.includes("id=")) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("id");
+      window.history.replaceState({}, "", url.pathname + (url.search ? url.search : ""));
+    }
+  };
 
   // Drawer / Internal Notes Editor State
   const [internalNotesInput, setInternalNotesInput] = useState("");
@@ -317,7 +337,7 @@ function EnquiriesManagerContent({
                 : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-800 hover:bg-slate-50"
             }`}
           >
-            All Leads ({counts.all})
+            All Enquiries ({counts.all})
           </button>
           <button
             onClick={() => setStatusFilter("NEW")}
@@ -328,7 +348,7 @@ function EnquiriesManagerContent({
             }`}
           >
             <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-            New Leads ({counts.new})
+            New Enquiries ({counts.new})
           </button>
           <button
             onClick={() => setStatusFilter("CONTACTED")}
@@ -380,7 +400,7 @@ function EnquiriesManagerContent({
           className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-xs hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition"
         >
           <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-          <span>Export Leads (Excel)</span>
+          <span>Export Enquiries (Excel)</span>
         </button>
       </div>
 
@@ -545,7 +565,7 @@ function EnquiriesManagerContent({
                           {leadCourse}
                         </div>
                         <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                          {inq.area || "London Wide"}
+                          {inq.area || "Greater Manchester"}
                         </div>
                         <span
                           className={`inline-flex items-center rounded px-1.5 py-0.2 text-[9px] font-bold mt-1 ${
@@ -637,7 +657,7 @@ function EnquiriesManagerContent({
       </div>
 
       {/* ========================================================================= */}
-      {/* LEAD DETAILS & INTERNAL NOTES DRAWER / MODAL */}
+      {/* ENQUIRY DETAILS & INTERNAL NOTES DRAWER / MODAL */}
       {/* ========================================================================= */}
       {selectedInquiry && (
         <div
@@ -646,7 +666,7 @@ function EnquiriesManagerContent({
           aria-modal="true"
           onClick={(e) => {
             if (e.target === e.currentTarget && !isSavingNotes) {
-              setSelectedInquiry(null);
+              handleCloseModal();
             }
           }}
         >
@@ -663,20 +683,20 @@ function EnquiriesManagerContent({
                     {selectedInquiry.status}
                   </span>
                   <span className="text-xs font-mono text-muted-foreground">
-                    ID: {selectedInquiry.id}
+                    Enquiry ID: {selectedInquiry.id}
                   </span>
                 </div>
                 <h3 className="text-xl font-bold text-foreground">
                   {selectedInquiry.name}
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Submitted {selectedInquiry.createdAt}
+                  Direct Student Enquiry • Submitted {selectedInquiry.createdAt}
                 </p>
               </div>
 
               <button
-                onClick={() => setSelectedInquiry(null)}
-                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 transition"
+                onClick={handleCloseModal}
+                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 transition cursor-pointer"
                 aria-label="Close details"
               >
                 <X className="w-5 h-5" />
@@ -728,7 +748,7 @@ function EnquiriesManagerContent({
                 <div>
                   <span className="text-muted-foreground block text-[11px]">Preferred Area &amp; Postcode:</span>
                   <span className="font-bold text-foreground text-sm mt-0.5 block font-mono">
-                    {selectedInquiry.area || "London Wide"} ({selectedInquiry.postcode})
+                    {selectedInquiry.area || "Greater Manchester"} ({selectedInquiry.postcode})
                   </span>
                 </div>
 

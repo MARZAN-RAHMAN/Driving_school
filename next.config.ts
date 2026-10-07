@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  devIndicators: {
+    position: "bottom-right",
+  },
   serverExternalPackages: ["@electric-sql/pglite", "@prisma/client"],
   images: {
     remotePatterns: [

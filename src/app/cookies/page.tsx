@@ -3,11 +3,17 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Cookie, ShieldCheck, Settings2, CheckCircle2 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Cookie Policy | NextDrive Driving Academy",
-  description:
-    "Learn how NextDrive Driving Academy uses cookies and local storage to keep your session secure, remember preferences, and analyze site performance.",
-};
+import { getPageMetadata } from "@/lib/seo";
+
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata("/cookies", {
+    title: "Cookie Policy | NextDrive Driving Academy",
+    description:
+      "Learn how NextDrive Driving Academy uses cookies and local storage to keep your session secure, remember preferences, and analyze site performance.",
+  });
+}
 
 export default function CookiesPage() {
   return (

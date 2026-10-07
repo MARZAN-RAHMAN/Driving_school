@@ -16,6 +16,7 @@ import {
   Phone,
   Mail,
   FileSpreadsheet,
+  User,
 } from "lucide-react";
 import { Booking, BookingStatus, Instructor, LessonPackage, TransmissionType } from "@/types";
 
@@ -162,7 +163,7 @@ export function BookingsManager({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-1 flex-wrap items-center gap-3">
           {/* Search Input */}
-          <div className="relative min-w-[240px] flex-1 max-w-md">
+          <div className="relative w-full sm:w-auto sm:min-w-[240px] flex-1 max-w-md">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
             <input
               type="text"
@@ -174,12 +175,12 @@ export function BookingsManager({
           </div>
 
           {/* Status Filter */}
-          <div className="flex items-center gap-1.5">
-            <Filter className="h-3.5 w-3.5 text-slate-400" />
+          <div className="flex items-center gap-1.5 w-full sm:w-auto">
+            <Filter className="h-3.5 w-3.5 text-slate-400 shrink-0" />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:border-indigo-600 focus:outline-none"
+              className="w-full sm:w-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:border-indigo-600 focus:outline-none"
             >
               <option value="ALL">All Statuses</option>
               <option value="CONFIRMED">Confirmed</option>
@@ -191,32 +192,34 @@ export function BookingsManager({
           </div>
 
           {/* Transmission Filter */}
-          <select
-            value={transmissionFilter}
-            onChange={(e) => setTransmissionFilter(e.target.value)}
-            className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:border-indigo-600 focus:outline-none"
-          >
-            <option value="ALL">All Transmissions</option>
-            <option value="MANUAL">Manual Only</option>
-            <option value="AUTOMATIC">Automatic Only</option>
-          </select>
+          <div className="w-full sm:w-auto">
+            <select
+              value={transmissionFilter}
+              onChange={(e) => setTransmissionFilter(e.target.value)}
+              className="w-full sm:w-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:border-indigo-600 focus:outline-none"
+            >
+              <option value="ALL">All Transmissions</option>
+              <option value="MANUAL">Manual Only</option>
+              <option value="AUTOMATIC">Automatic Only</option>
+            </select>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => {
               window.location.href = "/api/admin/export?type=bookings";
             }}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-xs hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-xs hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition"
           >
             <FileSpreadsheet className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-            <span>Export Bookings (Excel)</span>
+            <span>Export Bookings</span>
           </button>
 
           <button
             onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-indigo-700 transition"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-indigo-700 transition"
           >
             <Plus className="h-4 w-4" />
             <span>New Booking</span>
@@ -270,85 +273,109 @@ export function BookingsManager({
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850/50 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                <tr>
-                  <th className="px-6 py-3.5">Student / Learner</th>
-                  <th className="px-6 py-3.5">Lesson &amp; Transmission</th>
-                  <th className="px-6 py-3.5">Assigned Instructor</th>
-                  <th className="px-6 py-3.5">Date &amp; Time Slot</th>
-                  <th className="px-6 py-3.5">Pickup Location</th>
-                  <th className="px-6 py-3.5">Price</th>
-                  <th className="px-6 py-3.5">Status</th>
-                  <th className="px-6 py-3.5 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium text-slate-700 dark:text-slate-300">
-                {filteredBookings.map((b) => (
-                  <tr key={b.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition">
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-slate-900 dark:text-white">{b.studentName}</div>
-                      <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                        <Mail className="h-3 w-3" />
-                        {b.studentEmail}
+          <>
+            {/* Mobile Card List (Visible on mobile screens < md) */}
+            <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+              {filteredBookings.map((b) => (
+                <div
+                  key={b.id}
+                  className="p-4 space-y-3 hover:bg-slate-50/50 dark:hover:bg-slate-850/50 transition"
+                >
+                  {/* Top Header: Student info & Price */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="font-bold text-sm text-slate-900 dark:text-white truncate">
+                        {b.studentName}
                       </div>
-                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-mono flex items-center gap-1">
-                        <Phone className="h-2.5 w-2.5" />
-                        {b.studentPhone}
+                      <div className="mt-0.5 space-y-0.5">
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5 truncate">
+                          <Mail className="h-3 w-3 shrink-0 text-slate-400" />
+                          <a
+                            href={`mailto:${b.studentEmail}`}
+                            className="hover:underline truncate"
+                          >
+                            {b.studentEmail}
+                          </a>
+                        </div>
+                        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-mono flex items-center gap-1.5">
+                          <Phone className="h-2.5 w-2.5 shrink-0" />
+                          <a href={`tel:${b.studentPhone}`} className="hover:underline">
+                            {b.studentPhone}
+                          </a>
+                        </div>
                       </div>
-                    </td>
+                    </div>
 
-                    <td className="px-6 py-4">
-                      <div className="text-slate-900 dark:text-white font-semibold">{b.lessonTitle}</div>
-                      <div className="mt-1 flex items-center gap-1.5">
-                        <span
-                          className={`rounded px-1.5 py-0.5 text-[9px] font-bold ${
-                            b.transmission === "MANUAL"
-                              ? "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300"
-                              : "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300"
-                          }`}
-                        >
-                          {b.transmission}
+                    <div className="text-right shrink-0">
+                      <span className="font-extrabold text-base text-slate-900 dark:text-white font-mono">
+                        £{b.price}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Lesson Details Box */}
+                  <div className="rounded-xl bg-slate-50 dark:bg-slate-850 p-3 border border-slate-100 dark:border-slate-800/80 space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-xs text-slate-900 dark:text-white">
+                        {b.lessonTitle}
+                      </span>
+                      <span
+                        className={`rounded px-1.5 py-0.5 text-[9px] font-bold shrink-0 ${
+                          b.transmission === "MANUAL"
+                            ? "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300"
+                            : "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300"
+                        }`}
+                      >
+                        {b.transmission}
+                      </span>
+                    </div>
+
+                    {b.testCenter && (
+                      <div className="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1">
+                        <span>🎯</span>
+                        <span>{b.testCenter}</span>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-200/60 dark:border-slate-800 text-xs">
+                      {/* Assigned Instructor */}
+                      <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                        <User className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                        <span className="truncate">
+                          <span className="font-semibold">{b.instructorName}</span>
+                          <span className="text-[10px] text-slate-400 ml-1">(Assigned ADI)</span>
                         </span>
-                        {b.testCenter && (
-                          <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium">
-                            🎯 {b.testCenter}
-                          </span>
-                        )}
                       </div>
-                    </td>
 
-                    <td className="px-6 py-4">
-                      <div className="font-semibold text-slate-900 dark:text-white">{b.instructorName}</div>
-                      <div className="text-[11px] text-slate-400 dark:text-slate-500">Assigned ADI</div>
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <div className="font-medium text-slate-900 dark:text-white">{b.dateTime}</div>
-                      <div className="text-[11px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {b.durationHours} Hours Session
+                      {/* Date & Time Slot */}
+                      <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                        <Clock className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                        <span>
+                          {b.dateTime} ({b.durationHours}h)
+                        </span>
                       </div>
-                    </td>
 
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1 text-slate-700 dark:text-slate-300">
-                        <MapPin className="h-3 w-3 text-slate-400 dark:text-slate-500 shrink-0" />
-                        <span className="truncate max-w-[150px]">{b.pickupLocation}</span>
+                      {/* Pickup Location */}
+                      <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300 sm:col-span-2">
+                        <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                        <span className="truncate">{b.pickupLocation}</span>
                       </div>
-                    </td>
+                    </div>
+                  </div>
 
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-slate-900 dark:text-white font-mono">£{b.price}</span>
-                    </td>
-
-                    <td className="px-6 py-4">
+                  {/* Actions & Status Dropdown */}
+                  <div className="flex items-center justify-between gap-3 pt-1">
+                    <div className="flex items-center gap-2 flex-1">
+                      <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 shrink-0">
+                        Status:
+                      </span>
                       <select
                         disabled={statusUpdatingId === b.id}
                         value={b.status}
-                        onChange={(e) => handleStatusChange(b.id, e.target.value as BookingStatus)}
-                        className={`rounded-lg px-2 py-1 text-[11px] font-bold border ${
+                        onChange={(e) =>
+                          handleStatusChange(b.id, e.target.value as BookingStatus)
+                        }
+                        className={`rounded-lg px-2.5 py-1.5 text-xs font-bold border transition ${
                           b.status === "CONFIRMED"
                             ? "border-indigo-300 bg-indigo-50 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800"
                             : b.status === "IN_PROGRESS"
@@ -366,22 +393,154 @@ export function BookingsManager({
                         <option value="PENDING">PENDING</option>
                         <option value="CANCELLED">CANCELLED</option>
                       </select>
-                    </td>
+                    </div>
 
-                    <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => handleDelete(b.id, b.studentName)}
-                        className="rounded-lg p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
-                        title="Cancel & Remove Booking"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </td>
+                    <button
+                      onClick={() => handleDelete(b.id, b.studentName)}
+                      className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-slate-200 dark:border-slate-800 transition"
+                      title="Cancel & Remove Booking"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      <span>Delete</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View (Visible on md screens and above) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full min-w-[950px] text-left text-xs">
+                <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850/50 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  <tr>
+                    <th className="px-6 py-3.5">Student / Learner</th>
+                    <th className="px-6 py-3.5">Lesson &amp; Transmission</th>
+                    <th className="px-6 py-3.5">Assigned Instructor</th>
+                    <th className="px-6 py-3.5">Date &amp; Time Slot</th>
+                    <th className="px-6 py-3.5">Pickup Location</th>
+                    <th className="px-6 py-3.5">Price</th>
+                    <th className="px-6 py-3.5">Status</th>
+                    <th className="px-6 py-3.5 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium text-slate-700 dark:text-slate-300">
+                  {filteredBookings.map((b) => (
+                    <tr
+                      key={b.id}
+                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-slate-900 dark:text-white">
+                          {b.studentName}
+                        </div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                          <Mail className="h-3 w-3" />
+                          {b.studentEmail}
+                        </div>
+                        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-mono flex items-center gap-1">
+                          <Phone className="h-2.5 w-2.5" />
+                          {b.studentPhone}
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <div className="text-slate-900 dark:text-white font-semibold">
+                          {b.lessonTitle}
+                        </div>
+                        <div className="mt-1 flex items-center gap-1.5">
+                          <span
+                            className={`rounded px-1.5 py-0.5 text-[9px] font-bold ${
+                              b.transmission === "MANUAL"
+                                ? "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300"
+                                : "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300"
+                            }`}
+                          >
+                            {b.transmission}
+                          </span>
+                          {b.testCenter && (
+                            <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium">
+                              🎯 {b.testCenter}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <div className="font-semibold text-slate-900 dark:text-white">
+                          {b.instructorName}
+                        </div>
+                        <div className="text-[11px] text-slate-400 dark:text-slate-500">
+                          Assigned ADI
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <div className="font-medium text-slate-900 dark:text-white">
+                          {b.dateTime}
+                        </div>
+                        <div className="text-[11px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {b.durationHours} Hours Session
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-1 text-slate-700 dark:text-slate-300">
+                          <MapPin className="h-3 w-3 text-slate-400 dark:text-slate-500 shrink-0" />
+                          <span className="truncate max-w-[150px]">
+                            {b.pickupLocation}
+                          </span>
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-slate-900 dark:text-white font-mono">
+                          £{b.price}
+                        </span>
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <select
+                          disabled={statusUpdatingId === b.id}
+                          value={b.status}
+                          onChange={(e) =>
+                            handleStatusChange(b.id, e.target.value as BookingStatus)
+                          }
+                          className={`rounded-lg px-2 py-1 text-[11px] font-bold border ${
+                            b.status === "CONFIRMED"
+                              ? "border-indigo-300 bg-indigo-50 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800"
+                              : b.status === "IN_PROGRESS"
+                              ? "border-amber-300 bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800"
+                              : b.status === "COMPLETED"
+                              ? "border-emerald-300 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800"
+                              : b.status === "CANCELLED"
+                              ? "border-rose-300 bg-rose-50 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800"
+                              : "border-slate-300 bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
+                          }`}
+                        >
+                          <option value="CONFIRMED">CONFIRMED</option>
+                          <option value="IN_PROGRESS">IN PROGRESS</option>
+                          <option value="COMPLETED">COMPLETED</option>
+                          <option value="PENDING">PENDING</option>
+                          <option value="CANCELLED">CANCELLED</option>
+                        </select>
+                      </td>
+
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          onClick={() => handleDelete(b.id, b.studentName)}
+                          className="rounded-lg p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
+                          title="Cancel & Remove Booking"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 

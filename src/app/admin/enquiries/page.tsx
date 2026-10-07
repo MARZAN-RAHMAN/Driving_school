@@ -7,8 +7,8 @@ import { EnquiriesManager } from "@/components/admin/EnquiriesManager";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Leads & Enquiries Management | NextDrive Operations",
-  description: "View and manage incoming driving lesson inquiries, student postcodes, and lead status dispatch.",
+  title: "Student Enquiries Management | NextDrive Operations",
+  description: "View and manage incoming driving lesson student enquiries, course package requests, and intake dispatch.",
 };
 
 export default async function AdminEnquiriesPage() {
@@ -31,19 +31,19 @@ export default async function AdminEnquiriesPage() {
               Control Center
             </Link>
             <span className="text-slate-300 dark:text-slate-700">/</span>
-            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Leads &amp; Enquiries</span>
+            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Enquiries</span>
           </div>
           <div className="flex items-center gap-3 mt-1">
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Leads &amp; Enquiries Management
+              Student Enquiries Management
             </h1>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 ring-1 ring-inset ring-indigo-500/20">
               <Sparkles className="h-3 w-3" />
-              Live Lead Ingestion
+              Live Enquiry Intake
             </span>
           </div>
           <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-            Real-time student leads from booking modal pop-ups, course cards, and website contact forms
+            Real-time student enquiries from website contact forms, course cards, and lesson requests
           </p>
         </div>
 

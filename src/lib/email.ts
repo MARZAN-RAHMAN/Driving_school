@@ -39,7 +39,7 @@ STUDENT CONTACT DETAILS:
 
 LESSON & COURSE PREFERENCES:
 - Driving Course: ${inquiry.course || inquiry.targetPackage || "Standard Driving Course"}
-- Preferred Area: ${inquiry.area || "Not specified / London wide"}
+- Preferred Area: ${inquiry.area || "Not specified / Greater Manchester"}
 - Provisional Licence: ${inquiry.provisionalLicence || "Not specified"}
 - Transmission: ${inquiry.transmission || "Not specified"}
 

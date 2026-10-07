@@ -1,15 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { User, Phone, MapPin, FileText, Save, CheckCircle2, ShieldCheck } from "lucide-react";
+import { User, Save, CheckCircle2 } from "lucide-react";
 import { Student } from "@/types";
 import { ConnectedAccountsCard } from "@/components/shared/ConnectedAccountsCard";
+import { UserProfilePhotoUpload } from "@/components/ui/UserProfilePhotoUpload";
 
 interface StudentProfileClientProps {
   student: Student;
 }
 
 export function StudentProfileClient({ student }: StudentProfileClientProps) {
+  const [avatar, setAvatar] = useState(student.avatar || "");
   const [phone, setPhone] = useState(student.phone || "");
   const [postcode, setPostcode] = useState(student.postcode || "");
   const [provisionalLicenseNumber, setProvisionalLicenseNumber] = useState(
@@ -32,11 +34,17 @@ export function StudentProfileClient({ student }: StudentProfileClientProps) {
           phone,
           postcode,
           provisionalLicenseNumber,
+          avatar,
         }),
       });
 
       if (res.ok) {
         setSuccess("Contact details and licence information updated successfully.");
+        window.dispatchEvent(
+          new CustomEvent("nextdrive:user-updated", {
+            detail: { avatar },
+          })
+        );
         setTimeout(() => setSuccess(null), 4000);
       }
     } catch {
@@ -65,24 +73,44 @@ export function StudentProfileClient({ student }: StudentProfileClientProps) {
         </div>
       )}
 
+      {/* Profile Photo Card */}
+      <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xs">
+        <UserProfilePhotoUpload
+          currentAvatar={avatar}
+          userName={student.name}
+          onChange={(newUrl) => {
+            setAvatar(newUrl);
+            fetch("/api/student/profile", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ avatar: newUrl }),
+            });
+          }}
+          onRemove={() => {
+            setAvatar("");
+            fetch("/api/student/profile", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ avatar: "" }),
+            });
+            window.dispatchEvent(
+              new CustomEvent("nextdrive:user-updated", {
+                detail: { avatar: "" },
+              })
+            );
+          }}
+        />
+      </div>
+
       {/* Overview Card */}
       <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-xs space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 font-bold text-white text-lg shadow-xs">
-            {student.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")
-              .slice(0, 2)}
-          </div>
-          <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-              {student.name}
-            </h2>
-            <p className="text-xs text-slate-400 font-mono">
-              Learner ID: {student.id} &bull; Registered {new Date(student.createdAt).toLocaleDateString()}
-            </p>
-          </div>
+        <div>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+            {student.name}
+          </h2>
+          <p className="text-xs text-slate-400 font-mono">
+            Learner ID: {student.id} &bull; Registered {new Date(student.createdAt).toLocaleDateString()}
+          </p>
         </div>
 
         <form onSubmit={handleSave} className="space-y-4 pt-2">

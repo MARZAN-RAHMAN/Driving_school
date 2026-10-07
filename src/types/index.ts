@@ -9,6 +9,7 @@ export interface User {
   role: UserRole;
   status: UserStatus;
   avatar: string;
+  phone?: string;
   passwordHash?: string;
   createdAt: string;
   lastLogin: string;
@@ -143,6 +144,9 @@ export interface Instructor {
   grade?: string;
   bio?: string;
   areas?: string[];
+  areasCovered?: string[];
+  passRate?: string;
+  totalStudentsTrained?: number;
   qualifications?: string[];
   availability?: InstructorAvailability;
   applicationDate?: string;
@@ -161,7 +165,9 @@ export interface LessonPackage {
   price: number;
   level: "Beginner" | "Intermediate" | "Refresher" | "Pass Plus" | "Intensive";
   popular?: boolean;
+  isPopular?: boolean;
   badge?: string;
+  description?: string;
   features: string[];
 }
 
@@ -193,6 +199,7 @@ export interface Student {
   name: string;
   email: string;
   phone: string;
+  avatar?: string;
   postcode: string;
   theoryStatus: TheoryStatus;
   hoursCompleted: number;
@@ -649,4 +656,172 @@ export interface FooterSettings {
   showContactIcons: boolean;
   showSocialIcons: boolean;
   showLinkArrows: boolean;
+}
+
+// ============================================================================
+// SEO MANAGER TYPES & INTERFACES
+// ============================================================================
+
+export type SEOIndexStatus = "INDEX" | "NOINDEX";
+export type SEOFollowStatus = "FOLLOW" | "NOFOLLOW";
+export type SEOSchemaType =
+  | "DrivingSchool"
+  | "LocalBusiness"
+  | "EducationalOrganization"
+  | "Service"
+  | "Course"
+  | "FAQPage"
+  | "WebPage"
+  | "AboutPage"
+  | "ContactPage";
+
+export interface PageSEO {
+  id: string;
+  urlPath: string;
+  pageName: string;
+  title: string;
+  metaDescription: string;
+  h1?: string;
+  canonicalUrl?: string;
+  indexStatus: SEOIndexStatus;
+  followStatus: SEOFollowStatus;
+  ogImage?: string;
+  ogType?: "website" | "article" | "profile";
+  schemaType: SEOSchemaType;
+  primaryKeyword?: string;
+  secondaryKeywords: string[];
+  priority: number;
+  changeFrequency: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
+  isSystemPage: boolean;
+  seoScore?: number;
+  wordCount?: number;
+  hasAltTextIssues?: boolean;
+  updatedAt: string;
+  notes?: string;
+}
+
+export interface GlobalSEOSettings {
+  siteName: string;
+  titleTemplate: string;
+  defaultMetaDescription: string;
+  canonicalBaseUrl: string;
+  defaultOgImage: string;
+  defaultRobots: {
+    index: boolean;
+    follow: boolean;
+  };
+  googleVerificationCode?: string;
+  bingVerificationCode?: string;
+  googleAnalyticsId?: string;
+  autoGenerateSitemap: boolean;
+  enforceTrailingSlash: boolean;
+  schemaDefaults: {
+    organizationType: "DrivingSchool" | "EducationalOrganization" | "LocalBusiness";
+    priceRange: string;
+    openingHours: string[];
+    areaServed: string[];
+  };
+}
+
+export interface SEORedirect {
+  id: string;
+  sourcePath: string;
+  destinationPath: string;
+  statusCode: 301 | 302;
+  isActive: boolean;
+  hitCount: number;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type SEOKeywordIntent = "LOCAL" | "COMMERCIAL" | "INFORMATIONAL" | "TRANSACTIONAL";
+export type SEOKeywordDifficulty = "LOW" | "MEDIUM" | "HIGH";
+export type SEOKeywordPriority = "PRIMARY" | "SECONDARY" | "LONG_TAIL";
+
+export interface SEOKeywordTarget {
+  id: string;
+  keyword: string;
+  targetUrl: string;
+  monthlyVolume: number | string;
+  intent: SEOKeywordIntent;
+  difficulty: SEOKeywordDifficulty;
+  priority: SEOKeywordPriority;
+  currentRank?: number | string;
+  notes?: string;
+}
+
+export interface LocalTestCentre {
+  id: string;
+  name: string;
+  slug: string;
+  dvsaCentreId?: string;
+  address: string;
+  postcode: string;
+  passRateRecent?: string;
+  keyRoutesDescription: string;
+  associatedLocationSlug: string;
+  isActive: boolean;
+}
+
+export type SEOIssueSeverity = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | "PASSED";
+export type SEOIssueCategory =
+  | "METADATA"
+  | "INDEXING"
+  | "LOCAL_SEO"
+  | "TECHNICAL"
+  | "SCHEMA"
+  | "CONTENT";
+
+export interface SEOAuditIssue {
+  id: string;
+  severity: SEOIssueSeverity;
+  category: SEOIssueCategory;
+  title: string;
+  description: string;
+  impactPoints: number;
+  affectedUrl?: string;
+  recommendation: string;
+}
+
+export interface SEONapAudit {
+  isConsistent: boolean;
+  globalBusinessName: string;
+  globalPhone: string;
+  globalAddress: string;
+  comparisons: {
+    component: string;
+    field: string;
+    expected: string;
+    found: string;
+    isMatch: boolean;
+  }[];
+}
+
+export interface SEOAuditResult {
+  score: number;
+  healthRating: "CRITICAL" | "POOR" | "FAIR" | "GOOD" | "EXCELLENT";
+  lastAudited: string;
+  breakdown: {
+    metadataScore: number;
+    indexingScore: number;
+    localSeoScore: number;
+    technicalScore: number;
+    schemaScore: number;
+    contentScore: number;
+  };
+  issues: SEOAuditIssue[];
+  stats: {
+    totalIndexable: number;
+    totalNoindex: number;
+    missingTitles: number;
+    missingDescriptions: number;
+    missingCanonicals: number;
+    missingOgImages: number;
+    missingH1: number;
+    activeRedirects: number;
+    schemaCoveragePercent: number;
+    localAreasConfigured: number;
+  };
+  napAudit: SEONapAudit;
 }

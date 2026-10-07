@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 import {
   LayoutDashboard,
   CalendarCheck,
@@ -28,10 +29,13 @@ import {
   Megaphone,
   PanelBottom,
   Search,
+  UserRound,
+  MessageSquare,
 } from "lucide-react";
 import { User, UserRole } from "@/types";
 import { useAdminSidebar } from "@/context/AdminSidebarContext";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { NextDriveLogo } from "@/components/ui/NextDriveLogo";
 
 interface AdminSidebarProps {
   userRole?: UserRole;
@@ -81,10 +85,10 @@ const navSections: NavSection[] = [
         badge: "5",
       },
       {
-        name: "Leads",
+        name: "Enquiries",
         href: "/admin/enquiries",
         aliases: ["/admin/leads"],
-        icon: UserPlus,
+        icon: MessageSquare,
         badge: "New",
       },
       {
@@ -171,6 +175,11 @@ const navSections: NavSection[] = [
     title: "SYSTEM",
     items: [
       {
+        name: "My Profile",
+        href: "/admin/profile",
+        icon: UserRound,
+      },
+      {
         name: "Settings",
         href: "/admin/settings",
         icon: Settings,
@@ -198,14 +207,60 @@ export function AdminSidebar({ userRole = "ADMIN", user }: AdminSidebarProps) {
   const router = useRouter();
   const { isCollapsed, toggleCollapse, isMobileOpen, toggleMobile } = useAdminSidebar();
 
+  const [currentUser, setCurrentUser] = useState<User | undefined>(user);
+
+  useEffect(() => {
+    if (user) {
+      setCurrentUser(user);
+    }
+  }, [user]);
+
+  // Fetch real authenticated user from /api/auth/me on mount to ensure fresh profile data & avatar
+  useEffect(() => {
+    let active = true;
+    const fetchFreshUser = async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok && active) {
+          const data = await res.json();
+          if (data.authenticated && data.user) {
+            setCurrentUser(data.user);
+          }
+        }
+      } catch {
+        // Silently preserve initial user
+      }
+    };
+
+    fetchFreshUser();
+
+    // Listen to local user update events (e.g. after photo crop or profile save)
+    const handleUserUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<Partial<User>>;
+      if (customEvent.detail) {
+        setCurrentUser((prev) => {
+          if (!prev) return prev;
+          return { ...prev, ...customEvent.detail };
+        });
+      }
+    };
+
+    window.addEventListener("nextdrive:user-updated", handleUserUpdate);
+
+    return () => {
+      active = false;
+      window.removeEventListener("nextdrive:user-updated", handleUserUpdate);
+    };
+  }, []);
+
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
     router.refresh();
   };
 
-  const userInitials = user?.name
-    ? user.name
+  const userInitials = (currentUser?.name || user?.name)
+    ? (currentUser?.name || user?.name || "")
         .split(" ")
         .map((n) => n[0])
         .join("")
@@ -253,9 +308,7 @@ export function AdminSidebar({ userRole = "ADMIN", user }: AdminSidebarProps) {
           ) : (
             <>
               <Link href="/admin" className="flex items-center gap-2.5 truncate">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm shrink-0">
-                  <Layers className="h-5 w-5" />
-                </div>
+                <NextDriveLogo size={36} className="shrink-0" />
                 <div className="truncate">
                   <span className="font-bold text-foreground tracking-tight block text-sm">
                     NextDrive
@@ -304,42 +357,52 @@ export function AdminSidebar({ userRole = "ADMIN", user }: AdminSidebarProps) {
                     const Icon = item.icon;
 
                     if (isCollapsed) {
-                      // Collapsed Icon View with Floating Tooltip
+                      // Collapsed Icon View with 3D button and Floating Tooltip
                       return (
                         <div key={item.name} className="relative group flex justify-center">
                           <Link
                             href={item.href}
-                            className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 focus-visible:outline-2 focus-visible:outline-primary ${
+                            className={`relative flex h-10 w-10 items-center justify-center rounded-xl border overflow-hidden nav-item-3d focus-visible:outline-2 focus-visible:outline-primary ${
                               active
-                                ? "bg-primary/15 text-primary shadow-xs font-semibold"
-                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                ? "nav-item-3d-active bg-gradient-to-br from-primary/20 to-primary/10 border-primary/50 text-primary font-semibold"
+                                : "border-transparent text-muted-foreground hover:border-border/80 hover:bg-card hover:text-foreground"
                             }`}
                             aria-label={item.name}
                           >
-                            {/* Subtle left active bar indicator */}
+                            {/* Specular sheen on hover */}
+                            <span
+                              className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-white/20 dark:via-white/10 to-transparent"
+                              aria-hidden="true"
+                            />
+
+                            {/* Active left 3D capsule */}
                             {active && (
                               <span
-                                className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-primary"
+                                className="absolute left-0.5 top-2 bottom-2 w-1.5 rounded-full bg-gradient-to-b from-cyan-400 to-primary shadow-[0_0_8px_rgba(34,211,238,0.85)]"
                                 aria-hidden="true"
                               />
                             )}
+
                             <Icon
-                              className={`h-4 w-4 shrink-0 transition-colors ${
-                                active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                              className={`h-4.5 w-4.5 shrink-0 transition-transform duration-200 ease-out group-hover:scale-115 group-hover:-translate-y-0.5 group-hover:rotate-[-6deg] ${
+                                active
+                                  ? "text-primary drop-shadow-[0_2px_4px_rgba(99,102,241,0.4)]"
+                                  : "text-muted-foreground group-hover:text-primary"
                               }`}
                             />
-                            {/* Badge dot indicator if badge exists */}
+
+                            {/* Badge dot */}
                             {item.badge && (
-                              <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary ring-2 ring-card" />
+                              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-cyan-400 ring-2 ring-card shadow-[0_0_6px_rgba(34,211,238,0.8)]" />
                             )}
                           </Link>
 
-                          {/* Accessible Floating Hover Tooltip */}
-                          <div className="pointer-events-none absolute left-[calc(100%+10px)] top-1/2 -translate-y-1/2 z-50 flex items-center opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150">
-                            <div className="whitespace-nowrap rounded-lg bg-popover text-popover-foreground px-2.5 py-1 text-xs font-semibold shadow-xl border border-border flex items-center gap-1.5">
+                          {/* Accessible Floating Hover Tooltip with 3D Depth */}
+                          <div className="pointer-events-none absolute left-[calc(100%+10px)] top-1/2 -translate-y-1/2 z-50 flex items-center opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200">
+                            <div className="whitespace-nowrap rounded-xl bg-card text-card-foreground px-3 py-1.5 text-xs font-semibold shadow-xl border border-border flex items-center gap-2">
                               <span>{item.name}</span>
                               {item.badge && (
-                                <span className="rounded-full bg-primary/20 text-primary px-1.5 py-0.2 text-[9px] font-bold">
+                                <span className="rounded-full bg-primary/20 text-primary border border-primary/30 px-1.5 py-0.2 text-[9px] font-bold">
                                   {item.badge}
                                 </span>
                               )}
@@ -349,39 +412,65 @@ export function AdminSidebar({ userRole = "ADMIN", user }: AdminSidebarProps) {
                       );
                     }
 
-                    // Expanded List View
+                    // Expanded List View with 3D Elevation, Specular Light Sweep & Animated Road Capsule
                     return (
                       <Link
                         key={item.name}
                         href={item.href}
-                        className={`group relative flex items-center justify-between rounded-xl px-2.5 py-2 text-xs font-medium transition-all duration-150 focus-visible:outline-2 focus-visible:outline-primary ${
+                        className={`group relative flex items-center justify-between rounded-xl px-2.5 py-2.5 text-xs font-medium overflow-hidden border nav-item-3d focus-visible:outline-2 focus-visible:outline-primary ${
                           active
-                            ? "bg-primary/10 text-primary font-semibold shadow-2xs"
-                            : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                            ? "nav-item-3d-active bg-gradient-to-r from-primary/15 via-primary/10 to-primary/5 border-primary/40 text-primary font-semibold"
+                            : "border-transparent text-muted-foreground hover:border-border/80 hover:bg-card hover:text-foreground"
                         }`}
                       >
-                        {/* Active left indicator */}
-                        {active && (
+                        {/* 3D Specular Sheen Beam on Hover */}
+                        <span
+                          className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-white/20 dark:via-white/10 to-transparent"
+                          aria-hidden="true"
+                        />
+
+                        {/* Top Beveled Highlight Edge for 3D tactile lift */}
+                        <span
+                          className={`pointer-events-none absolute inset-x-2 top-0 h-px transition-opacity duration-200 ${
+                            active
+                              ? "bg-white/40 dark:bg-white/20 opacity-100"
+                              : "bg-white/30 dark:bg-white/10 opacity-0 group-hover:opacity-100"
+                          }`}
+                          aria-hidden="true"
+                        />
+
+                        {/* 3D Illuminated Road Indicator Capsule */}
+                        {active ? (
                           <span
-                            className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-primary"
+                            className="absolute left-1 top-2 bottom-2 w-1.5 rounded-full bg-gradient-to-b from-cyan-400 via-primary to-indigo-600 shadow-[0_0_8px_rgba(34,211,238,0.85)] animate-pulse"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <span
+                            className="absolute left-1 top-2.5 bottom-2.5 w-1 rounded-full bg-primary/70 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 shadow-[0_0_6px_rgba(99,102,241,0.6)]"
                             aria-hidden="true"
                           />
                         )}
-                        <div className="flex items-center gap-2.5 truncate">
-                          <Icon
-                            className={`h-4 w-4 shrink-0 transition-colors ${
-                              active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                            }`}
-                          />
-                          <span className="truncate">{item.name}</span>
+
+                        <div className="flex items-center gap-2.5 truncate pl-1">
+                          <div className="relative shrink-0 flex items-center justify-center transition-transform duration-200 ease-out group-hover:scale-115 group-hover:-translate-y-0.5 group-hover:rotate-[-5deg]">
+                            <Icon
+                              className={`h-4 w-4 shrink-0 transition-colors ${
+                                active
+                                  ? "text-primary drop-shadow-[0_2px_4px_rgba(99,102,241,0.4)]"
+                                  : "text-muted-foreground group-hover:text-primary"
+                              }`}
+                            />
+                          </div>
+                          <span className="truncate tracking-tight">{item.name}</span>
                         </div>
 
                         {item.badge && (
                           <span
-                            className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold shrink-0 ${
+                            className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold shrink-0 transition-all duration-200 group-hover:scale-105 ${
                               active
-                                ? "bg-primary/20 text-primary"
-                                : "bg-muted text-muted-foreground"
+                                ? "bg-primary/25 text-primary border border-primary/30 shadow-xs"
+                                : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary group-hover:border group-hover:border-primary/20"
                             }`}
                           >
                             {item.badge}
@@ -400,12 +489,19 @@ export function AdminSidebar({ userRole = "ADMIN", user }: AdminSidebarProps) {
         <div className="border-t border-border p-2.5 space-y-2">
           {isCollapsed ? (
             <div className="flex flex-col items-center gap-2">
-              <div
-                className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-primary-foreground shadow-sm cursor-default"
-                title={`${user?.name || "Admin"} (${userRole})`}
+              <Link
+                href="/admin/profile"
+                className="group relative flex items-center justify-center rounded-full transition focus-visible:outline-2 focus-visible:outline-primary hover:opacity-90"
+                title={`${currentUser?.name || "Admin"} (${userRole}) - View Profile`}
               >
-                {userInitials}
-              </div>
+                <UserAvatar
+                  src={currentUser?.avatar}
+                  name={currentUser?.name || "Admin User"}
+                  size="sm"
+                  showStatusDot
+                  statusColor="bg-emerald-500"
+                />
+              </Link>
               <button
                 onClick={handleLogout}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-error/10 hover:text-error transition cursor-pointer"
@@ -417,24 +513,32 @@ export function AdminSidebar({ userRole = "ADMIN", user }: AdminSidebarProps) {
             </div>
           ) : (
             <>
-              <div className="flex items-center gap-2.5 px-2 py-1">
-                <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-primary-foreground shadow-sm shrink-0">
-                  {userInitials}
-                </div>
-                <div className="truncate">
-                  <div className="truncate text-xs font-semibold text-foreground">
-                    {user?.name || "Admin User"}
+              <Link
+                href="/admin/profile"
+                className="group flex items-center gap-2.5 rounded-xl px-2 py-1.5 transition hover:bg-muted/60"
+                title="View Admin Profile"
+              >
+                <UserAvatar
+                  src={currentUser?.avatar}
+                  name={currentUser?.name || "Admin User"}
+                  size="sm"
+                  showStatusDot
+                  statusColor="bg-emerald-500"
+                />
+                <div className="truncate min-w-0 flex-1">
+                  <div className="truncate text-xs font-semibold text-foreground group-hover:text-primary transition-colors">
+                    {currentUser?.name || "Admin User"}
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="rounded bg-primary/10 px-1.5 py-0.2 text-[9px] font-bold text-primary uppercase">
                       {userRole}
                     </span>
                     <span className="text-[10px] text-muted-foreground truncate">
-                      {user?.email || "admin@nextdrive.uk"}
+                      {currentUser?.email || "admin@nextdrive.uk"}
                     </span>
                   </div>
                 </div>
-              </div>
+              </Link>
 
               <div className="flex items-center gap-1 pt-1 border-t border-border">
                 <Link
@@ -476,9 +580,7 @@ export function AdminSidebar({ userRole = "ADMIN", user }: AdminSidebarProps) {
             {/* Drawer Header */}
             <div className="flex items-center justify-between px-4 pb-3 border-b border-border">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-                  <Layers className="h-4 w-4" />
-                </div>
+                <NextDriveLogo size={32} className="shrink-0" />
                 <div>
                   <span className="font-bold text-foreground text-sm">NextDrive</span>
                   <span className="block text-[9px] font-semibold text-primary uppercase">
@@ -525,26 +627,45 @@ export function AdminSidebar({ userRole = "ADMIN", user }: AdminSidebarProps) {
                             key={item.name}
                             href={item.href}
                             onClick={() => toggleMobile(false)}
-                            className={`flex items-center justify-between rounded-xl px-3 py-2 text-xs font-medium transition ${
+                            className={`group relative flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-medium overflow-hidden border nav-item-3d ${
                               active
-                                ? "bg-primary/10 text-primary font-semibold"
-                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                ? "nav-item-3d-active bg-gradient-to-r from-primary/15 via-primary/10 to-primary/5 border-primary/40 text-primary font-semibold"
+                                : "border-transparent text-muted-foreground hover:border-border/80 hover:bg-card hover:text-foreground"
                             }`}
                           >
-                            <div className="flex items-center gap-2.5 truncate">
-                              <Icon
-                                className={`h-4 w-4 shrink-0 ${
-                                  active ? "text-primary" : "text-muted-foreground"
-                                }`}
+                            {/* Specular sheen */}
+                            <span
+                              className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-white/20 dark:via-white/10 to-transparent"
+                              aria-hidden="true"
+                            />
+
+                            {/* Active road indicator capsule */}
+                            {active && (
+                              <span
+                                className="absolute left-1 top-2 bottom-2 w-1.5 rounded-full bg-gradient-to-b from-cyan-400 via-primary to-indigo-600 shadow-[0_0_8px_rgba(34,211,238,0.85)]"
+                                aria-hidden="true"
                               />
+                            )}
+
+                            <div className="flex items-center gap-2.5 truncate pl-1">
+                              <div className="relative shrink-0 flex items-center justify-center transition-transform duration-200 ease-out group-hover:scale-110">
+                                <Icon
+                                  className={`h-4 w-4 shrink-0 transition-colors ${
+                                    active
+                                      ? "text-primary drop-shadow-[0_2px_4px_rgba(99,102,241,0.4)]"
+                                      : "text-muted-foreground group-hover:text-primary"
+                                  }`}
+                                />
+                              </div>
                               <span className="truncate">{item.name}</span>
                             </div>
+
                             {item.badge && (
                               <span
-                                className={`rounded-full px-1.5 py-0.5 text-[9px] font-semibold ${
+                                className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${
                                   active
-                                    ? "bg-primary/20 text-primary"
-                                    : "bg-muted text-muted-foreground"
+                                    ? "bg-primary/25 text-primary border border-primary/30"
+                                    : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
                                 }`}
                               >
                                 {item.badge}
@@ -561,6 +682,29 @@ export function AdminSidebar({ userRole = "ADMIN", user }: AdminSidebarProps) {
 
             {/* Drawer Footer */}
             <div className="border-t border-border px-4 pt-3 space-y-2">
+              <Link
+                href="/admin/profile"
+                onClick={() => toggleMobile(false)}
+                className="flex items-center gap-3 rounded-xl p-2 bg-surface-secondary/40 hover:bg-muted transition"
+                title="View Admin Profile"
+              >
+                <UserAvatar
+                  src={currentUser?.avatar}
+                  name={currentUser?.name || "Admin User"}
+                  size="sm"
+                  showStatusDot
+                  statusColor="bg-emerald-500"
+                />
+                <div className="min-w-0 flex-1 truncate">
+                  <div className="truncate text-xs font-bold text-foreground">
+                    {currentUser?.name || "Admin User"}
+                  </div>
+                  <div className="text-[10px] text-muted-foreground truncate">
+                    {currentUser?.email || "admin@nextdrive.uk"}
+                  </div>
+                </div>
+              </Link>
+
               <Link
                 href="/"
                 target="_blank"

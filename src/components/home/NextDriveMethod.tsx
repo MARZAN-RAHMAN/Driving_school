@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { BookLessonButton } from "@/components/booking/BookLessonButton";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { RoadProgressRoute } from "@/components/ui/RoadProgressRoute";
+import { NextDriveBackground } from "@/components/ui/NextDriveBackground";
 
 export interface SyllabusStep {
   step: string;
@@ -87,6 +89,9 @@ export function NextDriveMethod({
 
   return (
     <div ref={containerRef} className="relative w-full">
+      {/* 3D Automotive Route Atmosphere */}
+      <NextDriveBackground variant="route" speedMultiplier={0.8} />
+
       {/* ========================================================================= */}
       {/* 1. SECTION HEADER */}
       {/* ========================================================================= */}
@@ -160,6 +165,11 @@ export function NextDriveMethod({
           </div>
         </div>
       </ScrollReveal>
+
+      {/* 2B. ANIMATED ROAD PROGRESS ROUTE (Connecting 01 -> 05) */}
+      <div className="hidden lg:block max-w-5xl mx-auto mb-6 px-4">
+        <RoadProgressRoute totalSteps={steps.length} hoveredIndex={hoveredIndex} />
+      </div>
 
       {/* ========================================================================= */}
       {/* 3. DESKTOP & LAPTOP LAYOUT (>= 1024px: 5 Columns with Connected Timeline) */}

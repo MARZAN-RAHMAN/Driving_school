@@ -66,7 +66,7 @@ export function HeroSection({ settings, assessmentPrice = 75 }: HeroSectionProps
     setCursorPos(null);
   };
 
-  const phone = settings.phone || "+44 20 7946 0921";
+  const phone = settings.phone || "+44 161 946 0921";
   const phoneHref = `tel:${phone.replace(/[^\d+]/g, "")}`;
   const heroImage =
     settings.heroImageUrl ||

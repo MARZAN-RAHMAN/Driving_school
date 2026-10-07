@@ -312,6 +312,9 @@ export default function LeadBookingModal({
       }
 
       setIsSubmitted(true);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("nextdrive:new-query"));
+      }
     } catch (err: unknown) {
       setSubmitError(
         err instanceof Error ? err.message : "An unexpected error occurred. Please try again."

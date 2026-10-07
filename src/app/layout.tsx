@@ -7,22 +7,46 @@ import "./globals.css";
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await db.getBusinessSettings();
+  const [settings, globalSeo, homePageSeo] = await Promise.all([
+    db.getBusinessSettings(),
+    db.getGlobalSEOSettings(),
+    db.getPageSEO("/"),
+  ]);
 
-  const title = settings.metaTitle || `${settings.businessName} | Manchester Driving Academy`;
+  const title =
+    homePageSeo?.title ||
+    settings.metaTitle ||
+    `${settings.businessName} | Manchester Driving Academy`;
   const description =
+    homePageSeo?.metaDescription ||
     settings.metaDescription ||
     `DVSA-approved driving tuition across Manchester with ${settings.businessName}. Modern dual-control vehicles and certified Grade A ADI instructors.`;
+
+  const baseUrl = globalSeo.canonicalBaseUrl || "https://nextdrive.uk";
+  const ogImg = homePageSeo?.ogImage || settings.ogImageUrl || globalSeo.defaultOgImage;
 
   return {
     title: {
       default: title,
-      template: `%s | ${settings.businessName}`,
+      template: globalSeo.titleTemplate || `%s | ${settings.businessName}`,
     },
     description,
-    metadataBase: new URL("https://nextdrive.uk"),
+    metadataBase: new URL(baseUrl),
+    alternates: {
+      canonical: homePageSeo?.canonicalUrl || baseUrl,
+    },
+    robots: {
+      index: globalSeo.defaultRobots?.index ?? true,
+      follow: globalSeo.defaultRobots?.follow ?? true,
+    },
+    verification: {
+      google: globalSeo.googleVerificationCode,
+      other: globalSeo.bingVerificationCode
+        ? { "msvalidate.01": globalSeo.bingVerificationCode }
+        : undefined,
+    },
     authors: [{ name: settings.businessName }],
-    keywords: settings.metaKeywords || [
+    keywords: homePageSeo?.secondaryKeywords || settings.metaKeywords || [
       "driving lessons manchester",
       "learn to drive manchester",
       "automatic driving lessons",
@@ -31,15 +55,16 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      url: "https://nextdrive.uk",
+      url: baseUrl,
       siteName: settings.businessName,
       type: "website",
-      images: settings.ogImageUrl ? [{ url: settings.ogImageUrl }] : undefined,
+      images: ogImg ? [{ url: ogImg }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: ogImg ? [ogImg] : undefined,
     },
   };
 }
@@ -50,6 +75,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const settings = await db.getBusinessSettings();
+  const postcodeMatch = settings.headOfficeAddress?.match(/[A-Z]{1,2}[0-9][0-9A-Z]?\s?[0-9][A-Z]{2}/i);
+  const postalCode = postcodeMatch ? postcodeMatch[0] : "M1 5AN";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -67,7 +94,7 @@ export default async function RootLayout({
       "streetAddress": settings.headOfficeAddress,
       "addressLocality": "Manchester",
       "addressRegion": "Greater Manchester",
-      "postalCode": "M3 3EB",
+      "postalCode": postalCode,
       "addressCountry": "GB",
     },
     "geo": {

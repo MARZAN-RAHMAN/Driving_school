@@ -75,6 +75,14 @@ export async function PUT(request: Request) {
 
     const updated = await db.updateInstructor(instructor.id, updates);
 
+    // Sync to unified user record
+    const userUpdates: Record<string, unknown> = {};
+    if (avatar !== undefined) userUpdates.avatar = avatar;
+    if (phone !== undefined) userUpdates.phone = phone;
+    if (Object.keys(userUpdates).length > 0) {
+      await db.updateUser(user.id, userUpdates);
+    }
+
     await db.addAuditLog({
       action: "INSTRUCTOR_PROFILE_UPDATED",
       actorEmail: user.email,

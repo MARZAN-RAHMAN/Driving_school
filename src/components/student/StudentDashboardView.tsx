@@ -111,7 +111,7 @@ export function StudentDashboardView({
             <StudentLessonRequestModal
               instructors={instructors}
               packages={packages}
-              defaultPickup={student.postcode ? `${student.postcode}, London` : "London, UK"}
+              defaultPickup={student.postcode ? `${student.postcode}, Manchester` : "Manchester, UK"}
               onBookingCreated={refreshBookings}
             />
           </div>
@@ -258,7 +258,7 @@ export function StudentDashboardView({
                   <StudentLessonRequestModal
                     instructors={instructors}
                     packages={packages}
-                    defaultPickup={student.postcode ? `${student.postcode}, London` : "London, UK"}
+                    defaultPickup={student.postcode ? `${student.postcode}, Manchester` : "Manchester, UK"}
                     onBookingCreated={refreshBookings}
                   />
                 </div>
@@ -446,7 +446,7 @@ export function StudentDashboardView({
                   Pickup Postcode
                 </span>
                 <p className="font-semibold text-slate-900 dark:text-white uppercase">
-                  {student.postcode || "BR1, London"}
+                  {student.postcode || "M1, Manchester"}
                 </p>
               </div>
 

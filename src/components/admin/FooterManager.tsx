@@ -378,7 +378,7 @@ export function FooterManager({
   const resolvedDescription = draft.description;
   const resolvedPhone = draft.useBusinessContact && businessSettings?.phone
     ? businessSettings.phone
-    : draft.phone || "+44 20 7946 0921";
+    : draft.phone || "+44 161 946 0921";
   const resolvedEmail = draft.useBusinessContact && businessSettings?.email
     ? businessSettings.email
     : draft.email || "support@nextdrive.uk";
@@ -1144,7 +1144,7 @@ export function FooterManager({
                       value={draft.phone || ""}
                       disabled={draft.useBusinessContact}
                       onChange={(e) => updateDraft({ phone: e.target.value })}
-                      placeholder="+44 20 7946 0921"
+                      placeholder="+44 161 946 0921"
                       className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-white disabled:opacity-50"
                     />
                   </div>

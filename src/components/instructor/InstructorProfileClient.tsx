@@ -59,6 +59,11 @@ export function InstructorProfileClient({
 
       if (res.ok) {
         setSuccess("Profile information updated successfully.");
+        window.dispatchEvent(
+          new CustomEvent("nextdrive:user-updated", {
+            detail: { avatar },
+          })
+        );
         setTimeout(() => setSuccess(null), 4000);
       }
     } catch {

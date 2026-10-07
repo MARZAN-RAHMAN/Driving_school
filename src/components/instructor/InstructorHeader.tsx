@@ -7,13 +7,11 @@ import {
   Car,
   ExternalLink,
   Menu,
-  ShieldCheck,
-  Calendar,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { InstructorLogoutButton } from "./InstructorLogoutButton";
 import { User, Instructor } from "@/types";
-import { InstructorImage } from "@/components/instructor/InstructorImage";
+import { UserAccountMenu } from "@/components/navigation/UserAccountMenu";
+import { NextDriveLogo } from "@/components/ui/NextDriveLogo";
 
 interface InstructorHeaderProps {
   user: User;
@@ -41,10 +39,8 @@ export function InstructorHeader({
             </button>
           )}
 
-          <Link href="/instructor" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-xs">
-              <Layers className="h-5 w-5" />
-            </div>
+          <Link href="/instructor" className="flex items-center gap-2.5">
+            <NextDriveLogo size={36} className="shrink-0" />
             <span className="text-xl font-bold tracking-tight text-foreground">
               Next<span className="text-primary">Drive</span>
             </span>
@@ -69,29 +65,17 @@ export function InstructorHeader({
 
           <ThemeToggle />
 
-          {/* Instructor Profile Pill */}
-          <div className="flex items-center gap-2.5 border-l border-border pl-2.5 sm:pl-3">
-            <div className="relative">
-              <InstructorImage
-                instructor={instructor}
-                aspectRatio="1/1"
-                fallbackSize="sm"
-                className="h-8 w-8 rounded-full shadow-xs"
-              />
-              <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-success ring-2 ring-card" />
-            </div>
-
-            <div className="hidden md:block text-left">
-              <span className="block text-xs font-semibold text-foreground leading-tight">
-                {instructor.name}
-              </span>
-              <span className="block text-[10px] font-mono text-secondary">
-                {instructor.badgeNumber}
-              </span>
-            </div>
+          {/* Instructor Interactive Account Menu */}
+          <div className="border-l border-border pl-2 sm:pl-2.5">
+            <UserAccountMenu
+              user={{
+                ...user,
+                avatar: instructor.avatar || user.avatar,
+                name: instructor.name || user.name,
+              }}
+              role="INSTRUCTOR"
+            />
           </div>
-
-          <InstructorLogoutButton />
         </div>
       </div>
     </header>

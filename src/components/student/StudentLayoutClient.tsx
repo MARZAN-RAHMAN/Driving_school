@@ -9,9 +9,10 @@ import {
   Menu,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { StudentLogoutButton } from "./StudentLogoutButton";
 import { StudentSidebar } from "./StudentSidebar";
 import { User, Student } from "@/types";
+import { UserAccountMenu } from "@/components/navigation/UserAccountMenu";
+import { NextDriveLogo } from "@/components/ui/NextDriveLogo";
 
 interface StudentLayoutClientProps {
   user: User;
@@ -41,10 +42,8 @@ export function StudentLayoutClient({
               <Menu className="h-5 w-5" />
             </button>
 
-            <Link href="/student" className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-xs">
-                <Layers className="h-5 w-5" />
-              </div>
+            <Link href="/student" className="flex items-center gap-2.5">
+              <NextDriveLogo size={36} className="shrink-0" />
               <span className="text-xl font-bold tracking-tight text-foreground">
                 Next<span className="text-primary">Drive</span>
               </span>
@@ -69,27 +68,10 @@ export function StudentLayoutClient({
 
             <ThemeToggle />
 
-            {/* Student Profile Pill */}
-            <div className="flex items-center gap-2 border-l border-border pl-2.5 sm:pl-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold shadow-xs">
-                {user.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase()
-                  .slice(0, 2)}
-              </div>
-              <div className="hidden sm:block text-left">
-                <span className="block text-xs font-semibold text-foreground leading-tight">
-                  {user.name}
-                </span>
-                <span className="block text-[10px] text-muted-foreground">
-                  {student.id}
-                </span>
-              </div>
+            {/* Student Interactive Account Menu */}
+            <div className="border-l border-border pl-2 sm:pl-2.5">
+              <UserAccountMenu user={user} role="STUDENT" />
             </div>
-
-            <StudentLogoutButton />
           </div>
         </div>
       </header>

@@ -4,9 +4,20 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ContactInquiryForm } from "@/components/contact/ContactInquiryForm";
 import { db } from "@/lib/db";
+import { Metadata } from "next";
+import { getPageMetadata } from "@/lib/seo";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { AmbientHalo } from "@/components/ui/AmbientHalo";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata("/contact", {
+    title: "Contact NextDrive Driving Academy | Manchester Lesson Booking",
+    description:
+      "Get in touch with our Manchester driving school team. Call +44 161 946 0921 or send an online enquiry for lesson availability and instructor matching.",
+  });
+}
 
 export default async function ContactPage() {
   const [settings, packages, locations] = await Promise.all([
@@ -24,6 +35,13 @@ export default async function ContactPage() {
       <Navbar initialSettings={settings} />
 
       <main className="flex-1">
+        {/* Top Breadcrumb Bar */}
+        <div className="border-b border-border bg-surface-secondary/20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <Breadcrumbs items={[{ label: "Contact Us", href: "/contact" }]} />
+          </div>
+        </div>
+
         {/* Header section */}
         <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-28 border-b border-border bg-surface-secondary/40">
           <AmbientHalo position="center" variant="dual" size="xl" />

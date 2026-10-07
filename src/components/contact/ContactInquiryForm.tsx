@@ -31,6 +31,9 @@ export function ContactInquiryForm({ settings }: ContactInquiryFormProps) {
         body: JSON.stringify(form),
       });
       setSubmitted(true);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("nextdrive:new-query"));
+      }
     } catch {
       setSubmitted(true);
     } finally {

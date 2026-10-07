@@ -7,7 +7,25 @@ import { SeoManager } from "@/components/admin/SeoManager";
 export const dynamic = "force-dynamic";
 
 export default async function AdminSeoPage() {
-  const settings = await db.getBusinessSettings();
+  const [
+    settings,
+    globalSeo,
+    pages,
+    redirects,
+    keywords,
+    testCentres,
+    audit,
+    locations,
+  ] = await Promise.all([
+    db.getBusinessSettings(),
+    db.getGlobalSEOSettings(),
+    db.getAllPageSEO(),
+    db.getSEORedirects(),
+    db.getSEOKeywords(),
+    db.getLocalTestCentres(),
+    db.runSEOAudit(),
+    db.getLocations(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -43,8 +61,17 @@ export default async function AdminSeoPage() {
         </div>
       </div>
 
-      {/* SEO Manager Client Component */}
-      <SeoManager initialSettings={settings} />
+      {/* Advanced SEO Manager Client Component */}
+      <SeoManager
+        initialSettings={settings}
+        initialGlobalSeo={globalSeo}
+        initialPages={pages}
+        initialRedirects={redirects}
+        initialKeywords={keywords}
+        initialTestCentres={testCentres}
+        initialAudit={audit}
+        initialLocations={locations}
+      />
     </div>
   );
 }

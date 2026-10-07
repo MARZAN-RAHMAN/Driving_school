@@ -1,14 +1,15 @@
 "use client";
 
 import React from "react";
+import { NextDrive3DCanvas } from "@/components/ui/NextDrive3DCanvas";
 
 interface HeroBackgroundGridProps {
   className?: string;
 }
 
 /**
- * HeroBackgroundGrid renders a subtle perspective depth grid and automotive light trails
- * behind the vehicle and lower hero canvas, fading gracefully into the background.
+ * HeroBackgroundGrid renders the 3D Canvas perspective road system, dynamic automotive
+ * light trails, and subtle perspective grid behind the vehicle and hero canvas.
  */
 export function HeroBackgroundGrid({ className = "" }: HeroBackgroundGridProps) {
   return (
@@ -17,7 +18,12 @@ export function HeroBackgroundGrid({ className = "" }: HeroBackgroundGridProps) 
       aria-hidden="true"
     >
       {/* ========================================================================= */}
-      {/* 1. PERSPECTIVE DEPTH GRID (Lower Hero Area) */}
+      {/* 1. INTERACTIVE 3D PERSPECTIVE CANVAS (Road lanes, particles, parallax) */}
+      {/* ========================================================================= */}
+      <NextDrive3DCanvas variant="hero" className="z-0" />
+
+      {/* ========================================================================= */}
+      {/* 2. PERSPECTIVE DEPTH GRID (Crisp Geometric Anchor in Lower Hero Area) */}
       {/* ========================================================================= */}
       <div className="absolute inset-x-0 bottom-0 h-[65%] w-full overflow-hidden [mask-image:radial-gradient(ellipse_80%_60%_at_65%_75%,#000_20%,transparent_80%)]">
         <svg
@@ -78,7 +84,7 @@ export function HeroBackgroundGrid({ className = "" }: HeroBackgroundGridProps) 
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. AUTOMOTIVE LIGHT TRAILS (Subtle flowing streaks) */}
+      {/* 3. AUTOMOTIVE LIGHT TRAILS (Subtle flowing streaks) */}
       {/* ========================================================================= */}
       <div className="absolute inset-0 overflow-hidden opacity-40 dark:opacity-60">
         {/* Light Trail 1: Primary Indigo (High Depth, Upper Tarmac) */}

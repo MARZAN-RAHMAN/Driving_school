@@ -17,6 +17,7 @@ import { LessonPackage } from "@/types";
 import { BookLessonButton } from "@/components/booking/BookLessonButton";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { AmbientHalo } from "@/components/ui/AmbientHalo";
+import { NextDriveBackground } from "@/components/ui/NextDriveBackground";
 
 interface CoursePackagesSectionProps {
   packages: LessonPackage[];
@@ -59,6 +60,7 @@ export function CoursePackagesSection({ packages }: CoursePackagesSectionProps) 
       <AmbientHalo position="center" variant="dual" size="xl" />
       <AmbientHalo position="top-right" variant="secondary" size="lg" />
       <AmbientHalo position="bottom-center" variant="accent" size="lg" />
+      <NextDriveBackground variant="subtle" showOrbs={false} speedMultiplier={0.6} />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* 2. Section Header: Strong Premium Hierarchy */}

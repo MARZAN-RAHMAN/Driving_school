@@ -16,6 +16,7 @@ import {
   Calendar,
   BookOpen,
   FileSpreadsheet,
+  User,
 } from "lucide-react";
 import { Student, StudentStatus, TheoryStatus, Instructor, Booking } from "@/types";
 
@@ -57,7 +58,7 @@ export function CustomersManager({
     name: "",
     email: "",
     phone: "+44 79",
-    postcode: "London",
+    postcode: "Manchester",
     theoryStatus: "STUDYING",
     hoursCompleted: 0,
     assignedInstructorId: instructors[0]?.id || "inst_01",
@@ -79,7 +80,7 @@ export function CustomersManager({
       name: "",
       email: "",
       phone: "+44 79",
-      postcode: "London",
+      postcode: "Manchester",
       theoryStatus: "STUDYING",
       hoursCompleted: 0,
       assignedInstructorId: instructors[0]?.id || "inst_01",
@@ -98,7 +99,7 @@ export function CustomersManager({
       name: s.name,
       email: s.email,
       phone: s.phone,
-      postcode: s.postcode || "London",
+      postcode: s.postcode || "Manchester",
       theoryStatus: s.theoryStatus,
       hoursCompleted: s.hoursCompleted,
       assignedInstructorId: s.assignedInstructorId || "inst_01",
@@ -296,39 +297,64 @@ export function CustomersManager({
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850/50 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                <tr>
-                  <th className="px-6 py-3.5">Student / Learner</th>
-                  <th className="px-6 py-3.5">Assigned Instructor</th>
-                  <th className="px-6 py-3.5">Theory Status</th>
-                  <th className="px-6 py-3.5">Lesson Hours</th>
-                  <th className="px-6 py-3.5">Syllabus Progress</th>
-                  <th className="px-6 py-3.5">Status</th>
-                  <th className="px-6 py-3.5 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium text-slate-700 dark:text-slate-300">
-                {filteredStudents.map((s) => (
-                  <tr key={s.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition">
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-slate-900 dark:text-white">{s.name}</div>
-                      <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                        <Mail className="h-3 w-3" />
-                        {s.email}
+          <>
+            {/* Mobile Card List (Visible on mobile screens < md) */}
+            <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+              {filteredStudents.map((s) => (
+                <div
+                  key={s.id}
+                  className="p-4 space-y-3 hover:bg-slate-50/50 dark:hover:bg-slate-850/50 transition"
+                >
+                  {/* Top Header: Student info & Status */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="font-bold text-sm text-slate-900 dark:text-white truncate">
+                        {s.name}
                       </div>
-                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-mono flex items-center gap-1">
-                        <Phone className="h-2.5 w-2.5" />
-                        {s.phone}
+                      <div className="mt-0.5 space-y-0.5">
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5 truncate">
+                          <Mail className="h-3 w-3 shrink-0 text-slate-400" />
+                          <a href={`mailto:${s.email}`} className="hover:underline truncate">
+                            {s.email}
+                          </a>
+                        </div>
+                        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-mono flex items-center gap-1.5">
+                          <Phone className="h-2.5 w-2.5 shrink-0" />
+                          <a href={`tel:${s.phone}`} className="hover:underline">
+                            {s.phone}
+                          </a>
+                        </div>
                       </div>
-                    </td>
+                    </div>
 
-                    <td className="px-6 py-4 font-semibold text-slate-900 dark:text-white">
-                      {s.assignedInstructorName}
-                    </td>
+                    <span
+                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold shrink-0 ${
+                        s.status === "PASSED"
+                          ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 ring-1 ring-emerald-600/20"
+                          : s.status === "TEST_READY"
+                          ? "bg-purple-50 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 ring-1 ring-purple-600/20"
+                          : s.status === "ACTIVE"
+                          ? "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 ring-1 ring-indigo-600/20"
+                          : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                      }`}
+                    >
+                      {s.status === "PASSED"
+                        ? `🎉 Passed`
+                        : s.status === "TEST_READY"
+                        ? `🎯 Ready`
+                        : s.status === "ACTIVE"
+                        ? "Active"
+                        : "Inactive"}
+                    </span>
+                  </div>
 
-                    <td className="px-6 py-4">
+                  {/* Student Details Box */}
+                  <div className="rounded-xl bg-slate-50 dark:bg-slate-850 p-3 border border-slate-100 dark:border-slate-800/80 space-y-2 text-xs">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                        <User className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                        <span className="font-semibold">{s.assignedInstructorName}</span>
+                      </div>
                       <span
                         className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold ${
                           s.theoryStatus === "PASSED"
@@ -339,85 +365,181 @@ export function CustomersManager({
                         }`}
                       >
                         {s.theoryStatus === "PASSED" && <CheckCircle2 className="h-3 w-3" />}
-                        {s.theoryStatus}
+                        Theory: {s.theoryStatus}
                       </span>
-                    </td>
+                    </div>
 
-                    <td className="px-6 py-4">
-                      <span className="font-bold font-mono text-slate-900 dark:text-white">
-                        {s.hoursCompleted} hrs
-                      </span>
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <div className="w-28">
-                        <div className="flex justify-between text-[10px] text-slate-500 dark:text-slate-400 mb-1">
-                          <span>{Math.min(100, Math.round((s.hoursCompleted / 30) * 100))}%</span>
-                          <span>30h target</span>
-                        </div>
-                        <div className="h-1.5 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                          <div
-                            className="h-full bg-indigo-600 dark:bg-indigo-500 rounded-full"
-                            style={{
-                              width: `${Math.min(100, Math.round((s.hoursCompleted / 30) * 100))}%`,
-                            }}
-                          />
-                        </div>
+                    <div className="pt-2 border-t border-slate-200/60 dark:border-slate-800 space-y-1">
+                      <div className="flex justify-between text-[11px] text-slate-600 dark:text-slate-300">
+                        <span>Lesson Progress: <span className="font-mono font-bold">{s.hoursCompleted} hrs</span></span>
+                        <span>{Math.min(100, Math.round((s.hoursCompleted / 30) * 100))}% (30h target)</span>
                       </div>
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-                          s.status === "PASSED"
-                            ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 ring-1 ring-emerald-600/20"
-                            : s.status === "TEST_READY"
-                            ? "bg-purple-50 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 ring-1 ring-purple-600/20"
-                            : s.status === "ACTIVE"
-                            ? "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 ring-1 ring-indigo-600/20"
-                            : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-                        }`}
-                      >
-                        {s.status === "PASSED"
-                          ? `🎉 Passed (${s.passDate || "Official DVSA"})`
-                          : s.status === "TEST_READY"
-                          ? `🎯 Ready (${s.testDate || "Booked"})`
-                          : s.status === "ACTIVE"
-                          ? "Active Lessons"
-                          : "Inactive"}
-                      </span>
-                    </td>
-
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          onClick={() => setViewingBookingsStudent(s)}
-                          className="rounded-lg p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-850"
-                          title="View Student Bookings"
-                        >
-                          <Calendar className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleOpenEditModal(s)}
-                          className="rounded-lg p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-850"
-                          title="Edit Student"
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(s.id, s.name)}
-                          className="rounded-lg p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40"
-                          title="Delete Student Record"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                      <div className="h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                        <div
+                          className="h-full bg-indigo-600 dark:bg-indigo-500 rounded-full"
+                          style={{
+                            width: `${Math.min(100, Math.round((s.hoursCompleted / 30) * 100))}%`,
+                          }}
+                        />
                       </div>
-                    </td>
+                    </div>
+                  </div>
+
+                  {/* Actions Bar */}
+                  <div className="flex items-center justify-end gap-2 pt-1">
+                    <button
+                      onClick={() => setViewingBookingsStudent(s)}
+                      className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/60 transition"
+                      title="View Student Bookings"
+                    >
+                      <Calendar className="h-3.5 w-3.5" />
+                      <span>Bookings</span>
+                    </button>
+                    <button
+                      onClick={() => handleOpenEditModal(s)}
+                      className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition"
+                      title="Edit Student"
+                    >
+                      <Edit2 className="h-3.5 w-3.5" />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(s.id, s.name)}
+                      className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 transition"
+                      title="Delete Student Record"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      <span>Delete</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View (Visible on md screens and above) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full min-w-[850px] text-left text-xs">
+                <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850/50 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  <tr>
+                    <th className="px-6 py-3.5">Student / Learner</th>
+                    <th className="px-6 py-3.5">Assigned Instructor</th>
+                    <th className="px-6 py-3.5">Theory Status</th>
+                    <th className="px-6 py-3.5">Lesson Hours</th>
+                    <th className="px-6 py-3.5">Syllabus Progress</th>
+                    <th className="px-6 py-3.5">Status</th>
+                    <th className="px-6 py-3.5 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium text-slate-700 dark:text-slate-300">
+                  {filteredStudents.map((s) => (
+                    <tr key={s.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition">
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-slate-900 dark:text-white">{s.name}</div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                          <Mail className="h-3 w-3" />
+                          {s.email}
+                        </div>
+                        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-mono flex items-center gap-1">
+                          <Phone className="h-2.5 w-2.5" />
+                          {s.phone}
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-4 font-semibold text-slate-900 dark:text-white">
+                        {s.assignedInstructorName}
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold ${
+                            s.theoryStatus === "PASSED"
+                              ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300"
+                              : s.theoryStatus === "BOOKED"
+                              ? "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300"
+                              : "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300"
+                          }`}
+                        >
+                          {s.theoryStatus === "PASSED" && <CheckCircle2 className="h-3 w-3" />}
+                          {s.theoryStatus}
+                        </span>
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <span className="font-bold font-mono text-slate-900 dark:text-white">
+                          {s.hoursCompleted} hrs
+                        </span>
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <div className="w-28">
+                          <div className="flex justify-between text-[10px] text-slate-500 dark:text-slate-400 mb-1">
+                            <span>{Math.min(100, Math.round((s.hoursCompleted / 30) * 100))}%</span>
+                            <span>30h target</span>
+                          </div>
+                          <div className="h-1.5 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                            <div
+                              className="h-full bg-indigo-600 dark:bg-indigo-500 rounded-full"
+                              style={{
+                                width: `${Math.min(100, Math.round((s.hoursCompleted / 30) * 100))}%`,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                            s.status === "PASSED"
+                              ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 ring-1 ring-emerald-600/20"
+                              : s.status === "TEST_READY"
+                              ? "bg-purple-50 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 ring-1 ring-purple-600/20"
+                              : s.status === "ACTIVE"
+                              ? "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 ring-1 ring-indigo-600/20"
+                              : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                          }`}
+                        >
+                          {s.status === "PASSED"
+                            ? `🎉 Passed (${s.passDate || "Official DVSA"})`
+                            : s.status === "TEST_READY"
+                            ? `🎯 Ready (${s.testDate || "Booked"})`
+                            : s.status === "ACTIVE"
+                            ? "Active Lessons"
+                            : "Inactive"}
+                        </span>
+                      </td>
+
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => setViewingBookingsStudent(s)}
+                            className="rounded-lg p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-850"
+                            title="View Student Bookings"
+                          >
+                            <Calendar className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleOpenEditModal(s)}
+                            className="rounded-lg p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-850"
+                            title="Edit Student"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(s.id, s.name)}
+                            className="rounded-lg p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                            title="Delete Student Record"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
@@ -597,7 +719,7 @@ export function CustomersManager({
                     type="text"
                     value={form.postcode}
                     onChange={(e) => setForm({ ...form, postcode: e.target.value })}
-                    placeholder="e.g. N22, London"
+                    placeholder="e.g. M14, Manchester"
                     className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-850 px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-indigo-600 focus:outline-none uppercase"
                   />
                 </div>

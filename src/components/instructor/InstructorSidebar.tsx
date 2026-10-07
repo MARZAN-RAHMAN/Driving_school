@@ -157,26 +157,34 @@ export function InstructorSidebar({
                 key={item.href}
                 href={item.href}
                 onClick={onCloseMobile}
-                className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold transition ${
+                className={`group relative flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold overflow-hidden border nav-item-3d ${
                   isActive
-                    ? "bg-primary text-primary-foreground shadow-xs"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    ? "nav-item-3d-active bg-primary text-primary-foreground border-primary/60 shadow-md"
+                    : "border-transparent text-muted-foreground hover:border-border/80 hover:bg-card hover:text-foreground"
                 }`}
               >
-                <div className="flex items-center gap-2.5">
-                  <Icon
-                    className={`h-4 w-4 ${
-                      isActive ? "text-primary-foreground" : "text-muted-foreground"
-                    }`}
-                  />
+                {/* 3D Specular Sheen Beam on Hover */}
+                <span
+                  className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-white/20 dark:via-white/10 to-transparent"
+                  aria-hidden="true"
+                />
+
+                <div className="flex items-center gap-2.5 pl-0.5">
+                  <div className="relative shrink-0 transition-transform duration-200 ease-out group-hover:scale-115 group-hover:-translate-y-0.5 group-hover:rotate-[-6deg]">
+                    <Icon
+                      className={`h-4 w-4 ${
+                        isActive ? "text-primary-foreground drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]" : "text-muted-foreground group-hover:text-primary"
+                      }`}
+                    />
+                  </div>
                   <span>{item.label}</span>
                 </div>
                 {item.badge && (
                   <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold transition-transform duration-200 group-hover:scale-105 ${
                       isActive
                         ? "bg-primary-foreground/20 text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
+                        : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
                     }`}
                   >
                     {item.badge}

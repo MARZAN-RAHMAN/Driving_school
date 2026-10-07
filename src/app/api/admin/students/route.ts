@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       name: body.name,
       email: body.email,
       phone: body.phone,
-      postcode: body.postcode || "London",
+      postcode: body.postcode || "Manchester",
       theoryStatus: body.theoryStatus || "STUDYING",
       hoursCompleted: Number(body.hoursCompleted) || 0,
       assignedInstructorId: body.assignedInstructorId || "inst_01",

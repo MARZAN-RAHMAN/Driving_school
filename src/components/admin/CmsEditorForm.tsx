@@ -339,13 +339,13 @@ export function CmsEditorForm({ initialSettings }: CmsEditorFormProps) {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Brand Tagline (e.g. &quot;DVSA Certified • London&quot;)
+                  Brand Tagline (e.g. &quot;DVSA Certified • Manchester&quot;)
                 </label>
                 <input
                   type="text"
                   value={formData.tagline || ""}
                   onChange={(e) => handleChange("tagline", e.target.value)}
-                  placeholder="DVSA Certified • London"
+                  placeholder="DVSA Certified • Manchester"
                   className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs text-slate-900 focus:border-indigo-600 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-500 dark:focus:border-indigo-500 dark:focus:bg-slate-900"
                 />
               </div>
@@ -564,7 +564,7 @@ export function CmsEditorForm({ initialSettings }: CmsEditorFormProps) {
                 type="text"
                 value={(formData.metaKeywords || []).join(", ")}
                 onChange={(e) => handleKeywordsChange(e.target.value)}
-                placeholder="driving lessons london, learn to drive, pass first time"
+                placeholder="driving lessons manchester, learn to drive, pass first time"
                 className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs text-slate-900 focus:border-indigo-600 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-500 dark:focus:border-indigo-500 dark:focus:bg-slate-900"
               />
             </div>

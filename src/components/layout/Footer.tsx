@@ -23,6 +23,7 @@ import {
   FooterSocialPlatform,
 } from "@/types";
 import { BookLessonButton } from "@/components/booking/BookLessonButton";
+import { NextDriveLogo } from "@/components/ui/NextDriveLogo";
 
 interface FooterProps {
   settings?: BusinessSettings;
@@ -113,7 +114,7 @@ export async function Footer({
   // Resolve Contact Information
   const phone = footer.useBusinessContact && settings.phone
     ? settings.phone
-    : footer.phone || settings.phone || "+44 20 7946 0921";
+    : footer.phone || settings.phone || "+44 161 946 0921";
   const phoneHref = `tel:${phone.replace(/[^\d+]/g, "")}`;
   const email = footer.useBusinessContact && settings.email
     ? settings.email
@@ -279,9 +280,7 @@ export async function Footer({
                     className="h-10 w-10 rounded-2xl object-cover shadow-xs ring-1 ring-border"
                   />
                 ) : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-xs">
-                    <Car className="h-5 w-5" />
-                  </div>
+                  <NextDriveLogo size={42} className="shrink-0" />
                 )
               )}
               <div>

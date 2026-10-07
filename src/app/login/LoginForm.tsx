@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { GoogleIcon, AppleIcon, LinkedInIcon } from "@/components/ui/SocialIcons";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { NextDriveLogo } from "@/components/ui/NextDriveLogo";
 
 interface LoginFormProps {
   initialError?: string;
@@ -443,9 +444,7 @@ export function LoginForm({ initialError, initialCallbackUrl }: LoginFormProps) 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-sm shadow-primary/25 group-hover:scale-105 transition-transform shrink-0">
-              <CarFront className="h-5 w-5 sm:h-5.5 sm:w-5.5" />
-            </div>
+            <NextDriveLogo size={42} className="shrink-0" />
             <div>
               <span className="text-lg sm:text-xl font-bold tracking-tight text-foreground block leading-tight">
                 Next<span className="text-primary">Drive</span>

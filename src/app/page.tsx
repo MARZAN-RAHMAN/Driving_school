@@ -17,6 +17,7 @@ import { FaqAccordion } from "@/components/home/FaqAccordion";
 import { AmbientHalo } from "@/components/ui/AmbientHalo";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ServiceLocationsMap } from "@/components/home/ServiceLocationsMap";
+import { NextDriveBackground } from "@/components/ui/NextDriveBackground";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -110,16 +111,7 @@ export default async function HomePage() {
         {/* ========================================================================= */}
         <section id="locations" className="relative py-20 lg:py-28 border-b border-border bg-background overflow-hidden">
           <AmbientHalo position="center" variant="dual" size="xl" />
-
-          {/* Subtle Map-Inspired Coordinate Grid Accent */}
-          <div
-            className="pointer-events-none absolute inset-0 -z-10 opacity-[0.035] dark:opacity-[0.06]"
-            style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, var(--accent) 1px, transparent 0)`,
-              backgroundSize: "32px 32px",
-            }}
-            aria-hidden="true"
-          />
+          <NextDriveBackground variant="locations" showOrbs={false} speedMultiplier={0.8} />
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader

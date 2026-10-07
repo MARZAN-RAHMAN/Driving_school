@@ -21,7 +21,7 @@ import {
 import { Account } from "@/types";
 
 interface ConnectedAccountsCardProps {
-  userRole: "STUDENT" | "INSTRUCTOR";
+  userRole?: "ADMIN" | "STUDENT" | "INSTRUCTOR";
 }
 
 interface ProviderMeta {

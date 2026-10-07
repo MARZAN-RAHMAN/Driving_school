@@ -41,16 +41,16 @@ const DARK_MAP_STYLES: google.maps.MapTypeStyle[] = [
   { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#38bdf8" }] },
 ];
 
-// Clean modern vector theme for Light Mode
+// Clean modern darkish slate theme for Light Mode
 const LIGHT_MAP_STYLES: google.maps.MapTypeStyle[] = [
-  { elementType: "geometry", stylers: [{ color: "#f8fafc" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#475569" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#ffffff" }] },
-  { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
-  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#e2e8f0" }] },
-  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#e0e7ff" }] },
-  { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#c7d2fe" }] },
-  { featureType: "water", elementType: "geometry", stylers: [{ color: "#e0f2fe" }] },
+  { elementType: "geometry", stylers: [{ color: "#dce3ed" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#243346" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#edf2f8" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#edf2f8" }] },
+  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#b0c1d5" }] },
+  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#c7d4e5" }] },
+  { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#9bb0c7" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#b8c9dc" }] },
 ];
 
 export function ServiceLocationsMap({ locations }: ServiceLocationsMapProps) {

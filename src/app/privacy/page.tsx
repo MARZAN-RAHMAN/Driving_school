@@ -3,11 +3,17 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ShieldCheck, Lock, Eye, FileText, CheckCircle2 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy | NextDrive Driving Academy",
-  description:
-    "NextDrive Driving Academy Privacy Policy. Learn how we handle your personal data, DVSA driving licence records, and lesson progress in compliance with UK GDPR.",
-};
+import { getPageMetadata } from "@/lib/seo";
+
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata("/privacy", {
+    title: "Privacy Policy | NextDrive Driving Academy",
+    description:
+      "NextDrive Driving Academy Privacy Policy. Learn how we handle your personal data, DVSA driving licence records, and lesson progress in compliance with UK GDPR.",
+  });
+}
 
 export default function PrivacyPolicyPage() {
   return (

@@ -3,11 +3,17 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { FileCheck, AlertCircle, Clock, CheckCircle2, Car, Shield } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Terms and Conditions | NextDrive Driving Academy",
-  description:
-    "Terms and Conditions for NextDrive Driving Academy. Clear booking rules, 48-hour cancellation policy, pupil requirements, and practical test day terms.",
-};
+import { getPageMetadata } from "@/lib/seo";
+
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata("/terms", {
+    title: "Terms and Conditions | NextDrive Driving Academy",
+    description:
+      "Terms and Conditions for NextDrive Driving Academy. Clear booking rules, 48-hour cancellation policy, pupil requirements, and practical test day terms.",
+  });
+}
 
 export default function TermsPage() {
   return (

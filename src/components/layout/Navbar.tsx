@@ -19,6 +19,7 @@ import {
 import { BusinessSettings } from "@/types";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useBookingModal } from "@/context/BookingModalContext";
+import { NextDriveLogo } from "@/components/ui/NextDriveLogo";
 
 interface UserSession {
   name: string;
@@ -117,7 +118,7 @@ export function Navbar({ initialSettings }: NavbarProps = {}) {
   };
 
   const businessName = settings?.businessName || "NextDrive";
-  const phone = settings?.phone || "+44 20 7946 0921";
+  const phone = settings?.phone || "+44 161 946 0921";
   const phoneHref = `tel:${phone.replace(/[^\d+]/g, "")}`;
   const tagline = settings?.tagline || "DVSA Certified • Manchester";
   const logoBadge = settings?.logoBadgeText || "Academy";
@@ -134,7 +135,7 @@ export function Navbar({ initialSettings }: NavbarProps = {}) {
     >
       <div className="mx-auto flex h-16 sm:h-20 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2.5 sm:gap-3 transition hover:opacity-90 shrink-0">
+        <Link href="/" className="flex items-center gap-2.5 sm:gap-3 transition hover:opacity-95 shrink-0">
           {settings?.logoUrl ? (
             <img
               src={settings.logoUrl}
@@ -142,9 +143,7 @@ export function Navbar({ initialSettings }: NavbarProps = {}) {
               className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl object-cover shadow-xs ring-1 ring-border shrink-0"
             />
           ) : (
-            <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl bg-primary text-primary-foreground shadow-xs shrink-0">
-              <Car className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
-            </div>
+            <NextDriveLogo size={42} className="shrink-0" />
           )}
           <div className="shrink-0">
             <div className="flex items-center gap-1.5">
@@ -174,43 +173,39 @@ export function Navbar({ initialSettings }: NavbarProps = {}) {
         </Link>
 
         {/* Desktop Nav Links (Visible on lg screens 1024px+) with comfortable separation from brand */}
-        <nav className="hidden items-center gap-1 xl:gap-2.5 2xl:gap-3.5 lg:flex shrink-0 lg:ml-7 xl:ml-10">
-          <Link
-            href="/#courses"
-            className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
-          >
-            Courses &amp; Pricing
-          </Link>
-          <Link
-            href="/#instructors"
-            className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
-          >
-            Instructors Fleet
-          </Link>
-          <Link
-            href="/#locations"
-            className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
-          >
-            Test Centers
-          </Link>
-          <Link
-            href="/#reviews"
-            className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
-          >
-            Pass Stories
-          </Link>
-          <Link
-            href="/#faqs"
-            className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
-          >
-            FAQ
-          </Link>
-          <Link
-            href="/contact"
-            className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition hover:text-primary hover:bg-muted/80"
-          >
-            Contact
-          </Link>
+        {/* Desktop Nav Links (Visible on lg screens 1024px+) with 3D Tactile Hover Animation */}
+        <nav className="hidden items-center gap-1 xl:gap-2 2xl:gap-3 lg:flex shrink-0 lg:ml-7 xl:ml-10">
+          {[
+            { href: "/driving-lessons", label: "Lessons" },
+            { href: "/pricing", label: "Pricing" },
+            { href: "/instructors", label: "Instructors" },
+            { href: "/locations", label: "Locations" },
+            { href: "/test-centres", label: "Test Centres" },
+            { href: "/faq", label: "FAQ" },
+            { href: "/contact", label: "Contact" },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="group relative whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground overflow-hidden border border-transparent nav-item-3d hover:text-foreground hover:border-border/60 hover:bg-card/90"
+            >
+              {/* Specular sheen beam on hover */}
+              <span
+                className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-white/20 dark:via-white/10 to-transparent"
+                aria-hidden="true"
+              />
+
+              {/* Glowing road lane underline */}
+              <span
+                className="pointer-events-none absolute bottom-0 inset-x-2 h-0.5 rounded-full bg-gradient-to-r from-cyan-400 via-primary to-indigo-600 opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100 transition-all duration-300 shadow-[0_0_8px_rgba(34,211,238,0.7)]"
+                aria-hidden="true"
+              />
+
+              <span className="relative z-10 transition-colors group-hover:text-primary">
+                {item.label}
+              </span>
+            </Link>
+          ))}
         </nav>
 
         {/* Desktop Actions & Theme Toggle */}
@@ -307,35 +302,49 @@ export function Navbar({ initialSettings }: NavbarProps = {}) {
         <div className="border-b border-border bg-card px-5 py-5 lg:hidden shadow-xl">
           <div className="flex flex-col gap-1.5">
             <Link
-              href="/#courses"
+              href="/driving-lessons"
               onClick={() => setMobileMenuOpen(false)}
               className="rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-muted hover:text-primary"
             >
-              Courses &amp; Pricing
+              Driving Lessons
             </Link>
             <Link
-              href="/#instructors"
+              href="/pricing"
               onClick={() => setMobileMenuOpen(false)}
               className="rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-muted hover:text-primary"
             >
-              Instructors Fleet
+              Prices &amp; Course Packages
             </Link>
             <Link
-              href="/#locations"
+              href="/instructors"
               onClick={() => setMobileMenuOpen(false)}
               className="rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-muted hover:text-primary"
             >
-              Test Centers &amp; Areas
+              Driving Instructors Fleet
             </Link>
             <Link
-              href="/#reviews"
+              href="/locations"
               onClick={() => setMobileMenuOpen(false)}
               className="rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-muted hover:text-primary"
             >
-              Pass Stories &amp; Reviews
+              Service Locations &amp; Map
             </Link>
             <Link
-              href="/#faqs"
+              href="/test-centres"
+              onClick={() => setMobileMenuOpen(false)}
+              className="rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-muted hover:text-primary"
+            >
+              Test Centres Guide
+            </Link>
+            <Link
+              href="/blog"
+              onClick={() => setMobileMenuOpen(false)}
+              className="rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-muted hover:text-primary"
+            >
+              Driving Guides &amp; Blog
+            </Link>
+            <Link
+              href="/faq"
               onClick={() => setMobileMenuOpen(false)}
               className="rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-muted hover:text-primary"
             >

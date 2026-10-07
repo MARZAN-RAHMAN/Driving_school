@@ -9,38 +9,38 @@
   --desktop-header-height: 80px;
   --site-header-height: var(--mobile-header-height);
 
-  /* Brand Colours - Light Mode */
-  --primary: #4F46E5;
+  /* Brand Colours - Light Mode (Rich Automotive Indigo, Regal Violet & Cyber Cyan) */
+  --primary: #4338CA;
   --primary-foreground: #FFFFFF;
-  --primary-hover: #4338CA;
-  --secondary: #7C3AED;
+  --primary-hover: #3730A3;
+  --secondary: #6D28D9;
   --secondary-foreground: #FFFFFF;
-  --secondary-hover: #6D28D9;
-  --accent: #06B6D4;
+  --secondary-hover: #5B21B6;
+  --accent: #0891B2;
   --accent-foreground: #FFFFFF;
 
-  /* Surfaces & Structural - Light Mode */
-  --background: #F8FAFC;
-  --foreground: #0F172A;
-  --card: #FFFFFF;
-  --card-foreground: #0F172A;
-  --surface: #FFFFFF;
-  --surface-foreground: #0F172A;
-  --surface-secondary: #F1F5F9;
-  --muted: #F1F5F9;
-  --muted-foreground: #475569;
-  --border: #E2E8F0;
-  --input: #FFFFFF;
-  --input-border: #E2E8F0;
-  --popover: #FFFFFF;
-  --popover-foreground: #0F172A;
-  --nav-bg: rgba(248, 250, 252, 0.94);
-  --sidebar-bg: #FFFFFF;
+  /* Surfaces & Structural - Darkish Automotive Slate Light Mode */
+  --background: #DCE3ED;
+  --foreground: #090E1A;
+  --card: #EDF2F8;
+  --card-foreground: #090E1A;
+  --surface: #EDF2F8;
+  --surface-foreground: #090E1A;
+  --surface-secondary: #CFDAE7;
+  --muted: #CFDAE7;
+  --muted-foreground: #243346;
+  --border: #B0C1D5;
+  --input: #F4F7FB;
+  --input-border: #9BB0C7;
+  --popover: #EDF2F8;
+  --popover-foreground: #090E1A;
+  --nav-bg: rgba(220, 227, 237, 0.94);
+  --sidebar-bg: #EDF2F8;
 
   /* Status Tokens - Light Mode */
-  --success: #16A34A;
+  --success: #15803D;
   --success-foreground: #FFFFFF;
-  --warning: #D97706;
+  --warning: #B45309;
   --warning-foreground: #FFFFFF;
   --error: #DC2626;
   --error-foreground: #FFFFFF;
@@ -48,11 +48,17 @@
   --destructive-foreground: #FFFFFF;
 
   /* Ambient Halo Tokens - Light Mode */
-  --halo-primary: rgba(79, 70, 229, 0.09);
-  --halo-secondary: rgba(124, 58, 237, 0.07);
-  --halo-accent: rgba(6, 182, 212, 0.07);
-  --halo-blur: 120px;
-  --halo-opacity: 0.75;
+  --halo-primary: rgba(67, 56, 202, 0.16);
+  --halo-secondary: rgba(109, 40, 217, 0.13);
+  --halo-accent: rgba(8, 145, 178, 0.14);
+  --halo-blur: 130px;
+  --halo-opacity: 0.85;
+
+  /* Slate & White overrides for darkish light mode */
+  --color-slate-50: #EDF2F8;
+  --color-slate-100: #DEE6F1;
+  --color-slate-200: #B0C1D5;
+  --color-slate-300: #8FA4BC;
 }
  
 @media (min-width: 640px) {
@@ -108,6 +114,10 @@
   --halo-opacity: 0.45;
 
   /* Re-align dark mode utility fallbacks to guarantee consistency */
+  --color-slate-50: #0B1120;
+  --color-slate-100: #111827;
+  --color-slate-200: #1E293B;
+  --color-slate-300: #334155;
   --color-slate-950: #0B1120;
   --color-slate-900: #111827;
   --color-slate-800: #1E293B;
@@ -373,9 +383,43 @@ body {
   -webkit-transform-style: preserve-3d;
 }
 
-.backface-hidden {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+/* 3D Interactive Navigation Links & Sidebar Items */
+.nav-item-3d {
+  position: relative;
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: perspective(700px) translateZ(0);
+  will-change: transform, box-shadow;
+}
+
+.nav-item-3d:hover {
+  transform: perspective(700px) translate3d(3px, -1.5px, 6px);
+  box-shadow: 
+    0 8px 18px -4px rgba(67, 56, 202, 0.16),
+    0 3px 6px -2px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.35);
+}
+
+.dark .nav-item-3d:hover {
+  box-shadow: 
+    0 10px 24px -4px rgba(0, 0, 0, 0.65),
+    0 3px 8px -2px rgba(99, 102, 241, 0.28),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+}
+
+.nav-item-3d-active {
+  position: relative;
+  transform: perspective(700px) translate3d(2px, -0.5px, 4px);
+  box-shadow: 
+    0 6px 16px -2px rgba(67, 56, 202, 0.2),
+    0 2px 5px -1px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
+}
+
+.dark .nav-item-3d-active {
+  box-shadow: 
+    0 8px 20px -3px rgba(0, 0, 0, 0.7),
+    0 2px 6px -1px rgba(99, 102, 241, 0.32),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -387,7 +431,9 @@ body {
   .animate-light-trail-fast,
   .animate-particle-drift,
   .animate-road-pulse,
-  .card-interactive:hover {
+  .card-interactive:hover,
+  .nav-item-3d:hover,
+  .nav-item-3d-active {
     animation: none !important;
     transform: none !important;
   }

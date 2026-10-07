@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { db } from "@/lib/db";
 
 const SECRET =
   process.env.SESSION_SECRET ||
@@ -244,7 +245,9 @@ export async function proxy(request: NextRequest) {
 
     // STUDENT and ADMIN can access student portal
     if (role === "STUDENT" || role === "ADMIN") {
-      return NextResponse.next();
+      const res = NextResponse.next();
+      res.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet");
+      return res;
     }
 
     // Instructors attempting to access student routes get redirected to instructor dashboard
@@ -255,11 +258,52 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  // 4. SEO 301 / 302 Redirect Evaluation for public URLs
+  const isPrivate =
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/instructor") ||
+    pathname.startsWith("/student") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/auth");
+
+  if (!isPrivate && !pathname.startsWith("/_next") && !pathname.includes(".")) {
+    try {
+      const redirects = await db.getSEORedirects();
+      const match = redirects.find(
+        (r) => r.isActive && r.sourcePath.toLowerCase() === pathname.toLowerCase()
+      );
+
+      if (match) {
+        db.recordRedirectHit(match.id).catch(() => {});
+        const dest = match.destinationPath.startsWith("http")
+          ? match.destinationPath
+          : new URL(match.destinationPath, request.url).toString();
+
+        return NextResponse.redirect(dest, {
+          status: match.statusCode || 301,
+          headers: {
+            "X-Redirect-By": "NextDrive-SEO-Manager",
+          },
+        });
+      }
+    } catch {
+      // Fallback silently if redirect query fails
+    }
+  }
+
+  const response = NextResponse.next();
+  if (isPrivate) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet");
+  }
+
+  return response;
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/instructor/:path*", "/student/:path*"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };
 
 export default proxy;
+
